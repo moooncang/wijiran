@@ -1,0 +1,108 @@
+{
+  "version": 10,
+  "effects": {
+    "file": "fx_arrow.png",
+    "columns": 8,
+    "cell": 96
+  },
+  "effect_clips": {
+    "arrow": {
+      "sheet": "fx_arrow.png",
+      "cell": 96,
+      "columns": 8,
+      "first": 0,
+      "count": 2,
+      "fps": 12,
+      "loop": true,
+      "pivot": [
+        48,
+        48
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        22,
+        7
+      ],
+      "render_scale": 1
+    },
+    "arrow_trail": {
+      "sheet": "fx_arrow.png",
+      "cell": 96,
+      "columns": 8,
+      "first": 2,
+      "count": 2,
+      "fps": 24,
+      "loop": true,
+      "pivot": [
+        48,
+        48
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        30,
+        9
+      ],
+      "render_scale": 1
+    },
+    "arrow_hit": {
+      "sheet": "fx_arrow.png",
+      "cell": 96,
+      "columns": 8,
+      "first": 4,
+      "count": 3,
+      "fps": 30,
+      "loop": false,
+      "pivot": [
+        16,
+        48
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        20,
+        20
+      ],
+      "render_scale": 1,
+      "lead_in_frames": 1,
+      "front_only": true
+    },
+    "arrow_stick": {
+      "sheet": "fx_arrow.png",
+      "cell": 96,
+      "columns": 8,
+      "first": 7,
+      "count": 1,
+      "fps": 1,
+      "loop": false,
+      "pivot": [
+        48,
+        48
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        22,
+        14
+      ],
+      "render_scale": 1
+    },
+    "arrow_parried": {
+      "sheet": "fx_arrow.png",
+      "cell": 96,
+      "columns": 8,
+      "first": 8,
+      "count": 3,
+      "fps": 30,
+      "loop": false,
+      "pivot": [
+        48,
+        48
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        30,
+        30
+      ],
+      "render_scale": 1,
+      "lead_in_frames": 1
+    }
+  }
+}

@@ -132,6 +132,16 @@ func _on_death() -> void:
 	for pr in get_tree().get_nodes_in_group("projectile"):
 		if pr.get("shooter") == self:
 			pr.queue_free()
+	_clear_field_art()
+
+
+func _clear_field_art() -> void:
+	for w in _waves:
+		if is_instance_valid(w.get("art")):
+			w.art.queue_free()
+	for r in _rain:
+		if is_instance_valid(r.get("art")):
+			r.art.queue_free()
 	_waves.clear()
 	_rain.clear()
 
@@ -141,8 +151,7 @@ func _on_stagger() -> void:
 	for pr in get_tree().get_nodes_in_group("projectile"):
 		if pr.get("shooter") == self:
 			pr.queue_free()
-	_waves.clear()
-	_rain.clear()
+	_clear_field_art()
 	status.stagger_left = stagger_time
 	_enter(State.STAGGER)
 
@@ -356,12 +365,12 @@ func _step_pattern(dt: float) -> void:
 				"PROJ":
 					_fire_volley(s)
 				"WAVE":
-					_waves.append({"rect": _wave_rect(s, global_position.x), "vx": facing * float(s.speed), "left": float(s.travel), "hit_id": hid, "s": s})
+					_waves.append(_make_wave(_wave_rect(s, global_position.x), facing * float(s.speed), float(s.travel), hid, s))
 					if bool(s.get("both", false)):
 						var back: Dictionary = s.duplicate()
 						var r2 := _wave_rect(s, global_position.x)
 						r2.position.x = global_position.x - (12.0 if facing > 0.0 else -12.0 - float(s.get("w", 40.0))) - (float(s.get("w", 40.0)) if facing > 0.0 else 0.0)
-						_waves.append({"rect": r2, "vx": -facing * float(s.speed), "left": float(s.travel), "hit_id": hid * 100, "s": back})
+						_waves.append(_make_wave(r2, -facing * float(s.speed), float(s.travel), hid * 100, back))
 				"RAIN":
 					_start_rain(s)
 		if shape in ["F", "B", "MOVE"] and pattern_time >= t and pattern_time < t + dur and not _fired.has(hid):
@@ -423,7 +432,10 @@ func _start_rain(s: Dictionary) -> void:
 			safes.append(c)
 	var w := (arena_right - arena_left) / float(n)
 	for i in n:
-		_rain.append({"x": arena_left + (i + 0.5) * w, "w": w, "t_hit": 0.55, "safe": safes.has(i), "hit_id": int(s.id) * 1000 + i, "s": s, "fired": false})
+		var col := {"x": arena_left + (i + 0.5) * w, "w": w, "t_hit": 0.55, "safe": safes.has(i), "hit_id": int(s.id) * 1000 + i, "s": s, "fired": false, "art": null}
+		if not col.safe and Anim.effects.has("ash_rain_warn"):
+			col.art = Juice.fx("ash_rain_warn", Vector2(col.x, ground_y))
+		_rain.append(col)
 
 
 func _step_rain(dt: float) -> void:
@@ -438,6 +450,11 @@ func _step_rain(dt: float) -> void:
 			p.velocity = Vector2(0, float(r.s.get("speed", 800.0)))
 			p.shooter = self
 			p.radius = 7.0
+			p.clip = String(r.s.get("clip", ""))
+			p.hit_clip = "ash_impact"
+			p.stick_clip = "ash_impact"
+			if is_instance_valid(r.art):
+				r.art.queue_free()
 			var hit := HitEvent.new()
 			hit.attacker = self
 			hit.instance_id = instance
@@ -451,7 +468,17 @@ func _step_rain(dt: float) -> void:
 			get_parent().add_child(p)
 		if r.t_hit > -0.6:
 			keep.append(r)
+		elif is_instance_valid(r.art):
+			r.art.queue_free()
 	_rain = keep
+
+
+func _make_wave(rect: Rect2, vx: float, travel: float, hid: int, s: Dictionary) -> Dictionary:
+	var w := {"rect": rect, "vx": vx, "left": travel, "hit_id": hid, "s": s, "art": null}
+	var clip := String(s.get("clip", ""))
+	if clip != "" and Anim.effects.has(clip):
+		w.art = Juice.fx(clip, Vector2(rect.get_center().x, ground_y), Vector2(signf(vx), 0))
+	return w
 
 
 func _step_waves(dt: float) -> void:
@@ -461,11 +488,15 @@ func _step_waves(dt: float) -> void:
 		var r: Rect2 = w.rect
 		r.position.x += float(w.vx) * dt
 		w.rect = r
+		if is_instance_valid(w.art):
+			w.art.position = Vector2(r.get_center().x, ground_y)
 		if r.intersects(player.hurt_rect()) and not _fired.has(int(w.hit_id)):
 			_fired[int(w.hit_id)] = true
 			_deliver(w.s, Vector2(r.get_center().x, ground_y))
 		if w.left > 0.0 and r.position.x > arena_left - 100.0 and r.end.x < arena_right + 100.0:
 			keep.append(w)
+		elif is_instance_valid(w.art):
+			w.art.queue_free()
 	_waves = keep
 
 
@@ -537,6 +568,10 @@ func _fire_volley(s: Dictionary) -> void:
 		p.shooter = self
 		p.color = Color(s.get("color", Color(0.85, 0.9, 0.7)))
 		p.radius = 5.0 * maxf(1.0, fx_scale * 0.6)
+		p.clip = String(s.get("clip", ""))
+		p.hit_clip = "arrow_hit"
+		p.parried_clip = "arrow_parried_big"
+		p.stick_clip = "arrow_stick"
 		var hit := HitEvent.new()
 		hit.attacker = self
 		hit.instance_id = instance
@@ -546,6 +581,7 @@ func _fire_volley(s: Dictionary) -> void:
 		hit.parry_class = int(s.cls)
 		hit.posture_damage = float(s.get("posture", POSTURE[int(s.cls)]))
 		hit.label = "%s#%d" % [pattern.name, int(s.id)]
+		hit.hit_fx = "arrow_hit"
 		p.hit = hit
 		get_parent().add_child(p)
 

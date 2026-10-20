@@ -308,18 +308,25 @@ func press_pull() -> bool:
 			best = d
 	if best == null:
 		_say("월인: 대상 없음")
+		Juice.fx("pull_fail", _hand_world(), aim)
 		return false
 	qi -= PULL_QI
 	pull_cooldown = PULL_COOLDOWN
 	facing = 1.0 if best.global_position.x >= global_position.x else -1.0
-	Juice.fx("thrust_line", origin, (best.global_position + Vector2(0, -24) - origin).normalized(), facing, false, null, 1.0, Vector2(bd / 76.0, 0.6))
+	var to_target: Vector2 = best.global_position + Vector2(0, -24) - origin
+	# the thread: its stretch band (cell x 20..176 = 156px) scaled to the distance, caps kept proportional
+	Juice.fx("pull_thread", origin, to_target.normalized(), facing, false, null, 1.0, Vector2(maxf(0.3, bd / 156.0), 1.0))
+	Juice.fx("pull_cast", origin, to_target.normalized())
+	Juice.fx("pull_hook", best.global_position + Vector2(0, -24), to_target.normalized())
 	Juice.hitstop(0.03)
 	if best.status.is_boss:
 		pull_target = best
 		pull_left = 0.3
 		_end_swing()
+		Juice.fx("pull_self", TORSO, to_target.normalized(), 1.0, false, self)
 	elif best.has_method("pull_to"):
 		best.pull_to(global_position + Vector2(facing * 34.0, 0))
+		Juice.fx("pull_drag", best.global_position, Vector2(-facing, 0))
 	return true
 
 
@@ -385,16 +392,26 @@ func _release_swing() -> void:
 		velocity.y = lunge.y if lunge.y < 0.0 else maxf(velocity.y, lunge.y)
 	var kind := String(swing.kind)
 	var mag := float(swing.get("fx_scale", 1.0))
+	var smear := String(swing.get("smear", ""))
+	var aura := String(swing.get("aura", "rush_aura"))
 	if kind == "thrust":
-		Juice.fx("thrust_line", _shoulder_world(), aim, facing, swing_dir < 0.0)
-		Juice.fx("rush_aura", TORSO, aim, 1.0, false, self)  # wind shell on the body during the rush
+		Juice.fx(smear, _shoulder_world(), aim, facing, swing_dir < 0.0, null, mag)
+		if aura != "":
+			Juice.fx(aura, TORSO, aim, 1.0, false, self)  # wind shell on the body during the rush
 	elif kind == "spin":
-		# liquid orbit in two layers so it wraps the body: back sheet behind, front sheet in front
-		Juice.fx("spin_whirl_back", TORSO, aim, facing, swing_dir < 0.0, self)   # orbit tilts to the aim
-		Juice.fx("spin_whirl_front", TORSO, aim, facing, swing_dir < 0.0, self)
+		# orbit in two layers so it wraps the body: back sheet behind, front sheet in front
+		var c: Dictionary = Anim.effects.get(smear, {})
+		if c.has("layers"):
+			Juice.fx_layered(smear, TORSO, aim, facing, swing_dir < 0.0, self, mag)
+		elif smear == "spin_whirl":
+			Juice.fx("spin_whirl_back", TORSO, aim, facing, swing_dir < 0.0, self)
+			Juice.fx("spin_whirl_front", TORSO, aim, facing, swing_dir < 0.0, self)
+		else:
+			Juice.fx(smear, TORSO, aim, facing, false, self, mag)
 	else:
 		_free(_gather)
-		Juice.fx("burst_core", _hand_world(), Vector2.RIGHT, 1.0, false, null, mag)
+		var dir := aim if kind == "front_burst" else Vector2.RIGHT
+		Juice.fx(smear, _hand_world(), dir, facing, false, null, mag)
 		Juice.shake(6.0, aim.x * 4.0)
 	Juice.ghost(sprite, 0.12, 0.35)
 

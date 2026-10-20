@@ -79,6 +79,22 @@ func flash(at: Vector2, radius: float) -> void:
 	world.add_child(f)
 
 
+## Two-layer effect (10차 rt_ring / 8차 liquid spin style): the clip's "layers" sheets are drawn behind
+## (z -1) and in front of the parent with the same frames. Both layer files start at slot 0.
+func fx_layered(clip: String, at: Vector2, dir: Vector2, facing: float, flip_v: bool, parent: Node, scale_by := 1.0) -> void:
+	var c: Dictionary = Anim.effects[clip]
+	var layers: Dictionary = c.layers
+	for key in ["back", "front"]:
+		var lc := c.duplicate()
+		lc.sheet = layers[key]
+		lc.first = 0
+		var tmp := "%s__%s" % [clip, key]
+		Anim.effects[tmp] = lc
+		var s := fx(tmp, at, dir, facing, flip_v, parent, scale_by)
+		if key == "back":
+			s.z_index = -1
+
+
 ## The v8 128px ultimate ring, scaled so its 50px source radius matches `radius`.
 func ultimate_ring(at: Vector2, radius: float) -> void:
 	var s := Sprite2D.new()

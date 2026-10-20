@@ -5,12 +5,16 @@ extends "res://src/world/interactable.gd"
 var cp_id := ""
 var level_id := ""
 var lit := false
+var _s: Sprite2D
+var _lit_t := -1.0
 
 
 func _ready() -> void:
 	super()
 	label = "체크포인트"
 	radius = 30.0
+	_s = Anim.prop_sprite("checkpoint_off")
+	add_child(_s)
 
 
 func _process(delta: float) -> void:
@@ -21,6 +25,7 @@ func _process(delta: float) -> void:
 
 func _use() -> void:
 	lit = true
+	_lit_t = 0.0
 	Game.reach_checkpoint(level_id, cp_id)
 	var p := get_tree().get_first_node_in_group("player") as Player
 	if p:
@@ -30,9 +35,11 @@ func _use() -> void:
 
 
 func _draw_body() -> void:
-	draw_rect(Rect2(-3, -60, 6, 60), Color(0.3, 0.22, 0.14))
-	draw_rect(Rect2(-12, -72, 24, 16), Color(0.5, 0.2, 0.15) if lit else Color(0.3, 0.2, 0.18))
-	var glow := Color(1.0, 0.7, 0.3, 0.5 + 0.3 * sin(_t * 4.0)) if lit else Color(0.4, 0.35, 0.3, 0.4)
-	draw_circle(Vector2(0, -64), 5.0, glow)
-	if lit:
-		draw_circle(Vector2(0, -64), 14.0, Color(1.0, 0.7, 0.3, 0.12))
+	if _lit_t >= 0.0 and _lit_t < 0.2:
+		Anim.prop_frame(_s, "checkpoint_lit", int(_lit_t * 20.0))
+	elif lit:
+		Anim.prop_frame(_s, "checkpoint_on", int(_t * 8.0))
+	else:
+		Anim.prop_frame(_s, "checkpoint_off", 0)
+	if _lit_t >= 0.0:
+		_lit_t += 1.0 / 60.0

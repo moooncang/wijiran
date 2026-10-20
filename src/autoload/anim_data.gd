@@ -4,6 +4,8 @@ extends Node
 
 const ROOT := "res://assets/v9/"
 const V8 := "res://assets/v8/"
+const R10 := "res://assets/r10/"
+const ROOTS := [ROOT, R10]           # manifests name files relative to one of these
 
 var manifest: Dictionary = {}
 var clips: Dictionary = {}
@@ -25,6 +27,15 @@ var boss: Dictionary = {}            # 128px 목각교두 sheet: {texture, cell,
 var boss_parts: Dictionary = {}      # name → {sheet, cell, columns, first, pivot}
 var boss_hud: Dictionary = {}        # manifest_boss_hud.json
 var boss_hud_texture: Texture2D
+# 10차 (본편 1구간)
+var sheets: Dictionary = {}          # name → {texture, cell, columns, pivot, clips}: scout, scout_human, tianel, disciple_m/f, renata
+var props: Dictionary = {}           # manifest_props.json clips
+var props_texture: Texture2D
+var ui: Dictionary = {}              # key → {file, rect, nine_slice}
+var bg: Dictionary = {}              # manifest_bg.json maps
+var terrain: Dictionary = {}         # manifest_terrain.json assets
+var cutscenes: Dictionary = {}
+var _tex_cache: Dictionary = {}
 
 
 func _ready() -> void:
@@ -60,6 +71,23 @@ func _ready() -> void:
 				effects[k] = fxm[k]
 	boss_hud = _load_json(ROOT + "manifest_boss_hud.json")
 	boss_hud_texture = load(ROOT + boss_hud.file)
+	# 10차: effect clips (each names its sheet/cell), character sheets, props, ui, backgrounds, terrain
+	for file in ["manifest_tianel_fx.json", "manifest_arrow.json", "manifest_pull.json", "manifest_palms.json"]:
+		var fxm: Dictionary = _load_json(R10 + file)
+		if fxm.has("effect_clips"):
+			fxm = fxm.effect_clips
+		for k in fxm:
+			if fxm[k] is Dictionary and fxm[k].has("first"):
+				effects[k] = fxm[k]
+	for name in ["scout", "scout_human", "tianel", "disciple_m", "disciple_f", "renata"]:
+		sheets[name] = load_sheet("manifest_%s.json" % name)
+	var pm: Dictionary = _load_json(R10 + "manifest_props.json")
+	props = pm.clips
+	props_texture = load(R10 + pm.props.file)
+	ui = _load_json(R10 + "manifest_ui.json").assets
+	bg = _load_json(R10 + "manifest_bg.json").maps
+	terrain = _load_json(R10 + "manifest_terrain.json").assets
+	cutscenes = _load_json(R10 + "manifest_cutscenes.json").assets
 
 
 ## Sheet for an effect clip: the default effects file, or the clip's own "sheet" file.
@@ -67,8 +95,67 @@ func effect_sheet(file: String) -> Texture2D:
 	if file == "":
 		return effect_texture
 	if not _effect_sheets.has(file):
-		_effect_sheets[file] = load(ROOT + file)
+		_effect_sheets[file] = tex(file)
 	return _effect_sheets[file]
+
+
+## A texture by manifest-relative file name, searched in every asset root (cached).
+func tex(file: String) -> Texture2D:
+	if _tex_cache.has(file):
+		return _tex_cache[file]
+	for r in ROOTS:
+		for sub in ["", "terrain/", "ui/"]:
+			if ResourceLoader.exists(r + sub + file):
+				_tex_cache[file] = load(r + sub + file)
+				return _tex_cache[file]
+	push_error("Anim: missing texture " + file)
+	return null
+
+
+func _find(file: String) -> String:
+	for r in ROOTS:
+		if FileAccess.file_exists(r + file):
+			return r + file
+	return ROOT + file
+
+
+## UI piece as an AtlasTexture (portraits, icons, panels).
+func ui_tex(key: String) -> Texture2D:
+	var d: Dictionary = ui[key]
+	var r: Array = d.rect
+	var at := AtlasTexture.new()
+	at.atlas = tex(String(d.file))
+	at.region = Rect2(r[0], r[1], r[2], r[3])
+	return at
+
+
+## Sprite2D playing one prop clip (checkpoint, door, manual, dummy, ...); pivot (32,60) at the origin.
+func prop_sprite(clip: String) -> Sprite2D:
+	var s := Sprite2D.new()
+	s.texture = props_texture
+	s.hframes = 8
+	s.vframes = int(props_texture.get_height() / 64)
+	s.centered = false
+	s.offset = Vector2(-32, -60)
+	prop_frame(s, clip, 0)
+	return s
+
+
+func prop_frame(s: Sprite2D, clip: String, i: int) -> void:
+	var c: Dictionary = props[clip]
+	s.frame = int(c.first) + (i % int(c.count))
+
+
+## Per-frame anchor (bow_tip, muzzle, arrow_tip, hand_ground) of a 10차 sheet, as a feet-relative offset.
+## Sheets face left; facing -1 draws as-is, +1 mirrors.
+func anchor(sheet: Dictionary, clip: String, i: int, key: String, facing: float) -> Vector2:
+	var c: Dictionary = sheet.clips[clip]
+	var table: Dictionary = c.get(key, {})
+	var k := str(clampi(i, 0, int(c.count) - 1))
+	if not table.has(k):
+		return Vector2(facing * 12.0, -40.0)
+	var p := Vector2(table[k][0], table[k][1])
+	return cell_to_local(p, -facing, sheet.pivot)
 
 
 func _load_json(path: String) -> Dictionary:
@@ -80,9 +167,9 @@ func _load_json(path: String) -> Dictionary:
 
 
 func load_sheet(manifest_file: String) -> Dictionary:
-	var m: Dictionary = _load_json(ROOT + manifest_file)
+	var m: Dictionary = _load_json(_find(manifest_file))
 	return {
-		"texture": load(ROOT + m.character.file),
+		"texture": tex(String(m.character.file)),
 		"cell": int(m.character.cell[0]),
 		"columns": int(m.character.columns),
 		"pivot": Vector2(m.character.pivot[0], m.character.pivot[1]),

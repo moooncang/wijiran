@@ -24,6 +24,7 @@ var _walls: Array = []
 var _spawned: Dictionary = {}     # room id → [enemies]
 var _enemy_count := 0
 var _safe := Vector2.ZERO          # last grounded spot over real floor (pit respawn, 본편 §4)
+var art: LevelArt
 
 
 func build(d: Dictionary, p: Player, cam: Camera2D) -> void:
@@ -33,15 +34,45 @@ func build(d: Dictionary, p: Player, cam: Camera2D) -> void:
 	width = float(d.get("width", 1600.0))
 	player = p
 	camera = cam
-	_build_backdrop()
+	var painted: bool = d.has("map_key") and Anim.bg.has(String(d.map_key))
+	if painted:
+		art = LevelArt.new()
+		add_child(art)
+		art.build(self, String(d.map_key))
+	else:
+		_build_backdrop()
+	var pieces: Dictionary = d.get("art", {})
 	for seg in d.get("floor", [[-200.0, width + 200.0]]):
-		_solid(Rect2(float(seg[0]), ground_y, float(seg[1]) - float(seg[0]), 60), Color(0.14, 0.11, 0.1))
-	for r in d.get("ceilings", []):
-		_solid(r, Color(0.2, 0.17, 0.15))
-	for r in d.get("platforms", []):
-		_solid(r, Color(0.3, 0.22, 0.16))
-	for r in d.get("covers", []):
-		_solid(r, Color(0.22, 0.2, 0.18))
+		_solid(Rect2(float(seg[0]), ground_y, float(seg[1]) - float(seg[0]), 60), Color(0.14, 0.11, 0.1), painted)
+		if painted:
+			art.add_floor(float(seg[0]), float(seg[1]))
+	var ceilings: Array = d.get("ceilings", [])
+	for i in ceilings.size():
+		var r: Rect2 = ceilings[i]
+		var drawn: bool = painted and pieces.has("c%d" % i) and art.add_piece(String(pieces["c%d" % i]), r)
+		_solid(r, Color(0.2, 0.17, 0.15), drawn)
+	var plats: Array = d.get("platforms", [])
+	for i in plats.size():
+		var r: Rect2 = plats[i]
+		var drawn := false
+		if painted:
+			var key := "p%d" % i
+			if pieces.has(key):
+				var name := String(pieces[key])
+				if name == "t0_platform":
+					art.add_platform(name, r)
+					drawn = true
+				else:
+					drawn = art.add_piece(name, r)
+		_solid(r, Color(0.3, 0.22, 0.16), drawn)
+	var covers: Array = d.get("covers", [])
+	for i in covers.size():
+		var r: Rect2 = covers[i]
+		var drawn: bool = painted and pieces.has("v%d" % i) and art.add_piece(String(pieces["v%d" % i]), r)
+		_solid(r, Color(0.22, 0.2, 0.18), drawn)
+	if painted:
+		for dec in d.get("decor", []):
+			art.add_decor(String(dec[0]), Vector2(float(dec[1]), float(dec[2])), bool(dec[3]) if dec.size() > 3 else true)
 	for pr in d.get("props", []):
 		_build_prop(pr)
 	for rd in d.get("rooms", []):
@@ -75,7 +106,7 @@ func _build_backdrop() -> void:
 	add_child(bd)
 
 
-func _solid(r: Rect2, col: Color) -> void:
+func _solid(r: Rect2, col: Color, painted := false) -> void:
 	solids.append(r)
 	var body := StaticBody2D.new()
 	var shape := CollisionShape2D.new()
@@ -85,12 +116,14 @@ func _solid(r: Rect2, col: Color) -> void:
 	body.add_child(shape)
 	body.position = r.get_center()
 	add_child(body)
-	var art := Node2D.new()
-	art.set_script(preload("res://src/world/solid_art.gd"))
-	art.rect = r
-	art.color = col
-	art.z_index = -1
-	add_child(art)
+	if painted:
+		return
+	var box := Node2D.new()
+	box.set_script(preload("res://src/world/solid_art.gd"))
+	box.rect = r
+	box.color = col
+	box.z_index = -1
+	add_child(box)
 
 
 func _build_prop(pr: Dictionary) -> void:
@@ -124,6 +157,15 @@ func _build_prop(pr: Dictionary) -> void:
 			node = Node2D.new()
 			node.set_script(preload("res://src/world/sign.gd"))
 			node.text = String(pr.text)
+		"npc":
+			node = Node2D.new()
+			node.set_script(preload("res://src/world/npc.gd"))
+			node.who = String(pr.who)
+			node.face = float(pr.get("face", -1.0))
+		"mark":
+			node = Node2D.new()
+			node.set_script(preload("res://src/world/prop_anim.gd"))
+			node.clip = String(pr.get("clip", "disciple_mark"))
 		_:
 			return
 	node.position = Vector2(x, y)

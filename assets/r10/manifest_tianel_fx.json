@@ -1,0 +1,368 @@
+{
+  "version": 10,
+  "effects": {
+    "file": "boss_tianel_fx.png",
+    "columns": 4,
+    "cell": 256
+  },
+  "effect_clips": {
+    "wind_arrow": {
+      "sheet": "boss_tianel_fx.png",
+      "cell": 256,
+      "columns": 4,
+      "first": 0,
+      "count": 2,
+      "fps": 24,
+      "loop": true,
+      "pivot": [
+        96,
+        96
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        84,
+        18
+      ],
+      "render_scale": 1
+    },
+    "leaf_arrow": {
+      "sheet": "boss_tianel_fx.png",
+      "cell": 256,
+      "columns": 4,
+      "first": 2,
+      "count": 2,
+      "fps": 24,
+      "loop": true,
+      "pivot": [
+        96,
+        96
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        30,
+        20
+      ],
+      "render_scale": 1
+    },
+    "leaf_burst": {
+      "sheet": "boss_tianel_fx.png",
+      "cell": 256,
+      "columns": 4,
+      "first": 4,
+      "count": 3,
+      "fps": 30,
+      "loop": false,
+      "pivot": [
+        96,
+        96
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        60,
+        40
+      ],
+      "render_scale": 1,
+      "lead_in_frames": 1,
+      "front_only": true
+    },
+    "root_wave": {
+      "sheet": "boss_tianel_fx.png",
+      "cell": 256,
+      "columns": 4,
+      "first": 7,
+      "count": 4,
+      "fps": 24,
+      "loop": true,
+      "pivot": [
+        96,
+        176
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        44,
+        24
+      ],
+      "render_scale": 1,
+      "ground": true,
+      "hitbox": {
+        "type": "rect",
+        "x": -22,
+        "y": -24,
+        "width": 44,
+        "height": 24
+      },
+      "global_scale_compensation": 0.45454545454545453
+    },
+    "root_wave_in": {
+      "sheet": "boss_tianel_fx.png",
+      "cell": 256,
+      "columns": 4,
+      "first": 11,
+      "count": 2,
+      "fps": 24,
+      "loop": false,
+      "pivot": [
+        96,
+        176
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        60,
+        30
+      ],
+      "render_scale": 1,
+      "lead_in_frames": 1,
+      "ground": true
+    },
+    "wind_ring": {
+      "sheet": "boss_tianel_fx.png",
+      "cell": 256,
+      "columns": 4,
+      "first": 13,
+      "count": 3,
+      "fps": 24,
+      "loop": true,
+      "pivot": [
+        96,
+        176
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        90,
+        24
+      ],
+      "render_scale": 1,
+      "ground": true
+    },
+    "wind_land": {
+      "sheet": "boss_tianel_fx.png",
+      "cell": 256,
+      "columns": 4,
+      "first": 16,
+      "count": 2,
+      "fps": 24,
+      "loop": false,
+      "pivot": [
+        96,
+        176
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        60,
+        16
+      ],
+      "render_scale": 1,
+      "lead_in_frames": 1,
+      "ground": true
+    },
+    "bow_flash": {
+      "sheet": "boss_tianel_fx.png",
+      "cell": 256,
+      "columns": 4,
+      "first": 18,
+      "count": 2,
+      "fps": 24,
+      "loop": false,
+      "pivot": [
+        96,
+        96
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        40,
+        40
+      ],
+      "render_scale": 1,
+      "lead_in_frames": 1
+    },
+    "arrow_parried_big": {
+      "sheet": "boss_tianel_fx.png",
+      "cell": 256,
+      "columns": 4,
+      "first": 20,
+      "count": 3,
+      "fps": 30,
+      "loop": false,
+      "pivot": [
+        96,
+        96
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        70,
+        70
+      ],
+      "render_scale": 1,
+      "lead_in_frames": 1
+    },
+    "leaf_fan5": {
+      "sheet": "boss_tianel_fx.png",
+      "cell": 256,
+      "columns": 4,
+      "first": 23,
+      "count": 3,
+      "fps": 30,
+      "loop": false,
+      "pivot": [
+        128,
+        128
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        120,
+        64
+      ],
+      "render_scale": 1,
+      "lead_in_frames": 1,
+      "front_only": true
+    },
+    "root_wave_twin": {
+      "sheet": "boss_tianel_fx.png",
+      "cell": 256,
+      "columns": 4,
+      "first": 26,
+      "count": 4,
+      "fps": 24,
+      "loop": true,
+      "pivot": [
+        128,
+        232
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        60,
+        34
+      ],
+      "render_scale": 1,
+      "ground": true,
+      "hitbox": {
+        "type": "rect",
+        "x": -30,
+        "y": -34,
+        "width": 60,
+        "height": 34
+      },
+      "global_scale_compensation": 0.45454545454545453
+    },
+    "ash_rain_warn": {
+      "sheet": "boss_tianel_fx_512.png",
+      "cell": 512,
+      "columns": 4,
+      "first": 0,
+      "count": 2,
+      "fps": 6,
+      "loop": true,
+      "pivot": [
+        256,
+        480
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        70,
+        400
+      ],
+      "render_scale": 1,
+      "ground": true,
+      "hitbox": {
+        "type": "rect",
+        "x": -35,
+        "y": -400,
+        "width": 70,
+        "height": 400
+      },
+      "global_scale_compensation": 0.45454545454545453
+    },
+    "ash_arrow": {
+      "sheet": "boss_tianel_fx.png",
+      "cell": 256,
+      "columns": 4,
+      "first": 30,
+      "count": 2,
+      "fps": 24,
+      "loop": true,
+      "pivot": [
+        128,
+        128
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        20,
+        150
+      ],
+      "render_scale": 1
+    },
+    "ash_impact": {
+      "sheet": "boss_tianel_fx.png",
+      "cell": 256,
+      "columns": 4,
+      "first": 32,
+      "count": 3,
+      "fps": 24,
+      "loop": false,
+      "pivot": [
+        128,
+        232
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        90,
+        70
+      ],
+      "render_scale": 1,
+      "lead_in_frames": 1,
+      "ground": true
+    },
+    "wind_charge": {
+      "sheet": "boss_tianel_fx.png",
+      "cell": 256,
+      "columns": 4,
+      "first": 35,
+      "count": 3,
+      "fps": 24,
+      "loop": true,
+      "pivot": [
+        128,
+        128
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        90,
+        60
+      ],
+      "render_scale": 1,
+      "hitbox": {
+        "type": "rect",
+        "x": -45,
+        "y": -30,
+        "width": 90,
+        "height": 60
+      },
+      "global_scale_compensation": 0.45454545454545453,
+      "visual_origin_from_foot": [
+        0,
+        -30
+      ]
+    },
+    "charge_burst": {
+      "sheet": "boss_tianel_fx.png",
+      "cell": 256,
+      "columns": 4,
+      "first": 38,
+      "count": 3,
+      "fps": 24,
+      "loop": false,
+      "pivot": [
+        128,
+        232
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        120,
+        60
+      ],
+      "render_scale": 1,
+      "lead_in_frames": 1,
+      "ground": true
+    }
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "version": 10,
+  "props": {
+    "file": "props.png",
+    "cell": 64,
+    "columns": 8,
+    "pivot": [
+      32,
+      60
+    ]
+  },
+  "clips": {
+    "checkpoint_off": {
+      "first": 0,
+      "count": 1,
+      "fps": 1,
+      "loop": false
+    },
+    "checkpoint_on": {
+      "first": 1,
+      "count": 3,
+      "fps": 8,
+      "loop": true
+    },
+    "checkpoint_lit": {
+      "first": 4,
+      "count": 4,
+      "fps": 20,
+      "loop": false
+    },
+    "door_open": {
+      "first": 8,
+      "count": 2,
+      "fps": 6,
+      "loop": true
+    },
+    "door_closed": {
+      "first": 10,
+      "count": 1,
+      "fps": 1,
+      "loop": false
+    },
+    "manual": {
+      "first": 11,
+      "count": 4,
+      "fps": 6,
+      "loop": true
+    },
+    "manual_taken": {
+      "first": 15,
+      "count": 1,
+      "fps": 1,
+      "loop": false
+    },
+    "manual_glow": {
+      "first": 16,
+      "count": 2,
+      "fps": 6,
+      "loop": true
+    },
+    "rest_point": {
+      "first": 18,
+      "count": 3,
+      "fps": 8,
+      "loop": true
+    },
+    "sign": {
+      "first": 21,
+      "count": 1,
+      "fps": 1,
+      "loop": false
+    },
+    "target_dummy": {
+      "first": 22,
+      "count": 3,
+      "fps": 8,
+      "loop": false
+    },
+    "cover_stump": {
+      "first": 25,
+      "count": 2,
+      "fps": 1,
+      "loop": false
+    },
+    "disciple_mark": {
+      "first": 27,
+      "count": 2,
+      "fps": 6,
+      "loop": true
+    }
+  }
+}

@@ -20,6 +20,9 @@ var _fade_t := -1.0
 var _pending: Array = []       # [level_id, spawn_id]
 var _death_t := -1.0
 var _notice_left := 0.0
+var title_band: TextureRect
+var cutscene: TextureRect
+var _cut_t := -1.0
 
 
 func _ready() -> void:
@@ -90,6 +93,13 @@ func _load_level(level_id: String, spawn_id: String) -> void:
 	title_label.text = String(level.data.get("name", ""))
 	_title_left = 2.5
 	_death_t = -1.0
+	var cut := String(level.data.get("cutscene", ""))
+	if cut != "" and Anim.cutscenes.has(cut) and not Game.save.skip_intro_seen.has(cut):
+		Game.save.skip_intro_seen.append(cut)
+		Game.write_save()
+		cutscene.texture = Anim.tex(String(Anim.cutscenes[cut].file))
+		cutscene.visible = true
+		_cut_t = 0.0
 
 
 var _title_left := 0.0
@@ -121,6 +131,13 @@ func _process(delta: float) -> void:
 	notice_label.visible = _notice_left > 0.0
 	_title_left = maxf(0.0, _title_left - delta)
 	title_label.modulate.a = clampf(_title_left, 0.0, 1.0)
+	title_band.modulate.a = title_label.modulate.a
+	if _cut_t >= 0.0:
+		_cut_t += delta
+		cutscene.modulate.a = clampf(minf(_cut_t * 2.0, (3.2 - _cut_t) * 2.0), 0.0, 1.0)
+		if _cut_t >= 3.2:
+			_cut_t = -1.0
+			cutscene.visible = false
 	if player.dead and _death_t < 0.0:
 		_death_t = 0.0
 	if _death_t >= 0.0:
@@ -173,6 +190,10 @@ func _build_ui() -> void:
 	notice_label.add_theme_color_override("font_color", Color(1, 0.85, 0.65))
 	notice_label.visible = false
 	layer.add_child(notice_label)
+	title_band = TextureRect.new()
+	title_band.texture = Anim.ui_tex("map_title")
+	title_band.position = Vector2(200, 148)
+	layer.add_child(title_band)
 	title_label = Label.new()
 	title_label.position = Vector2(0, 150)
 	title_label.size = Vector2(800, 30)
@@ -180,6 +201,14 @@ func _build_ui() -> void:
 	title_label.add_theme_font_size_override("font_size", 16)
 	title_label.add_theme_color_override("font_color", Color(0.95, 0.9, 0.85))
 	layer.add_child(title_label)
+	cutscene = TextureRect.new()
+	cutscene.position = Vector2(80, 45)
+	cutscene.size = Vector2(640, 360)
+	cutscene.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	cutscene.stretch_mode = TextureRect.STRETCH_SCALE
+	cutscene.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	cutscene.visible = false
+	layer.add_child(cutscene)
 	add_child(layer)
 	var menu_layer := CanvasLayer.new()
 	menu_layer.layer = 9

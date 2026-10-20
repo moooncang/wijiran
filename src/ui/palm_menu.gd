@@ -59,6 +59,8 @@ func _draw() -> void:
 	var vp := get_viewport_rect().size
 	draw_rect(Rect2(Vector2.ZERO, vp), Color(0.02, 0.01, 0.03, 0.82))
 	var font := Anim.font
+	draw_texture(Anim.ui_tex("palm_list_panel"), Vector2(40, 70))
+	draw_texture(Anim.ui_tex("palm_description_panel"), Vector2(280, 70))
 	draw_string(font, Vector2(60, 50), "장법  (Tab 닫기 · ↑↓ 선택 · J/Enter 장착)", HORIZONTAL_ALIGNMENT_LEFT, -1, 11, Color(1, 0.9, 0.8))
 	var ids := PalmStyles.ids()
 	var y := 90.0
@@ -68,11 +70,12 @@ func _draw() -> void:
 		var s := PalmStyles.style(id)
 		var col := Color(1, 0.95, 0.9) if owned else Color(0.45, 0.4, 0.45)
 		if i == selected:
-			draw_rect(Rect2(50, y - 14, 200, 22), Color(0.6, 0.15, 0.2, 0.5))
+			draw_rect(Rect2(50, y - 16, 200, 26), Color(0.6, 0.15, 0.2, 0.5))
+		draw_texture(Anim.ui_tex(String(s.icon) if owned else "palm_undiscovered"), Vector2(56, y - 16))
 		var name: String = ("%s %s" % [s.name, s.hanja]) if owned else "미발견 장법"
 		if id == Game.equipped_palm():
 			name += "  ● 장착 중"
-		draw_string(font, Vector2(60, y), name, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, col)
+		draw_string(font, Vector2(84, y), name, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, col)
 		y += 30
 	var sid: String = ids[selected]
 	if not Game.unlocked_palms().has(sid):
@@ -97,8 +100,10 @@ func _draw() -> void:
 	lines.append(["주의: " + String(st.caution), 9, Color(1, 0.8, 0.7)])
 	lines.append(["", 8, Color.WHITE])
 	if sid == Game.equipped_palm():
+		draw_texture(Anim.ui_tex("equip_button_active"), Vector2(660, 330))
 		lines.append(["장착 중", 10, Color(1, 0.9, 0.6)])
 	elif Game.can_equip_now():
+		draw_texture(Anim.ui_tex("equip_button"), Vector2(660, 330))
 		lines.append(["[J / Enter] 장착", 10, Color(1, 0.95, 0.85)])
 	else:
 		lines.append(["휴식 지점에서 장착할 수 있습니다", 10, Color(0.8, 0.7, 0.7)])

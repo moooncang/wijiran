@@ -1,0 +1,361 @@
+{
+  "version": 10,
+  "effects": {
+    "file": "fx_palms.png",
+    "columns": 8,
+    "cell": 96
+  },
+  "effect_clips": {
+    "fb_enter_line": {
+      "sheet": "fx_palms_128.png",
+      "cell": 128,
+      "columns": 8,
+      "first": 0,
+      "count": 4,
+      "fps": 30,
+      "loop": false,
+      "pivot": [
+        16,
+        64
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        96,
+        10
+      ],
+      "render_scale": 1,
+      "lead_in_frames": 1,
+      "front_only": true
+    },
+    "fb_wedge": {
+      "sheet": "fx_palms_128.png",
+      "cell": 128,
+      "columns": 8,
+      "first": 4,
+      "count": 4,
+      "fps": 30,
+      "loop": false,
+      "pivot": [
+        16,
+        64
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        80,
+        14
+      ],
+      "render_scale": 1,
+      "lead_in_frames": 1,
+      "front_only": true
+    },
+    "fb_break_front": {
+      "sheet": "fx_palms_128.png",
+      "cell": 128,
+      "columns": 8,
+      "first": 8,
+      "count": 5,
+      "fps": 24,
+      "loop": false,
+      "pivot": [
+        24,
+        64
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        60,
+        120
+      ],
+      "render_scale": 1,
+      "lead_in_frames": 1,
+      "front_only": true,
+      "hitbox": {
+        "type": "front_semicircle",
+        "radius": 60
+      }
+    },
+    "fb_heavy_front": {
+      "sheet": "fx_palms_128.png",
+      "cell": 128,
+      "columns": 8,
+      "first": 13,
+      "count": 5,
+      "fps": 24,
+      "loop": false,
+      "pivot": [
+        24,
+        64
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        60,
+        120
+      ],
+      "render_scale": 1,
+      "lead_in_frames": 1,
+      "front_only": true,
+      "hitbox": {
+        "type": "front_semicircle",
+        "radius": 60
+      }
+    },
+    "fb_rush_aura": {
+      "sheet": "fx_palms.png",
+      "cell": 96,
+      "columns": 8,
+      "first": 0,
+      "count": 2,
+      "fps": 24,
+      "loop": true,
+      "pivot": [
+        48,
+        48
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        70,
+        70
+      ],
+      "render_scale": 1
+    },
+    "rt_open_arc": {
+      "sheet": "fx_palms.png",
+      "cell": 96,
+      "columns": 8,
+      "first": 2,
+      "count": 4,
+      "fps": 30,
+      "loop": false,
+      "pivot": [
+        16,
+        48
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        60,
+        60
+      ],
+      "render_scale": 1,
+      "lead_in_frames": 1,
+      "front_only": true
+    },
+    "rt_ring": {
+      "sheet": "fx_palms_128.png",
+      "cell": 128,
+      "columns": 8,
+      "first": 18,
+      "count": 12,
+      "fps": 60,
+      "loop": false,
+      "pivot": [
+        64,
+        64
+      ],
+      "orientation": "fixed",
+      "art_size": [
+        124,
+        86
+      ],
+      "render_scale": 1,
+      "lead_in_frames": 1,
+      "hitbox": {
+        "type": "circle",
+        "radius": 62
+      },
+      "layers": {
+        "back": "fx_palms_rt_ring_back.png",
+        "front": "fx_palms_rt_ring_front.png"
+      },
+      "layer_first": 0,
+      "layer_columns": 8,
+      "layer_cell": 128
+    },
+    "rt_tide": {
+      "sheet": "fx_palms_192.png",
+      "cell": 192,
+      "columns": 8,
+      "first": 0,
+      "count": 5,
+      "fps": 24,
+      "loop": false,
+      "pivot": [
+        96,
+        96
+      ],
+      "orientation": "fixed",
+      "art_size": [
+        156,
+        156
+      ],
+      "render_scale": 1,
+      "lead_in_frames": 1,
+      "hitbox": {
+        "type": "circle",
+        "radius": 78
+      }
+    },
+    "rt_heavy": {
+      "sheet": "fx_palms_192.png",
+      "cell": 192,
+      "columns": 8,
+      "first": 5,
+      "count": 5,
+      "fps": 24,
+      "loop": false,
+      "pivot": [
+        96,
+        96
+      ],
+      "orientation": "fixed",
+      "art_size": [
+        184,
+        184
+      ],
+      "render_scale": 1,
+      "lead_in_frames": 1,
+      "hitbox": {
+        "type": "circle",
+        "radius": 92
+      }
+    },
+    "rt_push_hit": {
+      "sheet": "fx_palms.png",
+      "cell": 96,
+      "columns": 8,
+      "first": 6,
+      "count": 3,
+      "fps": 30,
+      "loop": false,
+      "pivot": [
+        16,
+        48
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        50,
+        40
+      ],
+      "render_scale": 1,
+      "lead_in_frames": 1,
+      "front_only": true
+    },
+    "bp_point": {
+      "sheet": "fx_palms.png",
+      "cell": 96,
+      "columns": 8,
+      "first": 9,
+      "count": 3,
+      "fps": 30,
+      "loop": false,
+      "pivot": [
+        16,
+        48
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        40,
+        28
+      ],
+      "render_scale": 1,
+      "lead_in_frames": 1,
+      "front_only": true
+    },
+    "bp_fold": {
+      "sheet": "fx_palms.png",
+      "cell": 96,
+      "columns": 8,
+      "first": 12,
+      "count": 4,
+      "fps": 30,
+      "loop": false,
+      "pivot": [
+        16,
+        48
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        48,
+        36
+      ],
+      "render_scale": 1,
+      "lead_in_frames": 1,
+      "front_only": true
+    },
+    "bp_needle": {
+      "sheet": "fx_palms.png",
+      "cell": 96,
+      "columns": 8,
+      "first": 16,
+      "count": 5,
+      "fps": 24,
+      "loop": false,
+      "pivot": [
+        16,
+        48
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        40,
+        40
+      ],
+      "render_scale": 1,
+      "lead_in_frames": 1,
+      "front_only": true,
+      "hitbox": {
+        "type": "front_semicircle",
+        "radius": 50
+      }
+    },
+    "bp_heavy": {
+      "sheet": "fx_palms_128.png",
+      "cell": 128,
+      "columns": 8,
+      "first": 30,
+      "count": 6,
+      "fps": 15,
+      "loop": false,
+      "pivot": [
+        24,
+        64
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        54,
+        108
+      ],
+      "render_scale": 1,
+      "lead_in_frames": 1,
+      "front_only": true,
+      "hitbox": {
+        "type": "front_semicircle",
+        "radius": 54
+      },
+      "frame_durations": [
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.04,
+        0.04
+      ]
+    },
+    "bp_mark": {
+      "sheet": "fx_palms.png",
+      "cell": 96,
+      "columns": 8,
+      "first": 21,
+      "count": 2,
+      "fps": 6,
+      "loop": true,
+      "pivot": [
+        48,
+        48
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        18,
+        18
+      ],
+      "render_scale": 1
+    }
+  }
+}

@@ -90,6 +90,10 @@ func _draw() -> void:
 		draw_string(font, Vector2(vp.x - 300, py), "%s  %s" % [line[0], line[1]], HORIZONTAL_ALIGNMENT_LEFT, -1, 8, col)
 		draw_string(font, Vector2(vp.x - 190, py), line[2] if reason == "" else reason, HORIZONTAL_ALIGNMENT_LEFT, -1, 7, col if reason == "" else Color(1, 0.7, 0.55))
 		py += 11
+	# equipped palm icon + name (장법 기획 §7)
+	var pst := PalmStyles.style(player.style_id)
+	draw_texture(Anim.ui_tex(String(pst.icon)), Vector2(x - 2, y + 92))
+	draw_string(font, Vector2(x + 26, y + 109), "%s · 우클릭 월인" % String(pst.name), HORIZONTAL_ALIGNMENT_LEFT, -1, 9, Color(0.95, 0.9, 0.85))
 	_icon("hp", Vector2(x, y))
 	_bar(Vector2(x + 20, y + 5), 90, player.hp, CombatConfig.PLAYER_MAX_HP, Color(0.85, 0.3, 0.4), str(player.hp))
 	y += 18

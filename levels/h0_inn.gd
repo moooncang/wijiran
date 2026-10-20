@@ -4,12 +4,14 @@ class_name LevelH0
 
 static func data() -> Dictionary:
 	return {
-		"id": "h0", "name": "쌍등객잔", "width": 900.0, "ground_y": 300.0, "backdrop": "inn", "no_combat": true,
+		"id": "h0", "name": "쌍등객잔", "width": 900.0, "ground_y": 300.0, "backdrop": "inn", "no_combat": true, "map_key": "H0", "cutscene": "route",
+		"decor": [["h0_lantern_blue_0", 300, 220, false], ["h0_lantern_red_0", 560, 220, false], ["h0_dumplings", 470, 262, false]],
 		"spawns": {"start": Vector2(80, 300)},
 		"platforms": [],
 		"props": [
 			{"type": "checkpoint", "x": 160, "id": "inn"},
 			{"type": "rest", "x": 420},
+			{"type": "npc", "x": 640, "who": "renata", "face": -1.0},
 			{"type": "sign", "x": 600, "text": "레나타: 「연구소에 아직 옮겨지지 않은 포로가 있어. …무기는 문밖에.」"},
 			{"type": "door", "x": 840, "to": "f2", "spawn": "start", "label": "단층 임시 연구소 (제작 중)", "requires": "never"},
 		],

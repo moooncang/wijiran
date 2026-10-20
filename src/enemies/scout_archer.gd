@@ -1,7 +1,9 @@
 extends "res://src/enemies/enemy_base.gd"
 ## 녹궁 정찰병 (elf scout; `human` = 성약군 사수 skin, same AI — 본편 §8). Aim telegraph (a thin line
 ## that locks 0.15 s before the shot), one arrow, cooldown; a single short retreat hop when the player
-## closes in, never twice in a row (§9). No new shot starts while off-camera (§5). Greybox silhouette.
+## closes in, never twice in a row (§9). No new shot starts while off-camera (§5).
+## 10차 sheet: idle / aim(hold) / shoot(impact 0) / retreat / hurt / recoil / stagger / death; the arrow
+## leaves from the aim clip's arrow_tip anchor.
 
 const KEEP_MIN := 150.0
 const KEEP_MAX := 280.0
@@ -22,6 +24,8 @@ var locked := false
 var can_retreat := true
 var shots := 0
 var _retreat_from := 0.0
+var _retreat_dir := 1.0
+var sprite: ClipSprite
 
 
 func _setup() -> void:
@@ -29,6 +33,10 @@ func _setup() -> void:
 	hurt_half_width = 10.0
 	status.max_hp = 60.0
 	status.hp = 60.0
+	sprite = ClipSprite.new()
+	sprite.setup(Anim.sheets["scout_human" if human else "scout"])
+	sprite.z_index = 2
+	add_child(sprite)
 
 
 func _cancel_attack() -> void:
@@ -57,6 +65,7 @@ func _ai(dt: float) -> void:
 				state_time = 0.0
 				locked = false
 				instance += 1
+				sprite.play("aim", true)
 		S.AIM:
 			if not locked:
 				facing = -1.0 if dx < 0.0 else 1.0
@@ -83,9 +92,6 @@ func _ai(dt: float) -> void:
 				Juice.fx("land_dust", global_position)
 
 
-var _retreat_dir := 1.0
-
-
 func _retreat_space() -> float:
 	var away := -1.0 if player.global_position.x > global_position.x else 1.0
 	var target := global_position.x + away * RETREAT_DIST
@@ -101,20 +107,28 @@ func _begin_retreat() -> void:
 	_retreat_from = global_position.x
 	_retreat_dir = _retreat_space()
 	can_retreat = false
+	sprite.play("retreat", true)
 	Juice.fx("backstep_dust", global_position, Vector2(_retreat_dir, 0))
 
 
 func _bow() -> Vector2:
+	if sprite and sprite.clip in ["aim", "shoot", "idle"]:
+		return global_position + sprite.anchor("arrow_tip")
 	return global_position + Vector2(facing * 10.0, -30.0)
 
 
 func _shoot() -> void:
 	shots += 1
+	sprite.play("shoot", true)
 	var p := Node2D.new()
 	p.set_script(preload("res://src/enemies/projectile.gd"))
 	p.position = _bow()
 	p.velocity = aim_dir * ARROW_SPEED
 	p.shooter = self
+	p.clip = "arrow"
+	p.hit_clip = "arrow_hit"
+	p.parried_clip = "arrow_parried"
+	p.stick_clip = "arrow_stick"
 	var hit := HitEvent.new()
 	hit.attacker = self
 	hit.instance_id = instance
@@ -124,28 +138,40 @@ func _shoot() -> void:
 	hit.parry_class = CombatConfig.ParryClass.NORMAL
 	hit.posture_damage = CombatConfig.POSTURE_NORMAL
 	hit.label = "화살"
+	hit.hit_fx = "arrow_hit"
 	p.hit = hit
 	get_parent().add_child(p)
 	Juice.fx("mark_flash", _bow())
 
 
+func _process(delta: float) -> void:
+	super(delta)
+	if Juice.frozen():
+		return
+	sprite.set_facing(facing)
+	sprite.position = Vector2(kick, 0)
+	sprite.modulate = Color(2, 2, 2) if flash > 0.0 else (Color(1, 1, 1, 0.5) if not status.alive() else Color.WHITE)
+	if not status.alive():
+		sprite.play("death")
+	elif status.staggered():
+		sprite.play("stagger")
+	elif status.recoil_left > 0.0:
+		sprite.play("recoil")
+	elif hurt_left > 0.0 and state != S.AIM:
+		sprite.play("hurt")
+	elif state == S.AIM:
+		sprite.play("aim")
+	elif state == S.RETREAT:
+		sprite.play("retreat")
+	elif state == S.RECOVER and sprite.clip == "shoot" and not sprite._done:
+		pass
+	else:
+		sprite.play("idle")
+	sprite.tick(delta)
+
+
 func _draw_body() -> void:
-	var alive := status.alive()
-	var body := (Color(0.55, 0.45, 0.35) if human else Color(0.3, 0.5, 0.3)) if alive else Color(0.3, 0.3, 0.3, 0.4)
-	var skin := Color(0.85, 0.75, 0.65)
-	var kx := kick
-	if flash > 0.0:
-		body = Color(2, 2, 2)
-	# legs, torso, head, bow (left-facing drawn, mirrored by facing)
-	var f := facing
-	draw_rect(Rect2(kx - 6, -22, 5, 22), body.darkened(0.3))
-	draw_rect(Rect2(kx + 1, -22, 5, 22), body.darkened(0.3))
-	draw_rect(Rect2(kx - 8, -46, 16, 26), body)
-	draw_circle(Vector2(kx, -52), 7.0, skin)
-	if not human:
-		draw_line(Vector2(kx - f * 6, -56), Vector2(kx - f * 13, -62), skin, 2.0)  # the long ear
-	draw_arc(Vector2(kx + f * 12, -34), 16.0, (-PI * 0.5 if f > 0 else PI * 0.5), (PI * 0.5 if f > 0 else PI * 1.5), 12, Color(0.15, 0.12, 0.1), 2.0)
-	if state == S.AIM and alive:
+	if state == S.AIM and status.alive():
 		var from := _bow() - global_position
 		var col := Color(1, 0.3, 0.25, 0.9) if locked else Color(1, 0.8, 0.4, 0.5)
 		draw_line(from, from + aim_dir * 520.0, col, 2.0 if locked else 1.0)

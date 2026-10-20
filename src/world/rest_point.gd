@@ -6,6 +6,8 @@ func _ready() -> void:
 	super()
 	label = "장법 (Tab)"
 	radius = 40.0
+	_s = Anim.prop_sprite("rest_point")
+	add_child(_s)
 
 
 func _process(delta: float) -> void:
@@ -18,6 +20,7 @@ func _process(delta: float) -> void:
 
 
 var _was_near := false
+var _s: Sprite2D
 
 
 func _use() -> void:
@@ -27,8 +30,4 @@ func _use() -> void:
 
 
 func _draw_body() -> void:
-	draw_rect(Rect2(-30, -6, 60, 6), Color(0.35, 0.25, 0.16))
-	draw_rect(Rect2(-26, -34, 8, 28), Color(0.3, 0.22, 0.14))
-	draw_rect(Rect2(18, -34, 8, 28), Color(0.3, 0.22, 0.14))
-	draw_rect(Rect2(-30, -40, 60, 6), Color(0.45, 0.3, 0.18))
-	draw_circle(Vector2(0, -52), 6.0, Color(1.0, 0.75, 0.4, 0.6 + 0.2 * sin(_t * 3.0)))
+	Anim.prop_frame(_s, "rest_point", int(_t * 8.0))

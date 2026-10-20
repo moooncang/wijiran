@@ -1,0 +1,334 @@
+{
+  "version": 10,
+  "assets": {
+    "portrait_wi_jiran_neutral": {
+      "file": "ui_portraits.png",
+      "rect": [
+        0,
+        0,
+        48,
+        48
+      ]
+    },
+    "portrait_wi_jiran_smile": {
+      "file": "ui_portraits.png",
+      "rect": [
+        48,
+        0,
+        48,
+        48
+      ]
+    },
+    "portrait_wi_jiran_angry": {
+      "file": "ui_portraits.png",
+      "rect": [
+        96,
+        0,
+        48,
+        48
+      ]
+    },
+    "portrait_tianel_cold": {
+      "file": "ui_portraits.png",
+      "rect": [
+        144,
+        0,
+        48,
+        48
+      ]
+    },
+    "portrait_tianel_shaken": {
+      "file": "ui_portraits.png",
+      "rect": [
+        192,
+        0,
+        48,
+        48
+      ]
+    },
+    "portrait_disciple": {
+      "file": "ui_portraits.png",
+      "rect": [
+        240,
+        0,
+        48,
+        48
+      ]
+    },
+    "portrait_renata": {
+      "file": "ui_portraits.png",
+      "rect": [
+        288,
+        0,
+        48,
+        48
+      ]
+    },
+    "portrait_disciple_f": {
+      "file": "ui_portraits.png",
+      "rect": [
+        336,
+        0,
+        48,
+        48
+      ]
+    },
+    "tianel_hud_portrait": {
+      "file": "ui/tianel_hud_portrait.png",
+      "rect": [
+        0,
+        0,
+        32,
+        32
+      ]
+    },
+    "palm_black_moon": {
+      "file": "ui_palms.png",
+      "rect": [
+        0,
+        0,
+        24,
+        24
+      ]
+    },
+    "palm_formation_breaker": {
+      "file": "ui_palms.png",
+      "rect": [
+        24,
+        0,
+        24,
+        24
+      ]
+    },
+    "palm_returning_tide": {
+      "file": "ui_palms.png",
+      "rect": [
+        48,
+        0,
+        24,
+        24
+      ]
+    },
+    "palm_bone_piercing": {
+      "file": "ui_palms.png",
+      "rect": [
+        72,
+        0,
+        24,
+        24
+      ]
+    },
+    "palm_undiscovered": {
+      "file": "ui_palms.png",
+      "rect": [
+        96,
+        0,
+        24,
+        24
+      ]
+    },
+    "pull": {
+      "file": "ui_skills.png",
+      "rect": [
+        0,
+        0,
+        24,
+        24
+      ]
+    },
+    "heavy_black_moon": {
+      "file": "ui_skills.png",
+      "rect": [
+        24,
+        0,
+        24,
+        24
+      ]
+    },
+    "heavy_formation_breaker": {
+      "file": "ui_skills.png",
+      "rect": [
+        48,
+        0,
+        24,
+        24
+      ]
+    },
+    "heavy_returning_tide": {
+      "file": "ui_skills.png",
+      "rect": [
+        72,
+        0,
+        24,
+        24
+      ]
+    },
+    "heavy_bone_piercing": {
+      "file": "ui_skills.png",
+      "rect": [
+        96,
+        0,
+        24,
+        24
+      ]
+    },
+    "eclipse": {
+      "file": "ui_skills.png",
+      "rect": [
+        120,
+        0,
+        24,
+        24
+      ]
+    },
+    "dash": {
+      "file": "ui_skills.png",
+      "rect": [
+        144,
+        0,
+        24,
+        24
+      ]
+    },
+    "parry": {
+      "file": "ui_skills.png",
+      "rect": [
+        168,
+        0,
+        24,
+        24
+      ]
+    },
+    "jump": {
+      "file": "ui_skills.png",
+      "rect": [
+        0,
+        24,
+        24,
+        24
+      ]
+    },
+    "attack": {
+      "file": "ui_skills.png",
+      "rect": [
+        24,
+        24,
+        24,
+        24
+      ]
+    },
+    "dialogue_frame": {
+      "file": "ui/dialogue_frame.png",
+      "rect": [
+        0,
+        0,
+        32,
+        32
+      ],
+      "nine_slice": [
+        8,
+        8,
+        8,
+        8
+      ]
+    },
+    "palm_list_panel": {
+      "file": "ui/palm_list_panel.png",
+      "rect": [
+        0,
+        0,
+        220,
+        300
+      ],
+      "nine_slice": [
+        12,
+        12,
+        12,
+        12
+      ]
+    },
+    "palm_description_panel": {
+      "file": "ui/palm_description_panel.png",
+      "rect": [
+        0,
+        0,
+        480,
+        300
+      ],
+      "nine_slice": [
+        12,
+        12,
+        12,
+        12
+      ]
+    },
+    "equip_button": {
+      "file": "ui/equip_button.png",
+      "rect": [
+        0,
+        0,
+        80,
+        24
+      ],
+      "nine_slice": [
+        6,
+        6,
+        6,
+        6
+      ]
+    },
+    "equip_button_active": {
+      "file": "ui/equip_button_active.png",
+      "rect": [
+        0,
+        0,
+        80,
+        24
+      ],
+      "nine_slice": [
+        6,
+        6,
+        6,
+        6
+      ]
+    },
+    "map_title": {
+      "file": "ui/map_title.png",
+      "rect": [
+        0,
+        0,
+        400,
+        30
+      ],
+      "nine_slice": [
+        8,
+        8,
+        8,
+        8
+      ]
+    },
+    "notification_dot": {
+      "file": "ui/notification_dot.png",
+      "rect": [
+        0,
+        0,
+        8,
+        8
+      ]
+    },
+    "cooldown_plate": {
+      "file": "ui/cooldown_plate.png",
+      "rect": [
+        0,
+        0,
+        24,
+        24
+      ]
+    }
+  },
+  "boss_hud_frame": {
+    "reuse": "reuse/boss_hud.png",
+    "note": "9차 보스 HUD 프레임 재사용. 새 초상만 교체."
+  },
+  "mobile_buttons": "optional_omitted_use_existing_code_skin"
+}

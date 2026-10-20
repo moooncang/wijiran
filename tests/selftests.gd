@@ -412,6 +412,7 @@ func _tianel() -> void:
 func _qa() -> void:
 	var p := _player()
 	p.input_locked = true
+	Game.save.skip_intro_seen = ["departure", "route"]   # captures without the cutscene overlay
 	await _goto("t0")
 	p.global_position = Vector2(700, 300)
 	await _snap("qa-t0")
@@ -425,6 +426,9 @@ func _qa() -> void:
 	p.global_position = Vector2(1560, 300)
 	await _pf(40)
 	await _snap("qa-f1-room3")
+	p.global_position = Vector2(3060, 300)
+	await _pf(20)
+	await _snap("qa-f1-rest")
 	Game.save = Game.default_save()
 	await _goto("b1")
 	p.global_position = Vector2(320, 300)

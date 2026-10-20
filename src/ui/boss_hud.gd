@@ -26,6 +26,8 @@ func _draw() -> void:
 	draw_rect(Rect2(late_x - 1, y - 2, 2, 12), Color(0.3, 0.2, 0.15))
 	draw_rect(Rect2(x, y + 14, 400 * clampf(st.posture / st.posture_max, 0.0, 1.0), 3), Color(0.85, 0.82, 0.75))
 	var name: String = String(boss.get("boss_name")) if boss.get("boss_name") != null else "보스"
+	if name == "티아넬":
+		draw_texture(Anim.ui_tex("tianel_hud_portrait"), Vector2(x - 40, y - 2))
 	draw_string(Anim.font, Vector2(x, y + 32), "%s  %d / %d" % [name, int(ceil(st.hp)), int(st.max_hp)], HORIZONTAL_ALIGNMENT_LEFT, -1, 9, Color(0.98, 0.9, 0.75))
 	var text := ""
 	if boss.get("beaten") == true or not st.alive():

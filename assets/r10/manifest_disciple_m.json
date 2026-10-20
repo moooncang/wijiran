@@ -1,0 +1,39 @@
+{
+  "version": 10,
+  "character": {
+    "file": "npc_disciple_m.png",
+    "sheet": "npc_disciple_m.png",
+    "cell": [
+      64,
+      64
+    ],
+    "columns": 8,
+    "rows": 2,
+    "pivot": [
+      32,
+      60
+    ],
+    "standing_height": 48,
+    "orientation": "left"
+  },
+  "clips": {
+    "idle": {
+      "first": 0,
+      "count": 4,
+      "fps": 6,
+      "loop": true
+    },
+    "bow": {
+      "first": 4,
+      "count": 2,
+      "fps": 8,
+      "loop": false
+    },
+    "walk": {
+      "first": 6,
+      "count": 6,
+      "fps": 12,
+      "loop": true
+    }
+  }
+}

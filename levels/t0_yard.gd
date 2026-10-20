@@ -8,7 +8,9 @@ class_name LevelT0
 
 static func data() -> Dictionary:
 	return {
-		"id": "t0", "name": "천흑산 잔등 연무장", "width": 3000.0, "ground_y": 300.0, "backdrop": "yard",
+		"id": "t0", "name": "천흑산 잔등 연무장", "width": 3000.0, "ground_y": 300.0, "backdrop": "yard", "map_key": "T0", "cutscene": "departure",
+		"art": {"p0": "t0_wall", "p1": "t0_lip", "p2": "t0_cliff", "p3": "t0_lip", "c0": "t0_bridge_ceiling"},
+		"decor": [["t0_pit_left", 1044, 348], ["t0_pit_right", 1150, 348]],
 		"spawns": {"start": Vector2(120, 300), "from_f1": Vector2(2880, 300)},
 		"floor": [[-200.0, 1060.0], [1150.0, 3200.0]],
 		"platforms": [
@@ -21,6 +23,7 @@ static func data() -> Dictionary:
 		"props": [
 			{"type": "sign", "x": 220, "text": "A/D 이동 · W 점프 · 공중에서 W 허공답월 · Shift 마우스 방향 잔월보"},
 			{"type": "checkpoint", "x": 300, "id": "yard"},
+			{"type": "npc", "x": 380, "who": "disciple_m", "face": -1.0}, {"type": "npc", "x": 150, "who": "disciple_f", "face": 1.0},
 			{"type": "sign", "x": 480, "text": "무너진 계단: 점프 중에 W 한 번 더 — 허공답월로만 넘는다"},
 			{"type": "sign", "x": 940, "text": "끊긴 다리: 천장이 낮아 못 뛴다. 끝까지 걸어가 마우스를 앞에 두고 Shift 잔월보"},
 			{"type": "sign", "x": 1300, "text": "단면 절벽: 점프 → 허공답월 → 위를 조준하고 Shift. 공중 잔월보는 한 번"},
