@@ -182,10 +182,12 @@ var log_lines: Array = []             # selection log for tests
 var drill := false                    # T0 패링 연습: P1_A only, no phases, never dies
 signal died(enemy: Node)
 var debug := false
+var _over: Node2D                     # overhead layer (bars, 내상 diamonds) above fighters and effects
 
 
 func _ready() -> void:
 	add_to_group("enemy")
+	_over = EnemyBase.overlay(self, _draw_overlay)
 	status.is_boss = true
 	status.max_hp = MAX_HP
 	status.hp = MAX_HP
@@ -1002,6 +1004,7 @@ func _process(delta: float) -> void:
 		hat_spin.position = ta + Vector2(0, -58)
 	_update_telegraph_sprites(ta)
 	queue_redraw()
+	_over.queue_redraw()
 
 
 ## The staff-tip mark and the head icon for the next pending strike (recreated when the class changes).
@@ -1028,6 +1031,9 @@ func _update_telegraph_sprites(ta: Vector2) -> void:
 	if cls != icon_cls or icon == null or not is_instance_valid(icon):
 		_free(icon)
 		icon = Juice.fx(["icon_bang", "icon_bang2", "icon_x"][cls], Vector2.ZERO, Vector2.RIGHT, 1.0, false, self)
+		icon.z_index = EnemyBase.OVER_Z   # same layer and tint as every other head icon
+		icon.z_as_relative = false
+		icon.modulate = EnemyBase.TAG_ICONS[["!", "!!", "X"][cls]][2]
 		icon_cls = cls
 	icon.position = ta + Vector2(0, -70)
 	if cls == U:
@@ -1068,7 +1074,7 @@ func _free(n) -> void:
 
 
 ## Zones of pending strikes drawn 1:1 with the hitboxes: zone_fill tiles + danger edges for N/H,
-## hatch tiles on the floor for U, lane hatching for P3_C. Also injury diamonds beside the tablet.
+## hatch tiles on the floor for U, lane hatching for P3_C (injury diamonds: _draw_overlay).
 func _draw() -> void:
 	if state == State.PATTERN and not pattern.is_empty():
 		for s in pattern.strikes:
@@ -1085,7 +1091,18 @@ func _draw() -> void:
 					_draw_zone(r, cls, progress)
 				continue
 			_draw_zone(_zone_rect(s, _predicted_x(s)), cls, progress)
-	load("res://src/enemies/enemy_base.gd")._draw_injury(self, status.injury, _anchor("tablet") + Vector2(-facing * 20.0, 12))
+
+
+## Injury diamonds and the overhead stack, on the overlay layer.
+func _draw_overlay() -> void:
+	EnemyBase._draw_injury(_over, status.injury, _anchor("tablet") + Vector2(-facing * 20.0, 12))
+	if status.alive():
+		# the head icon sprite owns the tag spot while it shows; the parry drill always shows its posture bar
+		# (perfect parries fill it toward a stagger; T0 has no boss HUD)
+		if not is_instance_valid(icon):
+			EnemyBase.draw_overhead(_over, hurt_top, status, [], drill)
+		elif drill:
+			EnemyBase.draw_bars(_over, hurt_top - 4.0, status)
 
 
 ## Hitbox-exact danger zone: translucent red dot field (2px dots) whose density and brightness rise toward

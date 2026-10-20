@@ -11,7 +11,7 @@ static func data() -> Dictionary:
 		"platforms": [Rect2(60, 230, 110, 14), Rect2(630, 230, 110, 14)],
 		"covers": [Rect2(250, 262, 34, 38), Rect2(430, 262, 34, 38)],
 		"props": [
-			{"type": "door", "x": 760, "to": "h0", "spawn": "start", "label": "숲길 통과 — 쌍등객잔", "requires": "b1_tianel_beaten"},
+			{"type": "door", "x": 760, "to": "h0", "spawn": "start", "label": "쌍등객잔", "requires": "b1_tianel_beaten"},
 		],
 		"rooms": [
 			{"id": "arena", "x0": 150, "x1": 800, "lock": true, "enemies": [{"type": "tianel", "x": 560}],

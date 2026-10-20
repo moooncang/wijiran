@@ -133,6 +133,7 @@ func _on_damaged(r: Dictionary, _push: float) -> void:
 		var refund := int(r.hp_damage) - int(r.hp_damage) / 2   # 가설 장벽: half of a front hit; 내상 폭발 passes
 		status.hp = minf(max_hp, status.hp + refund)
 		r.hp_damage = int(r.hp_damage) - refund
+		Juice.mark_guarded(global_position)   # its number shows as a blocked hit
 		_on_barrier_hit()
 	if not late and status.hp <= max_hp * late_fraction and status.alive():
 		late = true
@@ -739,8 +740,20 @@ func _next_strike() -> Dictionary:
 	return {}
 
 
-func _draw() -> void:
-	super()
+## Head icon per parry class of the next pending strike: "!" normal, "!!" perfect-only, "X" unparryable.
+## It appears together with that strike's dot field (warn_from), as in the T0 parry drill.
+func _tag() -> Array:
+	if state != State.PATTERN:
+		return []
+	var nxt := _next_strike()
+	if nxt.is_empty() or pattern_time < float(nxt.get("warn_from", 0.0)):
+		return []
+	var cls := int(nxt.cls)
+	return [["!", "!!", "X"][cls], [TAG_WARN, Color(1, 0.62, 0.25), TAG_UNPARRY][cls]]   # same "!" as normal enemies
+
+
+## Telegraphs go between the body and the overhead stack, so the head icon is never under a dot field.
+func _draw_telegraphs() -> void:
 	if state == State.PATTERN and not pattern.is_empty():
 		for s in pattern.strikes:
 			var hid := int(s.id)
@@ -761,7 +774,7 @@ func _draw() -> void:
 						path = Rect2(global_position.x - reach - float(s.get("w", 40.0)), r.position.y, 2.0 * reach + 2.0 * float(s.get("w", 40.0)), r.size.y)
 					_draw_zone(path, int(s.cls), progress)
 				"RAIN":
-					draw_string(Anim.font, Vector2(-24, hurt_top - 44), "잿비", HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color(1, 0.6, 0.5))
+					pass   # the columns are drawn below once they fall; the boss HUD names the pattern
 				"ZONE", "LANE":
 					if _zone_rects.has(hid):
 						var lock_t := maxf(w0, float(s.get("lock", 0.0)))
@@ -773,22 +786,26 @@ func _draw() -> void:
 					pass
 				_:
 					_draw_zone(_zone_rect(s), int(s.cls), progress)
-		var nxt := _next_strike()
-		if not nxt.is_empty():
-			var icon: String = ["!", "!!", "X"][int(nxt.cls)]
-			var col: Color = [Color(1, 0.96, 0.88), Color(1, 0.7, 0.28), Color(0.85, 0.83, 0.78)][int(nxt.cls)]
-			draw_string(Anim.font, Vector2(-5, hurt_top - 30), icon, HORIZONTAL_ALIGNMENT_LEFT, -1, 14, col)
 	if state == State.PATTERN and not pattern.is_empty():
 		for s in pattern.strikes:
 			if String(s.shape) == "AURA" and _fx_done.has(int(s.id)) and pattern_time < float(s.t) + float(s.dur):
 				draw_arc(Vector2(0, -30), float(s.r), 0.0, TAU, 48, Color(1.0, 1.0, 1.0, 0.5 + 0.3 * sin(pattern_time * 20.0)), 3.0)
 	if barrier_left > 0.0:
-		var bx := 12.0 if facing > 0.0 else -32.0
-		draw_rect(Rect2(bx, -100, 20, 90), Color(0.6, 0.8, 1.0, 0.35))
-		draw_rect(Rect2(bx, -100, 20, 90), Color(0.75, 0.9, 1.0, 0.9), false, 2.0)
+		_draw_barrier(Rect2(12.0 if facing > 0.0 else -32.0, -100.0, 20.0, 100.0))
 	for w in _waves:
+		# travelling hitbox: exact rect as a light fill + red edge so the wave art underneath reads;
+		# purifying waves (백향 행렬) carry the pale incense of purify_zone
 		var r: Rect2 = w.rect
-		draw_rect(Rect2(r.position - global_position, r.size), Color(1.0, 0.3, 0.2, 0.6))
+		var local := Rect2(r.position - global_position, r.size)
+		var purify := bool(w.s.get("purify", false))
+		draw_rect(local, Color(0.95, 0.96, 1.0, 0.2) if purify else Color(1.0, 0.3, 0.2, 0.16))
+		if purify:
+			for i in int(local.size.x / 12.0):
+				var px := local.position.x + 6.0 + i * 12.0
+				draw_circle(Vector2(px, local.end.y - 7.0 - 9.0 * absf(sin(clock * 2.0 + i))), 5.0, Color(0.95, 0.97, 1.0, 0.45))
+		draw_rect(local, Color(1.0, 0.3, 0.25, 0.85), false, 1.5)
+		if int(w.s.cls) == U:
+			draw_rect(Rect2(local.position.x, local.end.y - 3.0, local.size.x, 3.0), Color(1.0, 0.25, 0.2, 0.85))
 	for r in _rain:
 		if r.safe or r.fired:
 			continue
@@ -800,12 +817,39 @@ func _draw_aim(s: Dictionary, progress: float) -> void:
 	var from := _muzzle() - global_position
 	var dir := _aim if _aim_locked else (player.global_position + Vector2(0, -24) - _muzzle()).normalized()
 	var col := Color(1, 0.3, 0.25, 0.9) if _aim_locked else Color(1, 0.8, 0.4, 0.35 + 0.3 * progress)
-	draw_line(from, from + dir * 600.0, col, 2.0 if _aim_locked else 1.0)
 	var spread := deg_to_rad(float(s.get("spread", 0.0)))
-	if spread > 0.0:
-		draw_line(from, from + dir.rotated(spread) * 600.0, col, 1.0)
-		draw_line(from, from + dir.rotated(-spread) * 600.0, col, 1.0)
+	var count := int(s.get("count", 1)) if spread > 0.0 else 1
+	for i in count:   # one ray per arrow, at _fire_volley's angles: no gap between rays looks safe
+		var ang := 0.0 if count == 1 else lerpf(-spread, spread, float(i) / float(count - 1))
+		draw_line(from, from + dir.rotated(ang) * 600.0, col, 2.0 if _aim_locked and is_zero_approx(ang) else 1.0)
 
 
 func _draw_zone(r: Rect2, cls: int, progress: float) -> void:
 	draw_telegraph(self, Rect2(r.position - global_position, r.size), cls == U, progress)
+
+
+## 가설 장벽 plate `p` (local, standing on the floor): a pane of light, not a debug rect. Soft outer glow,
+## a fill that brightens toward the base, hatch strokes drifting up, three pulsing runes, bright side
+## edges and a ground glow. Nothing is drawn outside p except the glow.
+func _draw_barrier(p: Rect2) -> void:
+	var glow := Color(0.6, 0.85, 1.0)
+	draw_rect(p.grow(4.0), Color(glow, 0.07))
+	draw_rect(p.grow(2.0), Color(glow, 0.12))
+	draw_rect(Rect2(p.position.x - 4.0, p.end.y - 3.0, p.size.x + 8.0, 3.0), Color(0.75, 0.9, 1.0, 0.55))
+	var top := Color(0.5, 0.75, 1.0, 0.14)
+	var base := Color(0.65, 0.86, 1.0, 0.42)
+	draw_polygon(PackedVector2Array([p.position, Vector2(p.end.x, p.position.y), p.end, Vector2(p.position.x, p.end.y)]), PackedColorArray([top, top, base, base]))
+	var rise := p.size.x * 0.6
+	var y := p.end.y - 2.0 - fmod(clock * 18.0, 14.0)
+	while y - rise >= p.position.y + 2.0:
+		draw_line(Vector2(p.position.x + 2.0, y), Vector2(p.end.x - 2.0, y - rise), Color(0.85, 0.95, 1.0, 0.22), 1.0)
+		y -= 14.0
+	for i in 3:
+		var c := Vector2(roundf(p.get_center().x), roundf(p.position.y + p.size.y * (0.22 + 0.28 * i)))
+		var a := 0.5 + 0.35 * sin(clock * 3.0 + i * 2.1)
+		draw_polyline(PackedVector2Array([c + Vector2(0, -4), c + Vector2(4, 0), c + Vector2(0, 4), c + Vector2(-4, 0), c + Vector2(0, -4)]), Color(0.9, 0.97, 1.0, a), 1.0)
+		draw_rect(Rect2(c - Vector2(1, 1), Vector2(2, 2)), Color(1.0, 1.0, 1.0, a))
+	draw_rect(Rect2(p.position.x + 4.0, p.position.y + 3.0, 1.0, p.size.y - 6.0), Color(1.0, 1.0, 1.0, 0.25))   # glass glint
+	draw_rect(Rect2(p.position.x, p.position.y, 2.0, p.size.y), Color(0.8, 0.93, 1.0, 0.9))
+	draw_rect(Rect2(p.end.x - 2.0, p.position.y, 2.0, p.size.y), Color(0.8, 0.93, 1.0, 0.9))
+	draw_rect(Rect2(p.position.x, p.position.y, p.size.x, 1.0), Color(0.8, 0.93, 1.0, 0.6))

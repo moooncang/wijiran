@@ -244,9 +244,13 @@ func swinging() -> bool:
 	return not swing.is_empty()
 
 
+const NOTICE_TIME := 1.6   # long enough to read a short line; the HUD shows it bottom-centre and fades the end
+
+
+## Short feedback toast. Says what is blocked; live countdowns stay in the HUD so the toast never shows a stale number.
 func _say(msg: String) -> void:
 	notice = msg
-	notice_left = 1.2
+	notice_left = NOTICE_TIME
 
 
 # ---------- input entry points ----------
@@ -267,14 +271,17 @@ func press_attack() -> bool:
 ## E / right click: the style's heavy strike (grounded free; its own 내공 cost and 마열 gain, 장법 기획 §6).
 ## Overheat rate and erosion recovery are snapshotted at start; costs are paid once, never refunded.
 func press_heavy() -> bool:
-	if not combat_enabled or action() != Action.FREE or swinging() or not is_on_floor() or crouching:
+	if not combat_enabled or action() != Action.FREE or swinging() or crouching:
+		return false
+	if not is_on_floor():
+		_say("강화 · 지상에서만")   # touch has no key panel to explain a silent press
 		return false
 	if tremor_left > 0.0:
-		_say("수전증")
+		_say("수전증 · 강화 불가")
 		return false
 	var h := PalmStyles.heavy(style_id)
 	if qi < float(h.qi_cost):
-		_say("내공 부족")
+		_say("강화 · 내공 부족")
 		return false
 	_burst_rate = CombatConfig.OVERHEAT_BURST_RATE if (eroded or rift >= CombatConfig.OVERHEAT_RIFT) else 1.0
 	_recovery_extra = CombatConfig.HEAVY_RECOVERY_EXTRA + (CombatConfig.EROSION_RECOVERY_EXTRA if eroded else 0.0)
@@ -289,15 +296,15 @@ func press_pull() -> bool:
 	if not combat_enabled or action() != Action.FREE or swinging():
 		return false
 	if pull_cooldown > 0.0:
-		_say("월인 재사용 %.1f" % pull_cooldown)
+		_say("월인 · 재사용 중")
 		return false
 	if qi < PULL_QI:
-		_say("내공 부족")
+		_say("월인 · 내공 부족")
 		return false
 	var origin := _shoulder_world()
 	var best: Node = _pull_candidate()
 	if best == null:
-		_say("월인: 대상 없음")
+		_say("월인 · 대상 없음")
 		Juice.fx("pull_fail", _hand_world(), aim)
 		return false
 	qi -= PULL_QI
@@ -336,9 +343,16 @@ func purified() -> bool:
 
 func _draw() -> void:
 	if purified() and not dead:
-		var a := 0.3 + 0.15 * sin(Time.get_ticks_msec() * 0.01)
-		draw_arc(TORSO, 30.0, 0.0, TAU, 28, Color(1.0, 1.0, 1.0, a), 2.0)
-		draw_circle(TORSO, 30.0, Color(0.9, 0.95, 1.0, a * 0.25))
+		# faint glow + slow dashed ring, dark under-stroke then the HUD 정화 tint (same look as the HUD marker):
+		# dashed, not solid, because a solid throbbing outline read as a telegraph; the under-stroke keeps it a
+		# ring over pale incense haze instead of loose specks
+		var ms := Time.get_ticks_msec()
+		var a := 0.5 + 0.5 * sin(ms * 0.004)
+		draw_circle(TORSO, 24.0, Color(0.9, 0.95, 1.0, 0.03 + 0.03 * a))
+		for i in 28:
+			var t := TAU * i / 28.0 + ms * 0.0003
+			draw_arc(TORSO, 30.0, t, t + 0.13, 3, Color(UiText.OUTLINE, 0.45), 3.0)
+			draw_arc(TORSO, 30.0, t, t + 0.13, 3, Color(0.86, 0.93, 1.0, 0.3 + 0.2 * a), 1.5)
 
 
 ## Nearest living enemy inside the 월인 cone and range, or null.
@@ -536,19 +550,22 @@ func press_parry(direction: float) -> bool:
 
 ## 10. 월식 (Q): grounded free, 내공 ≥ 60, gauge 100, no cooldown, no tremor.
 func press_ultimate() -> bool:
-	if action() != Action.FREE or swinging() or not is_on_floor() or crouching:
+	if action() != Action.FREE or swinging() or crouching:
+		return false
+	if not is_on_floor():
+		_say("월식 · 지상에서만")
 		return false
 	if tremor_left > 0.0:
-		_say("수전증")
+		_say("수전증 · 월식 불가")
 		return false
 	if ult_cooldown > 0.0:
-		_say("월식 재사용 대기 %.0f" % ult_cooldown)
+		_say("월식 · 재사용 중")
 		return false
 	if gauge < CombatConfig.ULT_GAUGE_COST:
-		_say("월식 게이지 부족")
+		_say("월식 · 게이지 부족")
 		return false
 	if qi < CombatConfig.ULT_QI_COST:
-		_say("내공 부족")
+		_say("월식 · 내공 부족")
 		return false
 	qi -= CombatConfig.ULT_QI_COST
 	gauge = 0.0

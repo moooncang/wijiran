@@ -33,7 +33,7 @@ func patterns() -> Dictionary:
 		"observe": {"name": "적색 관측탄", "dmin": 90.0, "recover": 0.45, "cooldown": 1.1, "pose": "orb_gather",
 			"strikes": [{"t": 0.50, "shape": "PROJ", "count": 1, "speed": 640.0, "raw": 15.0, "cls": N, "lock_lead": 0.12, "clip": "observe_orb"}],
 			"chain_to": "burn"},
-		"observe_twin": {"name": "적색 관측탄 (2발)", "variant_of": "observe", "dmin": 90.0, "recover": 0.45, "cooldown": 1.1, "pose": "orb_gather_twin",
+		"observe_twin": {"name": "적색 쌍관측탄", "variant_of": "observe", "dmin": 90.0, "recover": 0.45, "cooldown": 1.1, "pose": "orb_gather_twin",
 			"strikes": [{"t": 0.55, "shape": "PROJ", "count": 1, "speed": 680.0, "raw": 15.0, "cls": N, "lock_lead": 0.12, "clip": "observe_orb"},
 				{"t": 0.75, "shape": "PROJ", "count": 1, "speed": 680.0, "raw": 15.0, "cls": N, "lock_lead": 0.10, "warn_from": 0.55, "clip": "observe_orb"}]},
 		"burn": {"name": "좌표 소각", "recover": 0.5, "cooldown": 2.0, "pose": "burn_mark",
@@ -66,7 +66,7 @@ func _on_state(s: int) -> void:
 			Dialogue.say("미레유", "엘로디에게 갔어. 백향 이송로. …처형당하게 두진 못해. 그래서 주는 거야.")
 			Game.set_flag("b2_mireille_beaten")
 			Game.set_flag("picked:b2_transfer_record")
-			Game.notice.emit("관측진 파괴 · 이송 기록 입수")
+			Game.notice.emit("관측진을 부쉈습니다 — 이송 기록을 얻었습니다")
 		State.STAGGER:
 			_orb_size = 3.0
 
@@ -119,17 +119,17 @@ func _process(delta: float) -> void:
 
 func _draw_body() -> void:
 	var alive := status.alive()
-	draw_figure(self, 56.0, Color(0.93, 0.93, 0.97), Color(0.9, 0.78, 0.66), facing, alive)
-	var a := 1.0 if alive else 0.4
-	draw_rect(Rect2(-9, -46, 18, 8), Color(0.2, 0.25, 0.5, a))       # short navy mantle
-	draw_rect(Rect2(-8, -58, 16, 10), Color(0.75, 0.2, 0.15, a))     # red waves
-	draw_rect(Rect2(facing * 3.0 - 4.0, -50, 8, 2), Color(0.85, 0.7, 0.3, a))   # gold spectacles
-	draw_rect(Rect2(-facing * 12.0 - 4.0, -30, 8, 6), Color(0.3, 0.3, 0.45, a))   # chained grimoire
-	if alive:
-		var orb_y := -70.0 + sin(clock * 3.0) * 2.0
-		draw_circle(Vector2(0, orb_y), _orb_size + 2.0, Color(_orb_col.r, _orb_col.g, _orb_col.b, 0.35))
-		draw_circle(Vector2(0, orb_y), _orb_size, _orb_col)
-		draw_circle(Vector2(0, orb_y), _orb_size * 0.4, Color(1, 1, 0.9))
+	draw_figure(self, 56.0, Color(0.93, 0.93, 0.97), Color(0.9, 0.78, 0.66), facing, alive, true)
+	if not alive:
+		return
+	var ink := Color(0.07, 0.04, 0.07)
+	var book := Rect2(-facing * 12.0 - 4.0, -30, 8, 6)   # chained grimoire at the hip
+	draw_rect(book, Color(0.3, 0.3, 0.45))
+	draw_rect(book, ink, false, 1.0)
+	var orb_y := -70.0 + sin(clock * 3.0) * 2.0
+	draw_circle(Vector2(0, orb_y), _orb_size + 2.0, Color(_orb_col.r, _orb_col.g, _orb_col.b, 0.35))
+	draw_circle(Vector2(0, orb_y), _orb_size, _orb_col)
+	draw_circle(Vector2(0, orb_y), _orb_size * 0.4, Color(1, 1, 0.9))
 	if state == State.PATTERN and pattern_id in ["observe", "observe_twin", "blink"]:
 		var m := _muzzle() - global_position
 		var nxt := _next_strike()
@@ -138,3 +138,16 @@ func _draw_body() -> void:
 			draw_circle(m, 3.0 + 9.0 * u, Color(1.0, 0.7, 0.25, 0.7))
 			if pattern_id == "observe_twin":
 				draw_circle(m + Vector2(0, -10), 2.0 + 6.0 * u, Color(1.0, 0.7, 0.25, 0.7))
+
+
+func _draw_dress(a: float) -> void:
+	var mantle := PackedVector2Array([Vector2(-9, -40), Vector2(9, -40), Vector2(10, -33), Vector2(-10, -33)])   # short navy mantle
+	draw_colored_polygon(mantle, Color(0.2, 0.25, 0.5, a))
+	mantle.append(mantle[0])
+	draw_polyline(mantle, Color(0.07, 0.04, 0.07, a), 1.0)
+	draw_hair(self, 56.0, Color(0.75, 0.2, 0.15, a), facing, 6.0)   # red waves to the shoulders, face open
+	draw_rect(Rect2(facing * 4.0 - 3.0, -50, 6, 3), Color(0.85, 0.7, 0.3, a), false, 1.0)   # gold spectacles
+
+
+func _overhead_top() -> float:
+	return -86.0   # above the mood orb (y -70, up to 12 px)

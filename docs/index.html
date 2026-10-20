@@ -1,4 +1,88 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>위지란 — 본편 (1막 1구간 회색 상자)</title>
-<style>body{margin:0;background:#1b1a24;color:#f3e9dc;font-family:'Noto Sans KR',sans-serif;display:flex;min-height:100vh;align-items:center;justify-content:center;text-align:center}a{display:inline-block;margin:.6rem;padding:.9rem 1.8rem;border:2px solid #e45140;border-radius:999px;color:#fff;text-decoration:none;background:rgba(228,81,64,.2)}small{opacity:.7}</style></head>
-<body><div><h1>위지란</h1><p>본편 1막 1구간 — 천흑산 연무장 → 불탄 수림길 → 티아넬 (회색 상자 빌드)</p>
-<a href="play/">▶ PC로 플레이</a><a href="mobile/">📱 모바일 (가로)</a><p><small>1막 전체(T0→F1→B1→H0→F2→B2→F3→B3). 2구간 적·보스·배경은 아직 코드 드로잉입니다. A/D 이동 · W 점프 · Shift 대시 · Space 패링 · 좌클릭 장법 · Tab 장법 메뉴 · ↑ 상호작용</small></p></div></body></html>
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#1b1a24">
+<title>위지란 — 1막 플레이 빌드</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#1b1a24;color:#f3e9dc;word-break:keep-all;font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;line-height:1.6;min-height:100vh;display:flex;align-items:center;justify-content:center}
+main{width:100%;max-width:640px;padding:40px 16px 48px;text-align:center}
+h1{font-size:2.6rem;letter-spacing:.12em;padding-left:.12em;margin:0 0 .2rem}
+.lead{margin:0 0 1.6rem;color:#d9cbbb}
+.play{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:2rem}
+.play a{flex:1 1 220px;max-width:280px;padding:.9rem 1.2rem;border:2px solid #e45140;border-radius:999px;color:#fff;text-decoration:none;font-weight:700;background:rgba(228,81,64,.2)}
+.play a:hover,.play a:focus-visible{background:rgba(228,81,64,.45);outline:none}
+.play small{display:block;font-weight:400;font-size:.85rem;color:#e8d8c8}
+section{text-align:left;background:rgba(255,255,255,.04);border:1px solid rgba(240,200,112,.25);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+h2{font-size:1.05rem;margin:0 0 .6rem;color:#f0c870}
+dl{display:grid;grid-template-columns:max-content 1fr;gap:6px 14px;margin:0}
+dt{white-space:nowrap}
+dd{margin:0;color:#e8dccf}
+kbd{display:inline-block;min-width:1.6em;padding:0 .4em;border:1px solid rgba(243,233,220,.4);border-bottom-width:2px;border-radius:5px;font:inherit;font-size:.9rem;text-align:center;background:rgba(255,255,255,.06)}
+ol{margin:0;padding-left:1.3em}
+li{margin:.1rem 0}
+.note{font-size:.9rem;color:#bfb2a6;margin:.6rem 0 0}
+@media (max-width:420px){h1{font-size:2.2rem}}
+@media (max-width:340px){dl{grid-template-columns:1fr;gap:0}dd{margin-bottom:.5rem}}
+</style>
+</head>
+<body>
+<main>
+<h1>위지란</h1>
+<p class="lead">본편 1막 플레이 빌드</p>
+<div class="play">
+<a href="play/">PC로 플레이<small>키보드 + 마우스</small></a>
+<a href="mobile/">모바일로 플레이<small>가로 화면 · 터치</small></a>
+</div>
+
+<section>
+<h2>PC 조작</h2>
+<dl>
+<dt><kbd>A</kbd> <kbd>D</kbd> · <kbd>←</kbd> <kbd>→</kbd></dt><dd>이동</dd>
+<dt><kbd>W</kbd></dt><dd>점프 · 공중에서 한 번 더 누르면 허공답월</dd>
+<dt><kbd>S</kbd></dt><dd>웅크리기</dd>
+<dt><kbd>Ctrl</kbd></dt><dd>누르고 있는 동안 걷기</dd>
+<dt><kbd>Shift</kbd></dt><dd>잔월보 (마우스 방향으로 대시)</dd>
+<dt><kbd>Space</kbd></dt><dd>패링</dd>
+<dt>좌클릭 · <kbd>J</kbd> · <kbd>X</kbd></dt><dd>장법 (기본 공격)</dd>
+<dt><kbd>E</kbd></dt><dd>강화 초식</dd>
+<dt>우클릭 · <kbd>F</kbd></dt><dd>월인 (조준한 적을 끌어당김)</dd>
+<dt><kbd>Q</kbd></dt><dd>월식</dd>
+<dt><kbd>↑</kbd> · <kbd>W</kbd></dt><dd>상호작용 (문 · 등불 · 휴식 지점 · 비급 · 제자 앞에서)</dd>
+<dt><kbd>Tab</kbd></dt><dd>장법 메뉴</dd>
+<dt><kbd>R</kbd></dt><dd>마지막 등불로 돌아가기</dd>
+</dl>
+</section>
+
+<section>
+<h2>모바일 조작</h2>
+<dl>
+<dt>왼쪽 스틱</dt><dd>이동 · 조준 (잔월보와 월인도 스틱 방향으로)</dd>
+<dt>스틱 아래로</dt><dd>웅크리기</dd>
+<dt>오른쪽 버튼</dt><dd>장법 · 점프 · 잔월보 · 패링 · 강화 · 월인 · 월식</dd>
+<dt>점프 버튼</dt><dd>공중에서 한 번 더 누르면 허공답월</dd>
+<dt>상호작용</dt><dd>쓸 수 있는 것(문 · 등불 · 휴식 지점 · 비급 · 제자) 근처에서만 나타납니다</dd>
+<dt>복귀</dt><dd>길게 누르면 마지막 등불로 돌아갑니다</dd>
+</dl>
+<p class="note">휴식 지점에서 상호작용을 누르면 장법 메뉴가 열립니다.</p>
+</section>
+
+<section>
+<h2>1막 진행</h2>
+<ol>
+<li>천흑산 잔등 연무장</li>
+<li>불탄 수림길</li>
+<li>반쪽 성목의 공터 — 티아넬</li>
+<li>쌍등객잔</li>
+<li>단층 임시 연구소</li>
+<li>관측실 — 미레유</li>
+<li>백향 이송로</li>
+<li>향당 — 엘로디</li>
+</ol>
+<p class="note">개발 중인 빌드입니다. 단층 임시 연구소 이후 일부 배경·적·보스는 아직 임시 그래픽입니다.</p>
+</section>
+</main>
+</body>
+</html>

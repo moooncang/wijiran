@@ -156,19 +156,36 @@ func _shoot() -> void:
 
 
 func _draw_body() -> void:
-	draw_figure(self, 50.0, Color(0.88, 0.88, 0.94), Color(0.85, 0.72, 0.6), facing, status.alive())
+	draw_figure(self, 50.0, Color(0.88, 0.88, 0.94), Color(0.85, 0.72, 0.6), facing, status.alive(), true)
 	if not status.alive():
 		return
-	draw_rect(Rect2(-facing * 14.0 - 5.0, -46, 10, 7), Color(0.2, 0.25, 0.45))   # floating book
+	var book := Rect2(-facing * 14.0 - 5.0, -46.0 + sin(clock * 2.5) * 1.5, 10, 7)   # floating book
+	draw_rect(book, Color(0.2, 0.25, 0.45))
+	draw_rect(book, Color(0.07, 0.04, 0.07), false, 1.0)
+	draw_line(book.position + Vector2(5, 1), book.position + Vector2(5, 6), Color(0.85, 0.7, 0.3), 1.0)
 	match state:
 		S.CAST_BOLT:
 			var from := _hand() - global_position
 			var col := Color(1, 0.3, 0.25, 0.9) if locked else Color(0.6, 0.75, 1.0, 0.5)
-			draw_line(from, from + aim_dir * 480.0, col, 2.0 if locked else 1.0)
+			# until it locks the line tracks the player live: aim_dir lags one tick behind IDLE → CAST_BOLT
+			var d := aim_dir if locked or player == null else (player.global_position + Vector2(0, -24) - _hand()).normalized()
+			draw_line(from, from + d * 480.0, col, 2.0 if locked else 1.0)
 			draw_circle(from, 3.0 + 4.0 * clampf(state_time / BOLT_TIME, 0.0, 1.0), Color(0.7, 0.85, 1.0, 0.8))
-			draw_string(Anim.font, Vector2(-5, hurt_top - 26), "!", HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color(1, 0.9, 0.4))
 		S.CAST_GROUND:
 			draw_telegraph(self, Rect2(zone.position - global_position, zone.size), true, clampf(state_time / GROUND_TIME, 0.0, 1.0))
-			draw_string(Anim.font, Vector2(-5, hurt_top - 26), "X", HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color(0.85, 0.83, 0.78))
+
+
+func _draw_dress(a: float) -> void:
+	draw_hair(self, 50.0, Color(0.24, 0.3, 0.55, a), facing, 6.0, 30.0)   # apprentice hood (마탑 blue)
+	draw_line(Vector2(-8, -35), Vector2(8, -35), Color(0.24, 0.3, 0.55, a), 2.0)   # blue collar
+
+
+func _tag() -> Array:
+	match state:
+		S.CAST_BOLT:
+			return ["!", TAG_WARN]
+		S.CAST_GROUND:
+			return ["X", TAG_UNPARRY]
 		S.INTERRUPTED:
-			draw_string(Anim.font, Vector2(-16, hurt_top - 26), "시전 끊김", HORIZONTAL_ALIGNMENT_LEFT, -1, 9, Color(1, 0.8, 0.5))
+			return ["시전 끊김", TAG_OPEN]
+	return []

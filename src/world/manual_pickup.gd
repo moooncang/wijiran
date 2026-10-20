@@ -1,5 +1,5 @@
 extends "res://src/world/interactable.gd"
-## 비급 (palm manual) on the ground. ↑ collects it: permanent, never auto-equips, one notice (장법 기획 §3).
+## 비급 (palm manual) on the ground. W/↑ collects it: permanent, never auto-equips, one notice (장법 기획 §3).
 ## A collected manual is inert on re-entry; nearby combat must be over first.
 
 var manual_id := ""
@@ -21,6 +21,10 @@ func available() -> bool:
 		return false
 	var lv := get_parent()
 	return not (lv is Level and lv._enemy_count > 0)
+
+
+func locked_hint() -> String:
+	return "" if Game.has_manual(manual_id) else "적을 모두 쓰러뜨린 뒤 주울 수 있다"
 
 
 func _use() -> void:

@@ -12,11 +12,17 @@ const Telegraph := preload("res://src/enemies/enemy_base.gd")
 var phase := 0.0
 var _t := 0.0
 var _fired := -1
+var _top := 0.0   # local y of the surface the plate lies on (a dais over the floor point); drawing only
 
 
 func _ready() -> void:
 	z_index = 1
 	_t = phase
+	var lv := get_parent()
+	if lv is Level:
+		for r: Rect2 in lv.data.get("platforms", []):
+			if r.position.x <= position.x and position.x <= r.end.x and r.position.y < position.y and r.end.y >= position.y:
+				_top = minf(_top, r.position.y - position.y)
 
 
 func _zone() -> Rect2:
@@ -50,8 +56,8 @@ func _physics_process(dt: float) -> void:
 
 func _draw() -> void:
 	var u := fmod(_t, PERIOD)
-	draw_rect(Rect2(-W * 0.5, -6, W, 6), Color(0.35, 0.3, 0.2))
-	draw_rect(Rect2(-W * 0.5 + 4, -5, W - 8, 3), Color(0.55, 0.45, 0.25))
+	draw_rect(Rect2(-W * 0.5, _top - 6, W, 6), Color(0.35, 0.3, 0.2))
+	draw_rect(Rect2(-W * 0.5 + 4, _top - 5, W - 8, 3), Color(0.55, 0.45, 0.25))
 	if u < WARN:
 		Telegraph.draw_telegraph(self, Rect2(-W * 0.5, -H, W, H), true, clampf(u / WARN, 0.0, 1.0))
 	elif u < WARN + BURST + 0.15:

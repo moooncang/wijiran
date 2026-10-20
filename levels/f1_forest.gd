@@ -20,12 +20,12 @@ static func data() -> Dictionary:
 		"props": [
 			{"type": "checkpoint", "x": 60, "id": "entry"},
 			{"type": "manual", "x": 1695, "y": 70, "id": "f1_outpost_manual"},
-			{"type": "mark", "x": 3120, "clip": "disciple_mark"},
+			{"type": "mark", "x": 3100, "clip": "disciple_mark"},
 			{"type": "sign", "x": 1300, "text": "무너진 동방 초소: 위로 가는 길 끝에 무언가 보인다"},
 			{"type": "checkpoint", "x": 2560, "id": "mid"},
 			{"type": "rest", "x": 3050}, {"type": "dummy", "x": 3140},
 			{"type": "checkpoint", "x": 2980, "id": "before_boss"},
-			{"type": "door", "x": 3340, "to": "b1", "spawn": "start", "label": "반쪽 성목의 공터"},
+			{"type": "door", "x": 3340, "to": "b1", "spawn": "start", "label": "반쪽 성목의 공터 — 티아넬"},
 		],
 		"rooms": [
 			{"id": "r1", "name": "버려진 감시길", "x0": 220, "x1": 760, "lock": true,
@@ -38,7 +38,7 @@ static func data() -> Dictionary:
 			{"id": "r4", "name": "뿌리의 문", "x0": 1820, "x1": 2460,
 				"enemies": [{"type": "archer", "x": 1910, "y": 210}, {"type": "archer", "x": 2110, "y": 160}]},
 			{"id": "r5", "name": "성목 앞 쉼터", "x0": 2900, "x1": 3400,
-				"lines": [["위지란", "…매듭 끈 조각. 여기까진 끌려왔어."], ["제자", "(떨어진 표식)"]]},
+				"lines": [["위지란", "…매듭 끈 조각. 여기까진 끌려왔어."]]},
 		],
 		"camera": {"top": -120, "bottom": 400},
 	}

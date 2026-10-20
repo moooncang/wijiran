@@ -33,7 +33,7 @@ func patterns() -> Dictionary:
 		"sweep": {"name": "은사슬 횡타", "dmax": 280.0, "recover": 0.5, "cooldown": 1.2, "pose": "chain_wind",
 			"strikes": [{"t": 0.45, "dur": 0.10, "shape": "F", "w": 260.0, "h": 40.0, "z": 20.0, "raw": 18.0, "cls": N, "clip": "chain_sweep_fx"}],
 			"chain_to": "brand"},
-		"sweep_double": {"name": "은사슬 횡타 (회수)", "variant_of": "sweep", "dmax": 280.0, "recover": 0.5, "cooldown": 1.2, "pose": "chain_wind_double",
+		"sweep_double": {"name": "은사슬 되감기", "variant_of": "sweep", "dmax": 280.0, "recover": 0.5, "cooldown": 1.2, "pose": "chain_wind_double",
 			"strikes": [{"t": 0.50, "dur": 0.10, "shape": "F", "w": 260.0, "h": 40.0, "z": 20.0, "raw": 16.0, "cls": N, "clip": "chain_sweep_fx"},
 				{"t": 0.90, "dur": 0.10, "shape": "F", "w": 260.0, "h": 40.0, "z": 20.0, "raw": 16.0, "cls": N, "warn_from": 0.50, "clip": "chain_return_fx"}]},
 		"brand": {"name": "태양 낙인", "recover": 0.55, "cooldown": 2.6, "pose": "brand_raise",
@@ -63,7 +63,7 @@ func _on_state(s: int) -> void:
 			Dialogue.say("엘로디", "…향이 꺼졌습니다. 심문은 여기까지입니다, 이교도.")
 			Dialogue.say("위지란", "이름은 위지란이야. 제자들 데려간다. 네 의문은 네가 안고 가.")
 			Game.set_flag("b3_elodie_beaten")
-			Game.notice.emit("향로가 떨어졌다 · 제자를 데리고 이탈")
+			Game.notice.emit("향로가 떨어졌습니다 — 제자를 데리고 이곳을 벗어나세요")
 		State.PATTERN:
 			if pattern_id == "prayer":
 				Juice.ultimate_ring(global_position + Vector2(0, -30), 150.0)
@@ -97,20 +97,34 @@ func _process(delta: float) -> void:
 
 func _draw_body() -> void:
 	var alive := status.alive()
-	draw_figure(self, 60.0, Color(0.96, 0.96, 0.98), Color(0.9, 0.8, 0.7), facing, alive)
-	var a := 1.0 if alive else 0.4
-	draw_rect(Rect2(-9, -62, 18, 12), Color(0.6, 0.8, 0.95, a))        # pale-blue hair
-	draw_rect(Rect2(-9, -46, 18, 4), Color(0.75, 0.78, 0.85, a))        # silver embroidery / high collar
+	var ink := Color(0.07, 0.04, 0.07)
+	draw_figure(self, 60.0, Color(0.96, 0.96, 0.98), Color(0.9, 0.8, 0.7), facing, alive, true)
+	if beaten:
+		# the dropped censer stays on the floor after she has fallen and faded
+		draw_circle(Vector2(facing * 20.0, -6.0), 7.0, ink)
+		draw_circle(Vector2(facing * 20.0, -6.0), 6.0, Color(0.85, 0.7, 0.3))
+	if not alive:
+		return
 	# the chain censer: hangs at rest, snaps out on a sweep
 	var hand := Vector2(facing * 10.0, -34.0)
 	var censer := hand + (Vector2(facing * 60.0, 4.0) if _swing > 0.0 else Vector2(facing * 6.0, 26.0 + sin(clock * 2.0) * 2.0))
-	draw_line(hand, censer, Color(0.8, 0.82, 0.9, a), 2.0)
-	draw_circle(censer, 6.0, Color(0.85, 0.7, 0.3, a))
-	draw_circle(censer, 2.5, Color(1.0, 0.95, 0.8, a))
-	if alive and not beaten:
-		for i in 3:
-			draw_circle(censer + Vector2(sin(clock * 1.5 + i) * 5.0, -8.0 - i * 7.0), 3.0 - i * 0.5, Color(1, 1, 1, 0.35 - i * 0.08))
-	elif beaten:
-		draw_circle(Vector2(facing * 20.0, -6.0), 6.0, Color(0.85, 0.7, 0.3, 0.8))   # dropped censer
+	draw_line(hand, censer, Color(0.8, 0.82, 0.9), 2.0)
+	draw_circle(censer, 7.0, ink)
+	draw_circle(censer, 6.0, Color(0.85, 0.7, 0.3))
+	draw_circle(censer, 2.5, Color(1.0, 0.95, 0.8))
+	for i in 3:
+		draw_circle(censer + Vector2(sin(clock * 1.5 + i) * 5.0, -8.0 - i * 7.0), 3.0 - i * 0.5, Color(1, 1, 1, 0.35 - i * 0.08))
 	if state == State.PATTERN and pattern_id == "prayer" and pattern_time >= 0.6:
 		draw_arc(Vector2(0, -30), 150.0, 0.0, TAU, 56, Color(0.95, 0.97, 1.0, 0.25), 8.0)
+
+
+func _draw_dress(a: float) -> void:
+	draw_hair(self, 60.0, Color(0.6, 0.8, 0.95, a), facing, 16.0)   # long pale-blue hair down the back, face open
+	var collar := PackedVector2Array([Vector2(-8, -43), Vector2(8, -43), Vector2(9, -39), Vector2(-9, -39)])   # silver high collar
+	draw_colored_polygon(collar, Color(0.75, 0.78, 0.85, a))
+	collar.append(collar[0])
+	draw_polyline(collar, Color(0.07, 0.04, 0.07, a), 1.0)
+
+
+func _overhead_top() -> float:
+	return -62.0   # the hair cap stands ~2 px above hurt_top

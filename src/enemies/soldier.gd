@@ -140,9 +140,12 @@ func _process(delta: float) -> void:
 	sprite.frame = frame()
 	sprite.flip_h = facing < 0.0
 	sprite.position = Vector2(kick, 0)
-	sprite.modulate = Color(2, 2, 2) if flash > 0.0 else (Color(1, 1, 1, 0.35) if not status.alive() else Color.WHITE)
+	sprite.modulate = Color(2, 2, 2) if flash > 0.0 else Color(1, 1, 1, corpse_alpha(dead_time))   # dead: death clip, then fade out
 
 
-func _draw_body() -> void:
-	if pattern != "" and attack_time < float(PATTERNS[pattern].times[0]):
-		draw_string(Anim.font, Vector2(-6, hurt_top - 26), "!", HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color(1, 0.9, 0.4))
+func _tag() -> Array:
+	return ["!", TAG_WARN] if pattern != "" and attack_time < float(PATTERNS[pattern].times[0]) else []
+
+
+func _overhead_top() -> float:
+	return -50.0   # the sheet's helmet top (hurt_top stands ~8 px above it)

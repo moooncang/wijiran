@@ -21,10 +21,16 @@ var active_room: Dictionary = {}
 var player: Player
 var camera: Camera2D
 var _walls: Array = []
+var _seals: Array = []            # drawn look of the walls (kept apart: tests count the bodies)
+var _ends: Node2D                  # shade past the map ends: gives way to a lock's dim (an arena wall on a map end)
 var _spawned: Dictionary = {}     # room id → [enemies]
 var _enemy_count := 0
 var _safe := Vector2.ZERO          # last grounded spot over real floor (pit respawn, 본편 §4)
 var art: LevelArt
+const FLOOR_TINT := {"lab": Color(0.14, 0.13, 0.16), "shrine": Color(0.2, 0.17, 0.19)}   # greybox floor per backdrop
+## Locked-room seal and dim start this far above the ground: with the camera at its lowest (bottom limit
+## ground+100) that is canvas y 130, below the tallest player-status block, so neither shows through it.
+const SEAL_TOP := 220.0
 
 
 func build(d: Dictionary, p: Player, cam: Camera2D) -> void:
@@ -42,8 +48,9 @@ func build(d: Dictionary, p: Player, cam: Camera2D) -> void:
 	else:
 		_build_backdrop()
 	var pieces: Dictionary = d.get("art", {})
+	var floor_col: Color = FLOOR_TINT.get(String(d.get("backdrop", "")), Color(0.14, 0.11, 0.1))
 	for seg in d.get("floor", [[-200.0, width + 200.0]]):
-		_solid(Rect2(float(seg[0]), ground_y, float(seg[1]) - float(seg[0]), 60), Color(0.14, 0.11, 0.1), painted)
+		_solid(Rect2(float(seg[0]), ground_y, float(seg[1]) - float(seg[0]), 60), floor_col, painted, 340.0)
 		if painted:
 			art.add_floor(float(seg[0]), float(seg[1]))
 	var ceilings: Array = d.get("ceilings", [])
@@ -69,10 +76,16 @@ func build(d: Dictionary, p: Player, cam: Camera2D) -> void:
 	for i in covers.size():
 		var r: Rect2 = covers[i]
 		var drawn: bool = painted and pieces.has("v%d" % i) and art.add_piece(String(pieces["v%d" % i]), r)
-		_solid(r, Color(0.22, 0.2, 0.18), drawn)
+		_solid(r, Color(0.22, 0.2, 0.18), drawn, 0.0, true)
 	if painted:
 		for dec in d.get("decor", []):
 			art.add_decor(String(dec[0]), Vector2(float(dec[1]), float(dec[2])), bool(dec[3]) if dec.size() > 3 else true)
+	_ends = Node2D.new()   # out-of-bounds shade past both map ends (z 5, like a locked room's dim)
+	_ends.z_index = 5
+	_ends.draw.connect(func() -> void:
+		_draw_out(_ends, 0.0, -1.0)
+		_draw_out(_ends, width, 1.0))
+	add_child(_ends)
 	for pr in d.get("props", []):
 		_build_prop(pr)
 	for rd in d.get("rooms", []):
@@ -128,11 +141,13 @@ func _build_backdrop() -> void:
 	bd.style = String(data.get("backdrop", "yard"))
 	bd.width = width
 	bd.ground_y = ground_y
+	bd.platforms = data.get("platforms", [])
 	bd.z_index = -5
 	add_child(bd)
 
 
-func _solid(r: Rect2, col: Color, painted := false) -> void:
+## `depth`: visual fill below the collision rect (floor pieces only; collision stays 60 px).
+func _solid(r: Rect2, col: Color, painted := false, depth := 0.0, cover := false) -> void:
 	solids.append(r)
 	var body := StaticBody2D.new()
 	var shape := CollisionShape2D.new()
@@ -148,6 +163,12 @@ func _solid(r: Rect2, col: Color, painted := false) -> void:
 	box.set_script(preload("res://src/world/solid_art.gd"))
 	box.rect = r
 	box.color = col
+	box.depth = depth
+	box.style = String(data.get("backdrop", ""))
+	box.cover = cover
+	box.floor_y = ground_y
+	if depth > 0.0:
+		box.lanes = data.get("lanes", [])   # boss lane strikes: the floor shows its sections
 	box.z_index = -1
 	add_child(box)
 
@@ -325,14 +346,86 @@ func _lock(r: Dictionary) -> void:
 		body.position = Vector2(x + (-8 if x == r.x0 else 8), ground_y - 200)
 		add_child(body)
 		_walls.append(body)
+		# rooms are narrower than the view, so the wall must be seen: a seal band under the fighters (z 1,
+		# over props past the wall) and the far side dimmed over them (z 5: under projectiles and world
+		# text), so the next room's sleeping enemies do not read as part of this fight
+		for z in [1, 5]:
+			var n := Node2D.new()
+			n.z_index = z
+			n.modulate.a = 0.0
+			n.draw.connect((_draw_seal if z == 1 else _draw_dim).bind(n, float(x), -1.0 if x == r.x0 else 1.0))
+			add_child(n)
+			n.create_tween().tween_property(n, "modulate:a", 1.0, 0.2)
+			_seals.append(n)
+	_ends.create_tween().tween_property(_ends, "modulate:a", 0.0, 0.2)   # the dim takes over: no doubled shade
 	player.world_min_x = r.x0 + 12.0
 	player.world_max_x = r.x1 - 12.0
+
+
+## A locked-room wall at `x`; `out` is the side away from the room (-1 left, +1 right). A dark crimson
+## band with a muted gold ward cord and talisman tags on the room side: a red edge read as one more
+## telegraph outline in boss fights.
+func _draw_seal(ci: Node2D, x: float, out: float) -> void:
+	var ink := Color(0.34, 0.05, 0.08)
+	var ward := Color(0.78, 0.58, 0.42, 0.9)
+	var paper := Color(0.88, 0.8, 0.64, 0.85)
+	var top := ground_y - SEAL_TOP
+	var sink := 0.0 if UiText.touch else 60.0   # touch: the floor below the wall is the stick's zone
+	for band in [[x if out > 0.0 else x - 7.0, 7.0, ink], [x if out > 0.0 else x - 2.0, 2.0, ward]]:   # the cord faces the room
+		var bx: float = band[0]
+		var bw: float = band[1]
+		var c: Color = band[2]
+		LevelArt.vgrad(ci, Rect2(bx, top, bw, 60.0), Color(c, 0.0), c)   # fades out below the HUD
+		ci.draw_rect(Rect2(bx, top + 60.0, bw, SEAL_TOP - 60.0), c)
+		if sink > 0.0:
+			LevelArt.vgrad(ci, Rect2(bx, ground_y, bw, sink), c, Color(c, 0.0))   # sinks into the floor
+	var rung := x - 3.0 if out > 0.0 else x - 7.0   # across the band and 3 px into the room
+	var tag := x - 3.0 if out > 0.0 else x          # a paper tag hanging from the rung's room end
+	var y := top + 20.0
+	while y < ground_y - 10.0:
+		var a := clampf((y - top) / 60.0, 0.0, 1.0)   # the same fade-in as the band
+		ci.draw_rect(Rect2(rung, y, 10.0, 2.0), Color(ward, ward.a * a))
+		ci.draw_rect(Rect2(tag, y + 2.0, 3.0, 6.0), Color(paper, paper.a * a))
+		y += 28.0
+
+
+## The far side of a locked-room wall, dimmed beside the seal band (not over it), fading in over the
+## same range as the band so the status panel never sits half over a dimmed backdrop.
+func _draw_dim(ci: Node2D, x: float, out: float) -> void:
+	var x0 := x + 7.0 if out > 0.0 else x - 1207.0
+	var dim := Color(0, 0, 0, 0.45)
+	LevelArt.vgrad(ci, Rect2(x0, ground_y - SEAL_TOP, 1200.0, 60.0), Color(dim, 0.0), dim)
+	ci.draw_rect(Rect2(x0, ground_y - SEAL_TOP + 60.0, 1200.0, SEAL_TOP + 440.0), dim)
+
+
+## Past a map end (`x`, `out` as in _draw_seal): touch builds let the view run past both ends and a
+## centred arena shows a strip beyond its wall, where floor and backdrop carry on but nobody can walk.
+## The _draw_dim shade, faded in over 36 px from the edge, and a dark cut through the floor.
+func _draw_out(ci: Node2D, x: float, out: float) -> void:
+	var dim := Color(0, 0, 0, 0.45)
+	var clear := Color(dim, 0.0)
+	var top := ground_y - SEAL_TOP
+	var xf := x + 36.0 * out
+	var xe := x + 1200.0 * out
+	for row in [[top, top + 60.0, clear], [top + 60.0, ground_y + 440.0, dim]]:
+		var y0: float = row[0]
+		var y1: float = row[1]
+		var a: Color = row[2]   # the shade at the row's top: fading in below the HUD as _draw_dim does
+		ci.draw_polygon(PackedVector2Array([Vector2(x, y0), Vector2(xf, y0), Vector2(xf, y1), Vector2(x, y1)]), PackedColorArray([clear, a, dim, clear]))
+		ci.draw_polygon(PackedVector2Array([Vector2(xf, y0), Vector2(xe, y0), Vector2(xe, y1), Vector2(xf, y1)]), PackedColorArray([a, a, dim, dim]))
+	LevelArt.vgrad(ci, Rect2(x if out > 0.0 else x - 3.0, ground_y, 3.0, 100.0), Color(0, 0, 0, 0.6), Color(0, 0, 0, 0.0))
 
 
 func _unlock() -> void:
 	for w in _walls:
 		w.queue_free()
 	_walls.clear()
+	for s in _seals:
+		var t: Tween = s.create_tween()
+		t.tween_property(s, "modulate:a", 0.0, 0.2)
+		t.tween_callback(s.queue_free)
+	_seals.clear()
+	_ends.create_tween().tween_property(_ends, "modulate:a", 1.0, 0.2)
 	var cb: Dictionary = data.get("camera", {})
 	camera.set_bounds(0, int(cb.get("top", -60)), int(width), int(cb.get("bottom", ground_y + 100)))
 	player.world_min_x = 20.0

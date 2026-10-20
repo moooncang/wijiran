@@ -12,7 +12,6 @@ static func data() -> Dictionary:
 			{"type": "checkpoint", "x": 160, "id": "inn"},
 			{"type": "rest", "x": 420},
 			{"type": "npc", "x": 640, "who": "renata", "face": -1.0},
-			{"type": "sign", "x": 600, "text": "레나타: 「연구소에 아직 옮겨지지 않은 포로가 있어. …무기는 문밖에.」"},
 			{"type": "door", "x": 840, "to": "f2", "spawn": "start", "label": "단층 임시 연구소"},
 		],
 		"rooms": [{"id": "hall", "x0": 0, "x1": 900, "lines": [["레나타", "어서 와. 등불 두 개 켜진 집은 여기뿐이야."], ["위지란", "정보 사러 왔어. 만두 값은 쳐줄게."]],

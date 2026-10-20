@@ -150,7 +150,7 @@ func _process(delta: float) -> void:
 		return
 	sprite.set_facing(facing)
 	sprite.position = Vector2(kick, 0)
-	sprite.modulate = Color(2, 2, 2) if flash > 0.0 else (Color(1, 1, 1, 0.5) if not status.alive() else Color.WHITE)
+	sprite.modulate = Color(2, 2, 2) if flash > 0.0 else Color(1, 1, 1, corpse_alpha(dead_time))   # dead: death clip, then fade out
 	if not status.alive():
 		sprite.play("death")
 	elif status.staggered():
@@ -174,5 +174,10 @@ func _draw_body() -> void:
 	if state == S.AIM and status.alive():
 		var from := _bow() - global_position
 		var col := Color(1, 0.3, 0.25, 0.9) if locked else Color(1, 0.8, 0.4, 0.5)
-		draw_line(from, from + aim_dir * 520.0, col, 2.0 if locked else 1.0)
-		draw_string(Anim.font, Vector2(-5, hurt_top - 26), "!", HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color(1, 0.9, 0.4))
+		# until it locks the line tracks the player live: aim_dir lags one tick behind IDLE → AIM
+		var d := aim_dir if locked or player == null else (player.global_position + Vector2(0, -24) - _bow()).normalized()
+		draw_line(from, from + d * 520.0, col, 2.0 if locked else 1.0)
+
+
+func _tag() -> Array:
+	return ["!", TAG_WARN] if state == S.AIM else []

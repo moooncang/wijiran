@@ -43,7 +43,7 @@ func patterns() -> Dictionary:
 			"strikes": [{"t": 0.45, "shape": "PROJ", "count": 1, "speed": 700.0, "raw": 14.0, "cls": N, "lock_lead": 0.12, "clip": "wind_arrow"},
 				{"t": 0.70, "shape": "PROJ", "count": 1, "speed": 760.0, "raw": 14.0, "cls": N, "lock_lead": 0.10, "warn_from": 0.45, "clip": "wind_arrow"}],
 			"chain_to": "leaf_fan"},
-		"wind_shot_delayed": {"name": "바람 두 발 (지연)", "variant_of": "wind_shot", "dmin": 100.0, "recover": 0.55, "cooldown": 1.2, "pose": "draw_long",
+		"wind_shot_delayed": {"name": "늦은 바람 두 발", "variant_of": "wind_shot", "dmin": 100.0, "recover": 0.55, "cooldown": 1.2, "pose": "draw_long",
 			"strikes": [{"t": 0.80, "shape": "PROJ", "count": 1, "speed": 780.0, "raw": 16.0, "cls": N, "lock_lead": 0.12, "clip": "wind_arrow"},
 				{"t": 1.00, "shape": "PROJ", "count": 1, "speed": 780.0, "raw": 16.0, "cls": N, "lock_lead": 0.10, "warn_from": 0.80, "clip": "wind_arrow"}]},
 		"leaf_fan": {"name": "다섯 갈래 잎", "dmin": 80.0, "recover": 0.6, "cooldown": 1.8, "pose": "draw_fan",
@@ -184,3 +184,7 @@ func _process(delta: float) -> void:
 
 func _draw_body() -> void:
 	pass
+
+
+func _overhead_top() -> float:
+	return -66.0   # the sheet's hair top (~-62): a 4 px gap like every other stack

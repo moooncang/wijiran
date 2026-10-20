@@ -96,19 +96,37 @@ func _lay_zone() -> void:
 
 
 func _draw_body() -> void:
-	draw_figure(self, 50.0, Color(0.9, 0.88, 0.84), Color(0.85, 0.72, 0.6), facing, status.alive())
+	draw_figure(self, 50.0, Color(0.9, 0.88, 0.84), Color(0.85, 0.72, 0.6), facing, status.alive(), true)
 	if not status.alive():
 		return
-	draw_line(Vector2(facing * 8.0, -8), Vector2(facing * 14.0, -46), Color(0.72, 0.75, 0.8), 2.0)   # staff
+	draw_line(Vector2(facing * 8.0, -8), Vector2(facing * 14.0, -46), Color(0.07, 0.04, 0.07), 4.0)   # staff (dark rim)
+	draw_line(Vector2(facing * 8.0, -8), Vector2(facing * 14.0, -46), Color(0.72, 0.75, 0.8), 2.0)
+	draw_circle(Vector2(facing * 14.0, -48), 4.0, Color(0.07, 0.04, 0.07))
 	draw_circle(Vector2(facing * 14.0, -48), 3.0, Color(0.85, 0.7, 0.3))
 	match state:
 		S.STRIKE:
 			if state_time < STRIKE_T:
-				draw_string(Anim.font, Vector2(-5, hurt_top - 26), "!", HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color(1, 0.9, 0.4))
 				draw_telegraph(self, Rect2(Vector2(8.0 if facing > 0.0 else -44.0, -36.0), Vector2(36.0, 30.0)), false, clampf(state_time / STRIKE_T, 0.0, 1.0))
 		S.CAST:
+			# preview of the zone it lays (purify_zone: 160×36 floor strip), growing from the keeper
 			var u := clampf(state_time / CAST_TIME, 0.0, 1.0)
-			draw_arc(Vector2(0, 0), 80.0 * u, 0.0, TAU, 32, Color(1, 1, 1, 0.5), 1.0)
-			draw_string(Anim.font, Vector2(-18, hurt_top - 26), "정화 구역", HORIZONTAL_ALIGNMENT_LEFT, -1, 9, Color(0.95, 0.95, 1.0))
+			var r := Rect2(-80.0 * u, -36.0, 160.0 * u, 36.0)
+			draw_rect(r, Color(1, 1, 1, 0.08 + 0.12 * u))
+			draw_rect(r, Color(0.9, 0.9, 1.0, 0.35 + 0.4 * u), false, 1.0)
+
+
+func _draw_dress(a: float) -> void:
+	draw_hair(self, 50.0, Color(0.78, 0.76, 0.72, a), facing, 8.0, 35.0)   # incense hood falling to the shoulders
+	draw_line(Vector2(facing * 3.0, -35), Vector2(facing * 4.0, -2), Color(0.85, 0.7, 0.3, a), 2.0)   # gold stole
+
+
+func _tag() -> Array:
+	match state:
+		S.STRIKE:
+			if state_time < STRIKE_T:
+				return ["!", TAG_WARN]
+		S.CAST:
+			return ["정화 기도", Color(0.95, 0.95, 1.0)]
 		S.INTERRUPTED:
-			draw_string(Anim.font, Vector2(-16, hurt_top - 26), "기도 끊김", HORIZONTAL_ALIGNMENT_LEFT, -1, 9, Color(1, 0.8, 0.5))
+			return ["기도 끊김", TAG_OPEN]
+	return []

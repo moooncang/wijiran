@@ -3,7 +3,10 @@ class_name Projectile
 ## A straight-flying strike (arrow, bolt). Hits the player once through the normal HitEvent path; the
 ## player reports the outcome back via on_resolved so a perfect parry destroys the shot and feeds posture
 ## to the shooter, i-frames let it pass, anything else consumes it. Stops in solids. Drawn with a looping
-## effect clip when `clip` is set (10차 arrows), otherwise a greybox arrow.
+## effect clip when `clip` is set (10차 arrows), a glowing orb when that clip has no art yet (mage_bolt,
+## observe_orb), otherwise a greybox arrow.
+
+const ORB_COLORS := {"observe_orb": Color(1.0, 0.45, 0.25)}   # orb tint per art-less clip (else `color`)
 
 var velocity := Vector2.RIGHT * 420.0
 var life := 2.6
@@ -19,13 +22,15 @@ var _sent := false
 var _stuck := false
 var _player: Player
 var _art: Sprite2D
+var _orb := false
 
 
 func _ready() -> void:
 	add_to_group("projectile")
 	z_index = 6
 	_player = get_tree().get_first_node_in_group("player") as Player
-	if clip != "" and Anim.effects.has(clip):
+	_orb = clip != "" and not Anim.effects.has(clip)
+	if clip != "" and not _orb:
 		_art = Juice.fx(clip, Vector2.ZERO, velocity.normalized(), 1.0, false, self)
 		_art.z_index = 0
 
@@ -42,6 +47,10 @@ func _physics_process(dt: float) -> void:
 	var next := global_position + velocity * dt
 	var lv = Game.level
 	if lv and lv.has_method("blocked") and lv.blocked(next):
+		if _orb:   # an orb bursts on the wall instead of sticking like an arrow
+			Juice.flash(global_position, 6.0)
+			queue_free()
+			return
 		_stuck = true
 		life = 0.6
 		if stick_clip != "" and Anim.effects.has(stick_clip):
@@ -80,6 +89,16 @@ func _draw() -> void:
 		return
 	var d := velocity.normalized()
 	var k := radius / 5.0
+	if _orb:
+		# its art clip is not in any manifest (mage_bolt, observe_orb): a glowing orb with a fading tail, not an arrow
+		var col: Color = ORB_COLORS.get(clip, color)
+		var r := radius * 1.2
+		for i in 4:
+			draw_circle(-d * (6.0 + 5.0 * i) * k, r * (0.85 - 0.17 * i), Color(col, 0.32 - 0.07 * i))
+		draw_circle(Vector2.ZERO, r * 1.9, Color(col, 0.35))
+		draw_circle(Vector2.ZERO, r, col)
+		draw_circle(Vector2.ZERO, r * 0.45, Color(1.0, 0.98, 0.9))
+		return
 	var tail := -d * 16.0 * k
 	draw_line(tail, d * 6.0 * k, Color(0.5, 0.35, 0.2), 2.0 * k)
 	draw_line(d * 4.0 * k, d * 10.0 * k, color, 3.0 * k)

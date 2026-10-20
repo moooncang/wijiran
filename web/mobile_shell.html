@@ -6,7 +6,8 @@
 		<meta name="mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-		<title>$GODOT_PROJECT_NAME</title>
+		<meta name="theme-color" content="#1b1a24">
+		<title>위지란</title>
 		<style>
 html, body, #canvas {
 	margin: 0;
@@ -14,11 +15,21 @@ html, body, #canvas {
 	border: 0;
 }
 
+html, body {
+	overscroll-behavior: none;   /* no pull-to-refresh when the stick is dragged down */
+}
+
 body {
-	color: white;
+	color: #f3e9dc;
 	background-color: black;
 	overflow: hidden;
 	touch-action: none;
+	font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+	/* holding a touch button must not select text, open the callout or flash a tap highlight */
+	-webkit-user-select: none;
+	user-select: none;
+	-webkit-touch-callout: none;
+	-webkit-tap-highlight-color: transparent;
 }
 
 #canvas {
@@ -29,19 +40,14 @@ body {
 	outline: none;
 }
 
-#status, #status-splash, #status-progress {
+/* loading screen in the start gate's colours and title (not Godot's grey logo splash) */
+#status {
 	position: absolute;
 	left: 0;
 	right: 0;
-}
-
-#status, #status-splash {
 	top: 0;
 	bottom: 0;
-}
-
-#status {
-	background-color: $GODOT_SPLASH_COLOR;
+	background-color: #1b1a24;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -49,85 +55,103 @@ body {
 	visibility: hidden;
 }
 
-#status-splash {
-	max-height: 100%;
-	max-width: 100%;
-	margin: auto;
-}
-
-#status-splash.show-image--false {
+#status-loader {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: max(10%, calc(env(safe-area-inset-bottom) + 1.5rem));
+	width: min(60%, 420px);
+	margin: 0 auto;
 	display: none;
+	text-align: center;
 }
 
-#status-splash.fullsize--true {
-	height: 100%;
-	width: 100%;
-	object-fit: contain;
-}
-
-#status-splash.use-filter--false {
-	image-rendering: pixelated;
-}
-
-#status-progress, #status-notice {
-	display: none;
+#status-text {
+	font-size: 1rem;
+	letter-spacing: 0.04em;
+	margin-bottom: 0.6rem;
+	text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
 }
 
 #status-progress {
-	bottom: 10%;
-	width: 50%;
-	margin: 0 auto;
+	-webkit-appearance: none;
+	appearance: none;
+	display: block;
+	width: 100%;
+	height: 6px;
+	border: 0;
+	border-radius: 999px;
+	overflow: hidden;
+	background: rgba(243, 233, 220, 0.18);
+	color: #e45140;
 }
-
-/* mobile-only build: tap-to-start gate (fullscreen + landscape lock) and a rotate prompt in portrait */
-#start, #rotate {
-	position: fixed; inset: 0; z-index: 20; display: flex; flex-direction: column; justify-content: center; align-items: center;
-	background: #1b1a24; color: #f3e9dc; font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif; text-align: center;
-}
-#start h1 { font-size: 2rem; margin: 0 0 0.4rem; letter-spacing: 0.1em; }
-#start p { margin: 0.2rem 0; opacity: 0.8; }
-#start .btn { margin-top: 1.4rem; padding: 0.9rem 2.4rem; border: 2px solid #e45140; border-radius: 999px; color: #fff; font-size: 1.1rem; background: rgba(228,81,64,0.25); }
-#rotate { display: none; z-index: 30; }
-#rotate .phone { width: 34px; height: 60px; border: 3px solid #f0c870; border-radius: 6px; margin-bottom: 1rem; animation: turn 1.6s ease-in-out infinite; }
-@keyframes turn { 0%, 20% { transform: rotate(0deg); } 60%, 100% { transform: rotate(90deg); } }
-@media (orientation: portrait) { #rotate { display: flex; } }
+#status-progress::-webkit-progress-bar { background: rgba(243, 233, 220, 0.18); border-radius: 999px; }
+#status-progress::-webkit-progress-value { background: #e45140; border-radius: 999px; }
+#status-progress::-moz-progress-bar { background: #e45140; border-radius: 999px; }
 
 #status-notice {
-	background-color: #5b3943;
-	border-radius: 0.5rem;
+	display: none;
+	background-color: #2a1d24;
+	border-radius: 0.6rem;
 	border: 1px solid #9b3943;
-	color: #e0e0e0;
-	font-family: 'Noto Sans', 'Droid Sans', Arial, sans-serif;
-	line-height: 1.3;
-	margin: 0 2rem;
-	overflow: hidden;
-	padding: 1rem;
+	color: #f3e9dc;
+	font-size: 1rem;
+	line-height: 1.5;
+	margin: 0 1.5rem;
+	max-width: 32rem;
+	overflow: auto;
+	max-height: 80%;
+	padding: 1rem 1.25rem;
 	text-align: center;
 	z-index: 1;
 }
+
+/* shared by the PC and mobile builds. Touch devices only: tap-to-start gate (fullscreen + landscape lock;
+   removed at once with a mouse) and a rotate prompt in portrait */
+#start, #rotate {
+	position: fixed; inset: 0; z-index: 20; display: flex; flex-direction: column; justify-content: center; align-items: center;
+	box-sizing: border-box;
+	padding: max(1rem, env(safe-area-inset-top)) max(1.5rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom)) max(1.5rem, env(safe-area-inset-left));
+	background: #1b1a24; color: #f3e9dc; text-align: center; line-height: 1.5; word-break: keep-all;
+}
+#start { cursor: pointer; }
+/* padding-left = letter-spacing: the trailing space after the last glyph would push the text off centre */
+#start h1, #status-title { font-size: clamp(2rem, 9vh, 2.8rem); margin: 0 0 0.5rem; letter-spacing: 0.12em; padding-left: 0.12em; font-weight: 700; }
+#start p { margin: 0.15rem 0; font-size: clamp(0.95rem, 4.2vh, 1.1rem); color: #d9cbbb; }
+#start .btn { margin-top: clamp(0.8rem, 5vh, 1.6rem); padding: 0.8rem 2.6rem 0.8rem calc(2.6rem + 0.06em); border: 2px solid #e45140; border-radius: 999px; color: #fff; font-size: 1.15rem; font-weight: 700; letter-spacing: 0.06em; background: rgba(228,81,64,0.25); }
+#start .btn:active { background: rgba(228,81,64,0.5); }
+#rotate { display: none; z-index: 30; }
+#rotate .phone { width: 34px; height: 60px; border: 3px solid #f0c870; border-radius: 6px; margin-bottom: 1.2rem; animation: turn 1.6s ease-in-out infinite; }
+#rotate p { margin: 0.2rem 0; font-size: 1.2rem; font-weight: 700; }
+#rotate small { font-size: 1rem; color: #d9cbbb; }
+@keyframes turn { 0%, 20% { transform: rotate(0deg); } 60%, 100% { transform: rotate(90deg); } }
+@media (orientation: portrait) and (pointer: coarse) { #rotate { display: flex; } }
 		</style>
 		$GODOT_HEAD_INCLUDE
 	</head>
 	<body>
 		<canvas id="canvas">
-			Your browser does not support the canvas tag.
+			이 브라우저는 canvas를 지원하지 않습니다.
 		</canvas>
 
 		<noscript>
-			Your browser does not support JavaScript.
+			JavaScript를 켜야 플레이할 수 있습니다.
 		</noscript>
 
 		<div id="start">
 			<h1>위지란</h1>
-			<p>모바일 전용 · 가로 화면</p>
-			<p>왼쪽 스틱 이동·조준 / 오른쪽 버튼 기술</p>
+			<p>가로 화면 · 터치 조작</p>
+			<p>왼쪽 스틱으로 이동 · 조준, 오른쪽 버튼으로 기술</p>
 			<div class="btn">탭하여 시작</div>
 		</div>
-		<div id="rotate"><div class="phone"></div><p>휴대폰을 가로로 돌려 주세요</p></div>
+		<div id="rotate"><div class="phone"></div><p>휴대폰을 가로로 돌려 주세요</p><small>가로 화면에서만 플레이할 수 있습니다</small></div>
 
 		<div id="status">
-			<img id="status-splash" class="$GODOT_SPLASH_CLASSES" src="$GODOT_SPLASH" alt="">
-			<progress id="status-progress"></progress>
+			<h1 id="status-title">위지란</h1>
+			<div id="status-loader">
+				<div id="status-text">불러오는 중…</div>
+				<progress id="status-progress"></progress>
+			</div>
 			<div id="status-notice"></div>
 		</div>
 
@@ -135,10 +159,15 @@ body {
 		<script>
 const GODOT_CONFIG = $GODOT_CONFIG;
 const GODOT_THREADS_ENABLED = $GODOT_THREADS_ENABLED;
-const engine = new Engine(GODOT_CONFIG);
 
 (function () {
+	// a long press on a touch button must not open the browser's context menu
+	document.addEventListener('contextmenu', (e) => e.preventDefault());
 	const startGate = document.getElementById('start');
+	const gated = matchMedia('(pointer: coarse)').matches;
+	if (!gated) {
+		startGate.remove();   // mouse and keyboard: no fullscreen / landscape gate, straight to loading
+	}
 	startGate.addEventListener('click', () => {
 		const el = document.documentElement;
 		const fs = el.requestFullscreen || el.webkitRequestFullscreen;
@@ -152,8 +181,11 @@ const engine = new Engine(GODOT_CONFIG);
 		if (c) { c.focus(); }
 	});
 	const statusOverlay = document.getElementById('status');
+	const statusLoader = document.getElementById('status-loader');
+	const statusText = document.getElementById('status-text');
 	const statusProgress = document.getElementById('status-progress');
 	const statusNotice = document.getElementById('status-notice');
+	const engine = new Engine(Object.assign({}, GODOT_CONFIG, { onProgress: showProgress }));
 
 	let initializing = true;
 	let statusMode = '';
@@ -168,9 +200,21 @@ const engine = new Engine(GODOT_CONFIG);
 			return;
 		}
 		statusOverlay.style.visibility = 'visible';
-		statusProgress.style.display = mode === 'progress' ? 'block' : 'none';
+		statusLoader.style.display = mode === 'progress' ? 'block' : 'none';
 		statusNotice.style.display = mode === 'notice' ? 'block' : 'none';
 		statusMode = mode;
+	}
+
+	function showProgress(current, total) {
+		if (current > 0 && total > 0) {
+			statusProgress.value = current;
+			statusProgress.max = total;
+			statusText.textContent = '불러오는 중… ' + Math.min(100, Math.floor((current / total) * 100)) + '%';
+		} else {
+			statusProgress.removeAttribute('value');
+			statusProgress.removeAttribute('max');
+			statusText.textContent = '불러오는 중…';
+		}
 	}
 
 	function setStatusNotice(text) {
@@ -186,12 +230,13 @@ const engine = new Engine(GODOT_CONFIG);
 
 	function displayFailureNotice(err) {
 		console.error(err);
+		const prefix = '게임을 시작하지 못했습니다.\n';
 		if (err instanceof Error) {
-			setStatusNotice(err.message);
+			setStatusNotice(prefix + err.message);
 		} else if (typeof err === 'string') {
-			setStatusNotice(err);
+			setStatusNotice(prefix + err);
 		} else {
-			setStatusNotice('An unknown error occurred.');
+			setStatusNotice(prefix + '알 수 없는 오류가 발생했습니다. 새로고침해 주세요.');
 		}
 		setStatusMode('notice');
 		initializing = false;
@@ -229,24 +274,25 @@ const engine = new Engine(GODOT_CONFIG);
 			});
 		} else {
 			// Display the message as usual
-			const missingMsg = 'Error\nThe following features required to run Godot projects on the Web are missing:\n';
-			displayFailureNotice(missingMsg + missing.join('\n'));
+			const missingMsg = '이 브라우저에는 실행에 필요한 기능이 없습니다.\n최신 Chrome 또는 Safari에서 열어 주세요.\n\n';
+			setStatusNotice(missingMsg + missing.join('\n'));
+			setStatusMode('notice');
+			initializing = false;
 		}
 	} else {
 		setStatusMode('progress');
-		engine.startGame({
-			'onProgress': function (current, total) {
-				if (current > 0 && total > 0) {
-					statusProgress.value = current;
-					statusProgress.max = total;
-				} else {
-					statusProgress.removeAttribute('value');
-					statusProgress.removeAttribute('max');
-				}
-			},
-		}).then(() => {
-			setStatusMode('hidden');
-		}, displayFailureNotice);
+		// engine.startGame() in two steps: download at once, but behind the touch gate run only on its tap, so the
+		// first-entry card, map title and opening lines never play unseen (and audio starts with that gesture)
+		const pack = GODOT_CONFIG.mainPack || GODOT_CONFIG.executable + '.pck';
+		const loaded = Promise.all([engine.init(GODOT_CONFIG.executable), engine.preloadFile(pack, pack)]);
+		const run = () => loaded
+			.then(() => engine.start({ args: ['--main-pack', pack].concat(GODOT_CONFIG.args || []) }))
+			.then(() => setStatusMode('hidden'), displayFailureNotice);
+		if (gated) {
+			startGate.addEventListener('click', run, { once: true });
+		} else {
+			run();
+		}
 	}
 }());
 		</script>

@@ -10,7 +10,7 @@ static func data() -> Dictionary:
 		"covers": [],
 		"props": [
 			{"type": "rescue", "x": 640, "id": "b3_c", "who": "disciple_f", "exit": -1.0},
-			{"type": "door", "x": 750, "to": "h0", "spawn": "start", "label": "귀환 — 쌍등객잔", "requires": "b3_elodie_beaten"},
+			{"type": "door", "x": 750, "to": "h0", "spawn": "start", "label": "쌍등객잔", "requires": "b3_elodie_beaten"},
 		],
 		"rooms": [
 			{"id": "arena", "x0": 140, "x1": 800, "lock": true, "enemies": [{"type": "elodie", "x": 560}],

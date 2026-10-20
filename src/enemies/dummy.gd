@@ -2,6 +2,8 @@ extends Node2D
 ## Training dummy: flashes white, snaps back with a spring, leans away from the hit, respawns when broken.
 ## Holds an EnemyStatus like every other enemy so injury stacks and the hit ledger work the same way.
 
+const Base := preload("res://src/enemies/enemy_base.gd")
+
 var status := EnemyStatus.new()
 var hurt_top := -52.0   # drawn at 0.7x to match the 48px player
 var flash := 0.0
@@ -9,10 +11,12 @@ var kick := 0.0
 var kick_v := 0.0
 var respawn := 0.0
 var _s: Sprite2D
+var _over: Node2D
 
 
 func _ready() -> void:
 	add_to_group("enemy")
+	_over = Base.overlay(self, _draw_overlay)
 
 
 func reset_state() -> void:
@@ -32,6 +36,7 @@ func on_hit(r: Dictionary, push: float, kick_px: float) -> void:
 
 
 func _process(delta: float) -> void:
+	_over.queue_redraw()   # every frame, hitstop too: the per-frame overhead layout counts every stack
 	if Juice.frozen():
 		return
 	status.tick(delta)
@@ -55,9 +60,12 @@ func _draw() -> void:
 	Anim.prop_frame(_s, "target_dummy", i)
 	_s.position = Vector2(kick, 0)
 	_s.modulate = Color(2, 2, 2) if flash > 0.0 else (Color(1, 1, 1, 0.3) if not status.alive() else Color.WHITE)
-	draw_rect(Rect2(-16, -68, 32, 2), Color(0.25, 0.2, 0.25))
-	draw_rect(Rect2(-16, -68, 32 * status.hp / status.max_hp, 2), Color(0.85, 0.44, 0.53))
-	load("res://src/enemies/enemy_base.gd")._draw_injury(self, status.injury, Vector2(16, -42))
+
+
+func _draw_overlay() -> void:
+	Base._draw_injury(_over, status.injury, Vector2(16, -42))
+	if status.alive():
+		Base.draw_overhead(_over, -50.0, status)   # the post art ends near -48: the same 4 px gap as every head
 
 
 ## 월인 target practice: the dummy slides over too.
