@@ -20,7 +20,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	visible = false
-	set_anchors_preset(Control.PRESET_FULL_RECT)
+	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 
 func is_open() -> bool:
@@ -60,6 +60,22 @@ func _blocked() -> bool:
 			return true
 	var fade = s.get("_fade_t")
 	return fade is float and fade >= 0.0
+
+
+## Row rectangles for the current page (the controls page lists its rows under the key table).
+func _row_rects_now() -> Array:
+	var top := 170.0
+	match page:
+		"confirm":
+			top = 220.0
+		"controls":
+			top = 92.0 + 22.0 * (10 if UiText.touch else 12) + 10.0
+	var cx := get_viewport_rect().size.x * 0.5
+	var w := 300.0 if UiText.touch else 260.0
+	var out: Array = []
+	for i in _rows().size():
+		out.append(Rect2(cx - w * 0.5, top + i * (ROW_H + 6.0), w, ROW_H))
+	return out
 
 
 func _rows() -> Array:
@@ -110,6 +126,13 @@ func _unhandled_input(event: InputEvent) -> void:
 	queue_redraw()
 
 
+## The tree is paused while the menu is up and GUI picking does not run then: clicks and taps are taken
+## here (delivered to always-processing nodes) and routed to the same handler.
+func _input(event: InputEvent) -> void:
+	if _open and (event is InputEventMouseButton or event is InputEventMouseMotion or event is InputEventScreenTouch):
+		_gui_input(event)
+
+
 func _gui_input(event: InputEvent) -> void:
 	var pos := Vector2.ZERO
 	var pressed := false
@@ -121,6 +144,7 @@ func _gui_input(event: InputEvent) -> void:
 		pressed = true
 	if not pressed:
 		return
+	_row_rects = _row_rects_now()
 	for i in _row_rects.size():
 		if (_row_rects[i] as Rect2).has_point(pos):
 			selected = i
@@ -183,12 +207,11 @@ func _draw() -> void:
 			UiText.centered(self, cx, vp.y - 24, hint, UiText.sz(UiText.XS), UiText.DIM, 0)
 
 
-func _draw_rows(cx: float, top: float) -> void:
+func _draw_rows(cx: float, _top: float) -> void:
 	var rows := _rows()
-	var w := 300.0 if UiText.touch else 260.0
+	_row_rects = _row_rects_now()
 	for i in rows.size():
-		var r := Rect2(cx - w * 0.5, top + i * (ROW_H + 6.0), w, ROW_H)
-		_row_rects.append(r)
+		var r: Rect2 = _row_rects[i]
 		if i == selected:
 			draw_rect(r, ROW_SEL)
 		draw_rect(r, UiText.PANEL_EDGE, false, 1.0)

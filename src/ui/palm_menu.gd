@@ -53,7 +53,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	mouse_filter = Control.MOUSE_FILTER_STOP   # while visible, clicks/taps stop here instead of reaching the HUD
 	visible = false
-	set_anchors_preset(Control.PRESET_FULL_RECT)
+	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 
 func open() -> void:
@@ -121,6 +121,13 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	get_viewport().set_input_as_handled()
 	queue_redraw()
+
+
+## The tree is paused while the menu is up and GUI picking does not run then: clicks and taps are taken
+## here (delivered to always-processing nodes) and routed to the same handler.
+func _input(event: InputEvent) -> void:
+	if _open and (event is InputEventMouseButton or event is InputEventMouseMotion or event is InputEventScreenTouch):
+		_gui_input(event)
 
 
 func _gui_input(event: InputEvent) -> void:

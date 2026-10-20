@@ -102,6 +102,22 @@ func _run() -> void:
 		print("FXLEAK frozen=%s left=%d %s" % [Juice.frozen(), left.size(), left])
 		get_tree().quit(0)
 		return
+	if suite == "clickprobe":
+		await _goto("f1")
+		var pm = main.pause_menu
+		pm.open()
+		await _pf(3)
+		print("probe rect=%s palm=%s visible=%s" % [pm.get_global_rect(), main.palm_menu.get_global_rect(), pm.visible])
+		var ev := InputEventMouseButton.new()
+		ev.button_index = MOUSE_BUTTON_LEFT
+		ev.pressed = true
+		ev.position = get_viewport().get_final_transform() * Vector2(400, 314)   # window space: the viewport maps it back
+		ev.global_position = ev.position
+		get_viewport().push_input(ev)
+		await _pf(3)
+		print("probe after click page=%s selected=%d" % [pm.page, pm.selected])
+		get_tree().quit(0)
+		return
 	if suite == "walk":
 		var bot := Node.new()
 		bot.set_script(preload("res://tests/walk_bot.gd"))
@@ -508,6 +524,17 @@ func _menu() -> void:
 	pm._activate("resume")
 	await _pf(2)
 	_check(not pm.visible and not Game.paused, "menu: 계속하기 resumes")
+	pm.open()
+	var ev := InputEventMouseButton.new()
+	ev.button_index = MOUSE_BUTTON_LEFT
+	ev.pressed = true
+	ev.position = get_viewport().get_final_transform() * Vector2(400, 314)
+	ev.global_position = ev.position
+	get_viewport().push_input(ev)
+	await _pf(3)
+	_check(pm.page == "confirm", "menu: a mouse click on 처음부터 works while paused", pm.page)
+	pm.page = "main"
+	pm.close()
 	pm.open()
 	pm._activate("reset")
 	_check(pm.page == "confirm", "menu: 처음부터 asks for confirmation")
