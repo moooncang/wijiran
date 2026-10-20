@@ -59,3 +59,9 @@ func _draw() -> void:
 	draw_rect(Rect2(-16, -68, 32, 2), Color(0.25, 0.2, 0.25))
 	draw_rect(Rect2(-16, -68, 32 * status.hp / status.max_hp, 2), Color(0.85, 0.44, 0.53))
 	load("res://src/enemies/enemy_base.gd")._draw_injury(self, status.injury, Vector2(16, -42))
+
+
+## 월인 target practice: the dummy slides over too.
+func pull_to(point: Vector2) -> void:
+	global_position.x = point.x
+	flash = 0.1

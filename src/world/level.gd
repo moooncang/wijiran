@@ -23,6 +23,7 @@ var camera: Camera2D
 var _walls: Array = []
 var _spawned: Dictionary = {}     # room id → [enemies]
 var _enemy_count := 0
+var _safe := Vector2.ZERO          # last grounded spot over real floor (pit respawn, 본편 §4)
 
 
 func build(d: Dictionary, p: Player, cam: Camera2D) -> void:
@@ -33,7 +34,10 @@ func build(d: Dictionary, p: Player, cam: Camera2D) -> void:
 	player = p
 	camera = cam
 	_build_backdrop()
-	_solid(Rect2(-200, ground_y, width + 400, 60), Color(0.14, 0.11, 0.1))
+	for seg in d.get("floor", [[-200.0, width + 200.0]]):
+		_solid(Rect2(float(seg[0]), ground_y, float(seg[1]) - float(seg[0]), 60), Color(0.14, 0.11, 0.1))
+	for r in d.get("ceilings", []):
+		_solid(r, Color(0.2, 0.17, 0.15))
 	for r in d.get("platforms", []):
 		_solid(r, Color(0.3, 0.22, 0.16))
 	for r in d.get("covers", []):
@@ -131,6 +135,15 @@ func _build_prop(pr: Dictionary) -> void:
 func _physics_process(_dt: float) -> void:
 	if player == null:
 		return
+	if player.is_on_floor() and not player.dead:
+		_safe = player.global_position
+	elif player.global_position.y > ground_y + 140.0 and _safe != Vector2.ZERO:
+		# fell into a pit: back to the last footing, no damage (낙하 시 가까운 발판으로 복귀)
+		player.global_position = _safe
+		player.velocity = Vector2.ZERO
+		player.air_jump_available = true
+		player.air_dash_available = true
+		Game.notice.emit("발판으로 복귀")
 	var px := player.global_position.x
 	for r in rooms:
 		if px >= r.x0 and px <= r.x1:

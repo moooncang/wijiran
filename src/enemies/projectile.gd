@@ -63,8 +63,11 @@ func _process(_delta: float) -> void:
 
 func _draw() -> void:
 	var d := velocity.normalized()
-	var tail := -d * 16.0
-	draw_line(tail, d * 6.0, Color(0.5, 0.35, 0.2), 2.0)
-	draw_line(d * 4.0, d * 10.0, color, 3.0)
+	var k := radius / 5.0
+	var tail := -d * 16.0 * k
+	draw_line(tail, d * 6.0 * k, Color(0.5, 0.35, 0.2), 2.0 * k)
+	draw_line(d * 4.0 * k, d * 10.0 * k, color, 3.0 * k)
+	if k > 1.2:
+		draw_line(tail - d * 20.0 * k, tail, Color(0.8, 1.0, 0.8, 0.35), 5.0 * k)  # wind trail
 	draw_line(tail, tail + Vector2(-d.y, d.x) * 3.0, Color(0.5, 0.8, 0.4), 2.0)
 	draw_line(tail, tail - Vector2(-d.y, d.x) * 3.0, Color(0.5, 0.8, 0.4), 2.0)

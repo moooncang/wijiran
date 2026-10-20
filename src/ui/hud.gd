@@ -52,7 +52,13 @@ func _skill_lines() -> Array:
 		heavy_reason = "내공 부족 %d/%d" % [int(player.qi), int(st.heavy.qi_cost)]
 	elif not grounded_free:
 		heavy_reason = "지상 대기 중에만"
-	lines.append(["E/우클릭", String(st.heavy.name), "내공 %d · 마열 +%d%s" % [int(st.heavy.qi_cost), int(st.heavy.rift_gain), " · 과열 ×1.2" if player.overheated() else ""], heavy_reason == "", heavy_reason])
+	var pull_reason := ""
+	if player.pull_cooldown > 0.0:
+		pull_reason = "재사용 %.1f" % player.pull_cooldown
+	elif player.qi < Player.PULL_QI:
+		pull_reason = "내공 부족 %d/20" % int(player.qi)
+	lines.append(["우클릭/F", "월인", "조준 방향 적을 당김 · 보스면 내가 끌려감 · 내공 20", pull_reason == "", pull_reason])
+	lines.append(["E", String(st.heavy.name), "내공 %d · 마열 +%d%s" % [int(st.heavy.qi_cost), int(st.heavy.rift_gain), " · 과열 ×1.2" if player.overheated() else ""], heavy_reason == "", heavy_reason])
 	var ult_reason := ""
 	if player.tremor_left > 0.0:
 		ult_reason = "수전증 %.1f" % player.tremor_left
@@ -76,7 +82,7 @@ func _draw() -> void:
 	var y := 8.0
 	# skill panel, bottom right
 	var font := Anim.font
-	var py := vp.y - 18.0 - 11.0 * 6
+	var py := vp.y - 18.0 - 11.0 * 7
 	for line in (_skill_lines() if show_skills else []):
 		var ok: bool = line[3]
 		var reason: String = line[4] if line.size() > 4 else ""

@@ -38,6 +38,8 @@ var state: int = State.INTRO
 var state_time := 0.0
 var late := false
 var beaten := false
+var fx_scale := 1.0                  # bosses: effect clips drawn this many times larger
+var _rain: Array = []                # [{x, t_hit, hit_id, s, done}] falling arrow columns
 
 var pattern_id := ""
 var pattern: Dictionary = {}
@@ -131,6 +133,7 @@ func _on_death() -> void:
 		if pr.get("shooter") == self:
 			pr.queue_free()
 	_waves.clear()
+	_rain.clear()
 
 
 func _on_stagger() -> void:
@@ -139,6 +142,7 @@ func _on_stagger() -> void:
 		if pr.get("shooter") == self:
 			pr.queue_free()
 	_waves.clear()
+	_rain.clear()
 	status.stagger_left = stagger_time
 	_enter(State.STAGGER)
 
@@ -161,6 +165,7 @@ func _ai(dt: float) -> void:
 	for k in cooldowns.keys():
 		cooldowns[k] = maxf(0.0, cooldowns[k] - dt)
 	_step_waves(dt)
+	_step_rain(dt)
 	match state:
 		State.INTRO:
 			if state_time >= intro_time:
@@ -352,6 +357,13 @@ func _step_pattern(dt: float) -> void:
 					_fire_volley(s)
 				"WAVE":
 					_waves.append({"rect": _wave_rect(s, global_position.x), "vx": facing * float(s.speed), "left": float(s.travel), "hit_id": hid, "s": s})
+					if bool(s.get("both", false)):
+						var back: Dictionary = s.duplicate()
+						var r2 := _wave_rect(s, global_position.x)
+						r2.position.x = global_position.x - (12.0 if facing > 0.0 else -12.0 - float(s.get("w", 40.0))) - (float(s.get("w", 40.0)) if facing > 0.0 else 0.0)
+						_waves.append({"rect": r2, "vx": -facing * float(s.speed), "left": float(s.travel), "hit_id": hid * 100, "s": back})
+				"RAIN":
+					_start_rain(s)
 		if shape in ["F", "B", "MOVE"] and pattern_time >= t and pattern_time < t + dur and not _fired.has(hid):
 			if _zone_rect(s).intersects(player.hurt_rect()):
 				_fired[hid] = true
@@ -398,6 +410,48 @@ func _resolve_dist(m: Dictionary) -> float:
 			return maxf(0.0, dx - float(m.get("gap", 24.0)))
 		_:
 			return dx + float(m.get("gap", 70.0))
+
+
+## 잿비: pick the safe columns, then every other column gets a falling arrow 0.55 s later.
+func _start_rain(s: Dictionary) -> void:
+	var n := int(s.get("columns", 7))
+	var safe := int(s.get("safe", 2))
+	var safes: Array = []
+	while safes.size() < safe:
+		var c := rng.randi() % n
+		if not safes.has(c):
+			safes.append(c)
+	var w := (arena_right - arena_left) / float(n)
+	for i in n:
+		_rain.append({"x": arena_left + (i + 0.5) * w, "w": w, "t_hit": 0.55, "safe": safes.has(i), "hit_id": int(s.id) * 1000 + i, "s": s, "fired": false})
+
+
+func _step_rain(dt: float) -> void:
+	var keep: Array = []
+	for r in _rain:
+		r.t_hit -= dt
+		if r.t_hit <= 0.0 and not r.fired and not r.safe:
+			r.fired = true
+			var p := Node2D.new()
+			p.set_script(preload("res://src/enemies/projectile.gd"))
+			p.position = Vector2(r.x, ground_y - float(r.s.get("h", 400.0)))
+			p.velocity = Vector2(0, float(r.s.get("speed", 800.0)))
+			p.shooter = self
+			p.radius = 7.0
+			var hit := HitEvent.new()
+			hit.attacker = self
+			hit.instance_id = instance
+			hit.hit_id = int(r.hit_id)
+			hit.raw_direct = float(r.s.raw)
+			hit.knockback = float(KNOCKBACK[int(r.s.cls)])
+			hit.parry_class = int(r.s.cls)
+			hit.posture_damage = 0.0
+			hit.label = "%s" % pattern.get("name", "잿비")
+			p.hit = hit
+			get_parent().add_child(p)
+		if r.t_hit > -0.6:
+			keep.append(r)
+	_rain = keep
 
 
 func _step_waves(dt: float) -> void:
@@ -482,6 +536,7 @@ func _fire_volley(s: Dictionary) -> void:
 		p.velocity = _aim.rotated(ang) * float(s.get("speed", 480.0))
 		p.shooter = self
 		p.color = Color(s.get("color", Color(0.85, 0.9, 0.7)))
+		p.radius = 5.0 * maxf(1.0, fx_scale * 0.6)
 		var hit := HitEvent.new()
 		hit.attacker = self
 		hit.instance_id = instance
@@ -535,7 +590,11 @@ func _draw() -> void:
 					var r := _wave_rect(s, global_position.x)
 					var reach := float(s.speed) * float(s.travel)
 					var path := Rect2(r.position.x + (0.0 if facing > 0.0 else -reach), r.position.y, r.size.x + reach, r.size.y)
+					if bool(s.get("both", false)):
+						path = Rect2(global_position.x - reach - float(s.get("w", 40.0)), r.position.y, 2.0 * reach + 2.0 * float(s.get("w", 40.0)), r.size.y)
 					_draw_zone(path, int(s.cls), progress)
+				"RAIN":
+					draw_string(Anim.font, Vector2(-24, hurt_top - 44), "잿비", HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color(1, 0.6, 0.5))
 				_:
 					_draw_zone(_zone_rect(s), int(s.cls), progress)
 		var nxt := _next_strike()
@@ -546,6 +605,11 @@ func _draw() -> void:
 	for w in _waves:
 		var r: Rect2 = w.rect
 		draw_rect(Rect2(r.position - global_position, r.size), Color(1.0, 0.3, 0.2, 0.6))
+	for r in _rain:
+		if r.safe or r.fired:
+			continue
+		var prog := clampf(1.0 - r.t_hit / 0.55, 0.0, 1.0)
+		_draw_zone(Rect2(float(r.x) - float(r.w) * 0.5 + 3.0, ground_y - 400.0, float(r.w) - 6.0, 400.0), U, prog)
 
 
 func _draw_aim(s: Dictionary, progress: float) -> void:

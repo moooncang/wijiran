@@ -48,6 +48,10 @@ func _run() -> void:
 		await _checkpoint()
 	if suite in ["all", "tianel"]:
 		await _tianel()
+	if suite in ["all", "pull"]:
+		await _pull()
+	if suite in ["all", "tutorial"]:
+		await _tutorial()
 	print("SELFTEST %d failures %s" % [fails.size(), fails])
 	get_tree().quit(0 if fails.is_empty() else 1)
 
@@ -191,20 +195,20 @@ func _projectile() -> void:
 	await _goto("t0")
 	var p := _player()
 	Juice.clear()
-	p.reset_state(600)
-	p.global_position = Vector2(600, 300)
+	p.reset_state(2000)
+	p.global_position = Vector2(2000, 300)
 	await _pf(2)
 	var hp0 := p.hp
 	var shooter := Node2D.new()
 	shooter.set_script(preload("res://src/enemies/scout_archer.gd"))
-	shooter.position = Vector2(800, 300)
+	shooter.position = Vector2(2200, 300)
 	main.level.add_child(shooter)
 	await _pf(1)
 	shooter.activate(p)
 	shooter.state = shooter.S.RECOVER   # never shoots on its own during the test
 	shooter.state_time = -99.0
 	# arrow from the right, perfect parry → no damage, destroyed, posture +25 on the shooter
-	var arrow := _arrow(shooter, Vector2(680, 276), Vector2(-440, 0))
+	var arrow := _arrow(shooter, Vector2(2080, 276), Vector2(-440, 0))
 	await _pf(8)
 	p.press_parry(1.0)
 	await _pf(14)
@@ -212,25 +216,25 @@ func _projectile() -> void:
 	_check(perfect_ok, "projectile: perfect parry destroys the arrow and adds posture", "hp=%d posture=%.0f" % [p.hp, shooter.status.posture])
 	# no parry → damage, arrow consumed
 	await _pf(30)
-	p.reset_state(600)
-	p.global_position = Vector2(600, 300)
+	p.reset_state(2000)
+	p.global_position = Vector2(2000, 300)
 	await _pf(2)
-	var arrow2 := _arrow(shooter, Vector2(680, 276), Vector2(-440, 0))
+	var arrow2 := _arrow(shooter, Vector2(2080, 276), Vector2(-440, 0))
 	await _pf(30)
 	_check(p.hp == 100 - 12 and not is_instance_valid(arrow2), "projectile: unparried arrow deals 12 and is consumed", "hp=%d" % p.hp)
 	# dash i-frames: it passes through
 	await _pf(30)
-	p.reset_state(600)
-	p.global_position = Vector2(600, 300)
+	p.reset_state(2000)
+	p.global_position = Vector2(2000, 300)
 	await _pf(2)
-	var arrow3 := _arrow(shooter, Vector2(660, 276), Vector2(-440, 0))
+	var arrow3 := _arrow(shooter, Vector2(2060, 276), Vector2(-440, 0))
 	await _pf(6)
 	p.press_dash(Vector2(1, 0))
 	await _pf(10)
 	_check(p.hp == 100, "projectile: dash i-frames pass the arrow", "hp=%d" % p.hp)
 	# archers do not start a shot off-camera
 	await _pf(40)
-	shooter.global_position = Vector2(2100, 300)
+	shooter.global_position = Vector2(200, 300)
 	shooter.state = shooter.S.IDLE
 	shooter.state_time = 0.0
 	await _pf(80)
@@ -377,10 +381,10 @@ func _tianel() -> void:
 	boss.global_position = Vector2(560, 300)
 	boss.state = boss.State.IDLE
 	boss._start_pattern("root_ripple")
-	await _pf(int(0.9 * 120))
+	await _pf(int(0.6 * 120))
 	p.press_parry(1.0)
-	await _pf(int(0.7 * 120))
-	_check(p.hp == 84, "tianel: root wave ignores the parry (16 damage)", "hp=%d" % p.hp)
+	await _pf(int(1.2 * 120))
+	_check(p.hp == 68, "tianel: both root waves ignore the parry (16 + 16)", "hp=%d" % p.hp)
 	# a perfect parry on an arrow adds posture; four of them stagger her
 	boss._cancel_pattern()
 	boss.status.posture = 75.0
@@ -390,7 +394,7 @@ func _tianel() -> void:
 	boss.global_position = Vector2(560, 300)
 	boss.state = boss.State.IDLE
 	boss._start_pattern("wind_shot")
-	await _pf(int(0.72 * 120))
+	await _pf(int(0.47 * 120))   # first arrow leaves at 0.45, 60px at 700px/s → arrives ≈ 0.54
 	p.press_parry(1.0)
 	await _pf(24)
 	_check(boss.state == boss.State.STAGGER and p.hp == 100, "tianel: perfect-parried arrow staggers at posture 100", "state=%d hp=%d posture=%.0f" % [boss.state, p.hp, boss.status.posture])
@@ -409,8 +413,11 @@ func _qa() -> void:
 	var p := _player()
 	p.input_locked = true
 	await _goto("t0")
-	p.global_position = Vector2(1500, 300)
+	p.global_position = Vector2(700, 300)
 	await _snap("qa-t0")
+	p.global_position = Vector2(1300, 300)
+	await _pf(2)
+	await _snap("qa-t0-cliff")
 	await _goto("f1")
 	p.global_position = Vector2(1000, 300)
 	await _pf(60)
@@ -424,13 +431,18 @@ func _qa() -> void:
 	await _pf(4)
 	var boss = main.level._spawned["arena"][0]
 	boss.state = boss.State.IDLE
-	boss._start_pattern("three_leaves")
-	await _pf(int(0.7 * 120))
+	boss._start_pattern("leaf_fan")
+	await _pf(int(0.5 * 120))
 	await _snap("qa-b1-leaves")
 	boss._cancel_pattern()
 	boss.state = boss.State.IDLE
+	boss._start_pattern("ash_rain")
+	await _pf(int(1.2 * 120))
+	await _snap("qa-b1-rain")
+	boss._cancel_pattern()
+	boss.state = boss.State.IDLE
 	boss._start_pattern("root_ripple")
-	await _pf(int(1.1 * 120))
+	await _pf(int(0.75 * 120))
 	await _snap("qa-b1-root")
 	await _goto("h0")
 	await _snap("qa-h0")
@@ -444,3 +456,126 @@ func _snap(name: String) -> void:
 	await RenderingServer.frame_post_draw
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://shots"))
 	get_viewport().get_texture().get_image().save_png("res://shots/%s.png" % name)
+
+
+# ---------- 월인 ----------
+
+func _pull() -> void:
+	Game.save = Game.default_save()
+	await _goto("f1")
+	var p := _player()
+	Juice.clear()
+	p.reset_state(60)
+	p.global_position = Vector2(60, 300)
+	await _pf(2)
+	var d := await _dummy(140.0)
+	p.aim = Vector2.RIGHT
+	var qi0 := p.qi
+	var ok := p.press_pull()
+	await _pf(30)
+	_check(ok and absf(d.global_position.x - p.global_position.x) < 50.0 and p.qi <= qi0 - Player.PULL_QI + 6.0, "pull: normal enemy yanked to the hand, 내공 20", "dx=%.0f qi=%.0f" % [d.global_position.x - p.global_position.x, p.qi])
+	_check(not p.press_pull(), "pull: cooldown blocks a second cast")
+	# behind the aim: no target
+	p.pull_cooldown = 0.0
+	d.global_position = p.global_position + Vector2(-100, 0)
+	_check(not p.press_pull(), "pull: nothing in the aim cone → refused")
+	d.queue_free()
+	# a boss cannot be moved: the thread pulls the player instead
+	Game.save = Game.default_save()
+	await _goto("b1")
+	Juice.clear()
+	p.global_position = Vector2(320, 300)
+	await _pf(4)
+	var boss = main.level._spawned["arena"][0]
+	boss._cancel_pattern()
+	boss.state = boss.State.IDLE
+	boss.state_time = -99.0
+	boss.global_position = Vector2(470, 300)
+	p.global_position = Vector2(320, 300)
+	p.pull_cooldown = 0.0
+	p.aim = Vector2.RIGHT
+	await _pf(2)
+	var bx0: float = boss.global_position.x
+	var okb := p.press_pull()
+	await _pf(40)
+	_check(okb and boss.global_position.x == bx0 and p.global_position.x > 380.0, "pull: boss stays, the player is reeled in", "px=%.0f" % p.global_position.x)
+
+
+# ---------- tutorial course (physics gates) ----------
+
+func _run_right(ticks: int) -> void:
+	Input.action_press("move_right")
+	await _pf(ticks)
+	Input.action_release("move_right")
+
+
+func _tutorial() -> void:
+	Game.save = Game.default_save()
+	await _goto("t0")
+	var p := _player()
+	Juice.clear()
+	# 1. the 115px wall: a single jump never clears it, jump + air jump does
+	p.reset_state(470)
+	p.global_position = Vector2(470, 300)
+	await _pf(2)
+	Input.action_press("move_right")
+	Input.action_press("jump")
+	await _pf(120)
+	Input.action_release("move_right")
+	Input.action_release("jump")
+	var single_x := p.global_position.x
+	p.reset_state(470)
+	p.global_position = Vector2(470, 300)
+	await _pf(2)
+	Input.action_press("move_right")
+	Input.action_press("jump")
+	await _pf(40)
+	Input.action_release("jump")
+	await _pf(2)
+	Input.action_press("jump")   # 허공답월 near the apex
+	await _pf(130)
+	Input.action_release("move_right")
+	Input.action_release("jump")
+	_check(single_x < 560.0 and p.global_position.x > 800.0 and p.global_position.y <= 186.0, "tutorial: wall needs the air jump", "single=%.0f double=%.0f y=%.0f" % [single_x, p.global_position.x, p.global_position.y])
+	# 2. the broken bridge: running in drops into the pit and returns to the footing; a dash crosses
+	p.reset_state(1000)
+	p.global_position = Vector2(1000, 300)
+	await _pf(2)
+	await _run_right(60)
+	await _pf(40)
+	var fell_back: bool = p.global_position.x < 1070.0 and p.global_position.y <= 300.5
+	p.reset_state(1046)
+	p.global_position = Vector2(1046, 300)   # at the edge, as the sign says
+	await _pf(2)
+	Input.action_press("move_right")
+	p.press_dash(Vector2(1, 0))
+	await _pf(40)
+	Input.action_release("move_right")
+	_check(fell_back and p.global_position.x > 1140.0 and p.is_on_floor(), "tutorial: bridge needs a ground dash", "x=%.0f y=%.0f" % [p.global_position.x, p.global_position.y])
+	# 3. the 180px cliff: jump + air jump fall short; jump + air jump + upward air dash lands on top
+	p.reset_state(1330)
+	p.global_position = Vector2(1330, 300)
+	await _pf(2)
+	Input.action_press("jump")
+	await _pf(40)
+	Input.action_release("jump")
+	await _pf(2)
+	Input.action_press("jump")
+	await _pf(100)
+	Input.action_release("jump")
+	var without_dash_y := p.global_position.y
+	p.reset_state(1330)
+	p.global_position = Vector2(1330, 300)
+	await _pf(2)
+	Input.action_press("jump")
+	await _pf(40)
+	Input.action_release("jump")
+	await _pf(2)
+	Input.action_press("jump")
+	await _pf(30)
+	Input.action_release("jump")
+	Input.action_press("move_right")
+	p.press_dash(Vector2(0.45, -1).normalized())
+	await _pf(90)
+	Input.action_release("move_right")
+	_check(without_dash_y > 150.0 and p.global_position.y <= 121.0 and p.global_position.x >= 1380.0, "tutorial: cliff needs the upward air dash", "nodash_y=%.0f y=%.0f x=%.0f" % [without_dash_y, p.global_position.y, p.global_position.x])

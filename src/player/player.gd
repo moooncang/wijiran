@@ -41,6 +41,16 @@ enum Action { FREE, DASH, PARRY, PARRY_RECOVERY, ULTIMATE, HURT, DEAD }
 # identities. These aliases keep the 흑월장 baseline reachable for tests.
 var style_id: String = PalmStyles.DEFAULT_ID
 var combat_enabled := true     # 쌍등객잔: weapons stay at the door
+# 월인(月引): a qi thread toward the cursor. Normal enemies are yanked to the hand (interrupting them);
+# a boss cannot be moved, so the thread pulls 위지란 to the boss instead. No damage, no i-frames.
+const PULL_RANGE := 190.0
+const PULL_CONE := 0.55         # cos of the half-angle around the aim
+const PULL_QI := 20.0
+const PULL_COOLDOWN := 3.0
+const PULL_SPEED := 1100.0
+var pull_cooldown := 0.0
+var pull_target: Node = null
+var pull_left := 0.0            # seconds of self-pull remaining (boss case)
 
 # --- movement ---
 var facing := 1.0
@@ -202,6 +212,9 @@ func reset_state(x: float) -> void:
 	ult_time = -1.0
 	ult_cooldown = 0.0
 	tremor_left = 0.0
+	pull_cooldown = 0.0
+	pull_left = 0.0
+	pull_target = null
 	resolved_hits.clear()
 	incoming.clear()
 	last_parry = "—"
@@ -266,6 +279,64 @@ func press_heavy() -> bool:
 	qi -= float(h.qi_cost)
 	_add_rift(float(h.rift_gain))
 	return true
+
+
+## Right click: 월인. Picks the nearest enemy inside the aim cone and range; pays 내공 20 once.
+func press_pull() -> bool:
+	if not combat_enabled or action() != Action.FREE or swinging():
+		return false
+	if pull_cooldown > 0.0:
+		_say("월인 재사용 %.1f" % pull_cooldown)
+		return false
+	if qi < PULL_QI:
+		_say("내공 부족")
+		return false
+	var best: Node = null
+	var bd := INF
+	var origin := _shoulder_world()
+	for d in get_tree().get_nodes_in_group("enemy"):
+		if d.get("status") == null or not d.status.alive():
+			continue
+		if d.has_method("invulnerable") and d.invulnerable():
+			continue
+		var to: Vector2 = (d.global_position + Vector2(0, -24)) - origin
+		var dist := to.length()
+		if dist > PULL_RANGE or dist < 1.0 or to.normalized().dot(aim) < PULL_CONE:
+			continue
+		if dist < bd:
+			bd = dist
+			best = d
+	if best == null:
+		_say("월인: 대상 없음")
+		return false
+	qi -= PULL_QI
+	pull_cooldown = PULL_COOLDOWN
+	facing = 1.0 if best.global_position.x >= global_position.x else -1.0
+	Juice.fx("thrust_line", origin, (best.global_position + Vector2(0, -24) - origin).normalized(), facing, false, null, 1.0, Vector2(bd / 76.0, 0.6))
+	Juice.hitstop(0.03)
+	if best.status.is_boss:
+		pull_target = best
+		pull_left = 0.3
+		_end_swing()
+	elif best.has_method("pull_to"):
+		best.pull_to(global_position + Vector2(facing * 34.0, 0))
+	return true
+
+
+func _step_pull(dt: float) -> void:
+	if pull_target == null or not is_instance_valid(pull_target):
+		pull_left = 0.0
+		return
+	pull_left -= dt
+	var to: Vector2 = pull_target.global_position - global_position
+	if absf(to.x) < 44.0 or pull_left <= 0.0:
+		pull_left = 0.0
+		pull_target = null
+		velocity.x *= 0.3
+		return
+	velocity.x = signf(to.x) * PULL_SPEED
+	if not is_on_floor():
+		velocity.y = minf(velocity.y, 0.0)
 
 
 ## 장법 교체 (Game.equip_palm): only the combo state resets (기획 §4).
@@ -525,6 +596,8 @@ func _physics_process(dt: float) -> void:
 			started = press_ultimate()
 		if not started and Input.is_action_just_pressed("heavy_attack"):
 			started = press_heavy()
+		if not started and Input.is_action_just_pressed("skill_pull"):
+			started = press_pull()
 		if Input.is_action_just_pressed("jump"):
 			press_jump()
 		if not started and (Input.is_action_just_pressed("attack") or Input.is_action_just_pressed("attack_key")):
@@ -550,6 +623,9 @@ func _physics_process(dt: float) -> void:
 	notice_left = maxf(0.0, notice_left - dt)
 	ult_cooldown = maxf(0.0, ult_cooldown - dt)
 	tremor_left = maxf(0.0, tremor_left - dt)
+	pull_cooldown = maxf(0.0, pull_cooldown - dt)
+	if pull_left > 0.0:
+		_step_pull(dt)
 	if not dead:
 		qi = minf(CombatConfig.QI_MAX, qi + CombatConfig.QI_REGEN * dt)
 		if rift_hold > 0.0:
@@ -600,6 +676,8 @@ func _physics_process(dt: float) -> void:
 			if swinging():
 				_step_swing(dt)
 				velocity.x = move_toward(velocity.x, 0.0, BRAKE * 0.6 * dt)
+			elif pull_left > 0.0:
+				pass  # carried by the thread
 			else:
 				if move == 0.0 and grounded:
 					facing = 1.0 if aim.x >= 0.0 else -1.0

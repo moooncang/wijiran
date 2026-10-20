@@ -198,7 +198,7 @@ func _build_ui() -> void:
 	if _touch_device():
 		player.touch_mode = true
 		hud.show_skills = false
-		for a in ["attack", "heavy_attack"]:
+		for a in ["attack", "skill_pull"]:
 			for ev in InputMap.action_get_events(a):
 				if ev is InputEventMouseButton:
 					InputMap.action_erase_event(a, ev)
@@ -222,7 +222,7 @@ func _setup_input() -> void:
 	var map := {
 		"move_left": [KEY_A, KEY_LEFT], "move_right": [KEY_D, KEY_RIGHT], "jump": [KEY_W],
 		"dash": [KEY_SHIFT], "walk": [KEY_CTRL], "crouch": [KEY_S], "attack_key": [KEY_J, KEY_X], "reset": [KEY_R],
-		"parry": [KEY_SPACE], "heavy_attack": [KEY_E], "ultimate": [KEY_Q], "interact": [KEY_UP, KEY_W], "menu": [KEY_TAB],
+		"parry": [KEY_SPACE], "heavy_attack": [KEY_E], "ultimate": [KEY_Q], "interact": [KEY_UP, KEY_W], "menu": [KEY_TAB], "skill_pull": [KEY_F],
 	}
 	for action in map:
 		if InputMap.has_action(action):
@@ -240,4 +240,4 @@ func _setup_input() -> void:
 	InputMap.action_add_event("attack", mb)
 	var mb2 := InputEventMouseButton.new()
 	mb2.button_index = MOUSE_BUTTON_RIGHT
-	InputMap.action_add_event("heavy_attack", mb2)
+	InputMap.action_add_event("skill_pull", mb2)   # E = 강화 초식, 우클릭/F = 월인

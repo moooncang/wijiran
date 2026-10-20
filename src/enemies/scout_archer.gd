@@ -34,6 +34,7 @@ func _setup() -> void:
 func _cancel_attack() -> void:
 	state = S.RECOVER
 	state_time = 0.0
+	locked = false
 
 
 func _on_stagger() -> void:

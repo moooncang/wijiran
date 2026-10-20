@@ -22,6 +22,8 @@ var instance := 0
 var dead_time := 0.0
 var _died_emitted := false
 var ground_y := 300.0
+var _pull_to := Vector2.ZERO
+var _pull_left := 0.0
 
 
 func _ready() -> void:
@@ -99,9 +101,24 @@ func _physics_process(dt: float) -> void:
 	if not status.alive():
 		dead_time += dt
 		return
+	if _pull_left > 0.0:
+		_pull_left -= dt
+		var u := clampf(1.0 - _pull_left / 0.16, 0.0, 1.0)
+		global_position.x = lerpf(global_position.x, _pull_to.x, u)
+		global_position.y = ground_y
+		return
 	if not active or player == null:
 		return
 	_ai(dt)
+
+
+## 월인: yanked next to the player over 0.16 s; whatever it was doing is cut (bosses never receive this).
+func pull_to(point: Vector2) -> void:
+	_pull_to = point
+	_pull_left = 0.16
+	hurt_left = 0.25
+	_cancel_attack()
+	Juice.fx("backstep_dust", global_position, Vector2(signf(point.x - global_position.x), 0))
 
 
 func _ai(_dt: float) -> void:

@@ -12,6 +12,7 @@ const BUTTONS := {
 	"jump": [Vector2(766, 330), 25.0, "jump", "점프"],
 	"parry": [Vector2(628, 408), 25.0, "parry", "패링"],
 	"heavy": [Vector2(700, 300), 21.0, "heavy_attack", "강화"],
+	"pull": [Vector2(580, 352), 21.0, "skill_pull", "월인"],
 	"ult": [Vector2(760, 262), 21.0, "ultimate", "월식"],
 	"portal": [Vector2(60, 280), 19.0, "interact", "포탈"],
 	"reset": [Vector2(770, 120), 15.0, "reset", "R"],
