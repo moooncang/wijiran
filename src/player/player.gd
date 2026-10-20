@@ -44,6 +44,7 @@ var combat_enabled := true     # 쌍등객잔: weapons stay at the door
 # 월인(月引): a qi thread toward the cursor. Normal enemies are yanked to the hand (interrupting them);
 # a boss cannot be moved, so the thread pulls 위지란 to the boss instead. No damage, no i-frames.
 const PULL_RANGE := 190.0
+const PURIFY_BURST_RATE := 0.7
 const PULL_CONE := 0.55         # cos of the half-angle around the aim
 const PULL_QI := 20.0
 const PULL_COOLDOWN := 3.0
@@ -52,6 +53,7 @@ var pull_cooldown := 0.0
 var pull_target: Node = null
 var pull_left := 0.0            # seconds of self-pull remaining (boss case)
 var pull_candidate: Node = null  # what a right click would pull right now (enemies draw the reticle)
+var purify_left := 0.0           # 정화 (본편 §8): inside white incense, injury bursts deal 30% less; fades 0.5 s after leaving
 
 # --- movement ---
 var facing := 1.0
@@ -321,6 +323,22 @@ func press_pull() -> bool:
 		best.pull_to(global_position + Vector2(facing * 34.0, 0))
 		Juice.fx("pull_drag", best.global_position, Vector2(-facing, 0), 1.0, false, null, 1.5).set("life", 0.2)
 	return true
+
+
+## 정화 영역이 매 프레임 부른다: 나간 뒤 0.5초면 정상. 중첩 없음, 내상 스택은 그대로 (기획 §8).
+func purify(seconds: float) -> void:
+	purify_left = maxf(purify_left, seconds)
+
+
+func purified() -> bool:
+	return purify_left > 0.0
+
+
+func _draw() -> void:
+	if purified() and not dead:
+		var a := 0.3 + 0.15 * sin(Time.get_ticks_msec() * 0.01)
+		draw_arc(TORSO, 30.0, 0.0, TAU, 28, Color(1.0, 1.0, 1.0, a), 2.0)
+		draw_circle(TORSO, 30.0, Color(0.9, 0.95, 1.0, a * 0.25))
 
 
 ## Nearest living enemy inside the 월인 cone and range, or null.
@@ -670,6 +688,8 @@ func _physics_process(dt: float) -> void:
 	ult_cooldown = maxf(0.0, ult_cooldown - dt)
 	tremor_left = maxf(0.0, tremor_left - dt)
 	pull_cooldown = maxf(0.0, pull_cooldown - dt)
+	purify_left = maxf(0.0, purify_left - dt)
+	queue_redraw()
 	pull_candidate = _pull_candidate() if combat_enabled and not dead and pull_cooldown == 0.0 and qi >= PULL_QI else null
 	if pull_left > 0.0:
 		_step_pull(dt)
@@ -810,7 +830,7 @@ func _ultimate_burst() -> void:
 	Juice.ultimate_ring(centre, CombatConfig.ULT_RADIUS)
 	Juice.hitstop(0.10)
 	Juice.shake(10.0, 0.0)
-	var a := {"damage": CombatConfig.ULT_DIRECT, "injury_burst": true, "burst_per_stack": CombatConfig.ULT_BURST_PER_STACK}
+	var a := {"damage": CombatConfig.ULT_DIRECT, "injury_burst": true, "burst_per_stack": CombatConfig.ULT_BURST_PER_STACK * (PURIFY_BURST_RATE if purified() else 1.0)}
 	for d in get_tree().get_nodes_in_group("enemy"):
 		if d.has_method("invulnerable") and d.invulnerable():
 			continue
@@ -835,9 +855,10 @@ const HURT_HALF_W := 12.0
 func _check_hits() -> void:
 	var a := swing
 	var atk := a
-	if bool(a.get("is_heavy", false)) and _burst_rate != 1.0:
+	var rate := (_burst_rate if bool(a.get("is_heavy", false)) else 1.0) * (PURIFY_BURST_RATE if purified() else 1.0)
+	if bool(a.get("injury_burst", false)) and rate != 1.0:
 		atk = a.duplicate()
-		atk.burst_per_stack = float(a.burst_per_stack) * _burst_rate
+		atk.burst_per_stack = float(a.get("burst_per_stack", CombatConfig.BURST_PER_STACK)) * rate
 	var shoulder := _shoulder_world()
 	var kind := String(a.kind)
 	var centre := _hand_world() if kind in ["burst", "front_burst"] else shoulder

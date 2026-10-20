@@ -117,6 +117,10 @@ func _draw() -> void:
 	if player.tremor_left > 0.0:
 		_icon("tremor", Vector2(x, y))
 		draw_string(Anim.font, Vector2(x + 20, y + 11), "수전증 %.1f" % player.tremor_left, HORIZONTAL_ALIGNMENT_LEFT, -1, 8, Color(1, 0.8, 0.5))
+		y += 14
+	if player.purified():
+		draw_rect(Rect2(x, y, 12, 12), Color(0.95, 0.97, 1.0, 0.8))
+		draw_string(Anim.font, Vector2(x + 20, y + 11), "정화 · 내상 폭발 −30%", HORIZONTAL_ALIGNMENT_LEFT, -1, 8, Color(0.92, 0.95, 1.0))
 	if _stamp_left > 0.0:
 		_icon(_stamp, Vector2(300, 60))
 		draw_string(Anim.font, Vector2(318, 71), "PERFECT" if _stamp == "parry_perfect" else "PARTIAL", HORIZONTAL_ALIGNMENT_LEFT, -1, 9, Color.WHITE if _stamp == "parry_perfect" else Color(0.7, 0.7, 0.75))

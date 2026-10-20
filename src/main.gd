@@ -1,10 +1,10 @@
 extends Node2D
 ## Root scene: owns the current Level, the player, the camera and the UI layers; routes travel, death
 ## and interaction. Levels are data classes (levels/*.gd). `-- --level=f1 --spawn=start` starts elsewhere,
-## `-- --test=all|palm|save|projectile|room|tianel|checkpoint` runs tests/selftests.gd, `-- --touch`
+## `-- --test=all` (or one suite name) runs tests/selftests.gd, `-- --touch`
 ## forces the on-screen controls, `-- --wipe` clears the save.
 
-static var LEVELS := {"t0": LevelT0, "f1": LevelF1, "b1": LevelB1, "h0": LevelH0}
+static var LEVELS := {"t0": LevelT0, "f1": LevelF1, "b1": LevelB1, "h0": LevelH0, "f2": LevelF2, "b2": LevelB2, "f3": LevelF3, "b3": LevelB3}
 
 var player: Player
 var level: Level

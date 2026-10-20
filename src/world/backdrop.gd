@@ -35,5 +35,22 @@ func _draw() -> void:
 			for i in int(width / 120.0) + 2:
 				var x := i * 120.0 - 60.0
 				draw_rect(Rect2(x, ground_y - 110, 10, 110), Color(0.11, 0.1, 0.09))
+		"lab":
+			draw_rect(Rect2(-200, -400, width + 400, ground_y + 400), Color(0.09, 0.1, 0.16))
+			for i in int(width / 160.0) + 2:
+				var x := i * 160.0 - 80.0
+				draw_rect(Rect2(x, ground_y - 260, 18, 260), Color(0.14, 0.15, 0.22))        # cracked pillars
+				draw_rect(Rect2(x + 40, ground_y - 120, 60, 80), Color(0.12, 0.16, 0.2))      # specimen tank
+				draw_rect(Rect2(x + 44, ground_y - 116, 52, 72), Color(0.2, 0.3, 0.42, 0.6))
+				draw_rect(Rect2(x + 30, ground_y - 200, 110, 6), Color(0.45, 0.36, 0.18))      # brass pipe
+			draw_rect(Rect2(-200, ground_y - 300, width + 400, 40), Color(0.11, 0.12, 0.18))
+		"shrine":
+			draw_rect(Rect2(-200, -400, width + 400, ground_y + 400), Color(0.14, 0.11, 0.18))
+			for i in int(width / 140.0) + 2:
+				var x := i * 140.0 - 70.0
+				draw_rect(Rect2(x, ground_y - 230, 12, 230), Color(0.26, 0.26, 0.3))          # gate pillars
+				draw_colored_polygon(PackedVector2Array([Vector2(x - 30, ground_y - 150), Vector2(x + 20, ground_y - 230), Vector2(x + 70, ground_y - 150)]), Color(0.85, 0.82, 0.76, 0.5))  # tents
+				draw_circle(Vector2(x + 20, ground_y - 262), 12.0, Color(0.85, 0.7, 0.3, 0.7))  # sun badges
+			draw_rect(Rect2(-200, ground_y - 60, width + 400, 30), Color(0.9, 0.9, 0.88, 0.12))  # incense haze
 		_:
 			draw_rect(Rect2(-200, -400, width + 400, ground_y + 400), Color(0.1, 0.1, 0.12))

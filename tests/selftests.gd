@@ -52,6 +52,12 @@ func _run() -> void:
 		await _pull()
 	if suite in ["all", "tutorial"]:
 		await _tutorial()
+	if suite in ["all", "minions"]:
+		await _minions()
+	if suite in ["all", "mireille"]:
+		await _mireille()
+	if suite in ["all", "elodie"]:
+		await _elodie()
 	print("SELFTEST %d failures %s" % [fails.size(), fails])
 	get_tree().quit(0 if fails.is_empty() else 1)
 
@@ -409,6 +415,255 @@ func _tianel() -> void:
 	_check(Game.flag("b1_tianel_beaten") and boss.beaten, "tianel: defeat sets the permanent flag")
 
 
+# ---------- F2 졸개·장치 ----------
+
+func _minions() -> void:
+	Game.save = Game.default_save()
+	Game.session_flags.clear()
+	await _goto("f2")
+	var p := _player()
+	Juice.clear()
+	var lv: Level = main.level
+	var shield: Node = null
+	for e in lv._spawned.get("r1", []):
+		if e.get("guarding") != null:
+			shield = e
+	_check(shield != null and lv._spawned.get("r2", []).size() == 1, "f2: shield soldier and mage are pre-placed", str(lv._spawned.keys()))
+	# the guard halves a front hit (the number shown shrinks too); a rear hit lands in full and breaks it
+	shield.activate(p)
+	shield.facing = -1.0
+	shield.guarding = true
+	p.global_position = shield.global_position + Vector2(-60, 0)
+	var r := {"hp_damage": 20, "burst": 0, "killed": false}
+	shield.status.hp = 110.0   # the resolver already took 20
+	shield.on_hit(r, 1.0, 0.0)
+	_check(int(shield.status.hp) == 120 and int(r.hp_damage) == 10, "shield: front hit halved through the guard", "hp=%.0f shown=%d" % [shield.status.hp, int(r.hp_damage)])
+	p.global_position = shield.global_position + Vector2(60, 0)
+	var r2 := {"hp_damage": 20, "burst": 0, "killed": false}
+	shield.status.hp = 100.0
+	shield.on_hit(r2, 1.0, 0.0)
+	_check(int(shield.status.hp) == 100 and shield.broken_left > 0.0, "shield: rear hit lands in full and breaks the guard", "hp=%.0f" % shield.status.hp)
+	# an injury burst from the front breaks it as well
+	shield.broken_left = 0.0
+	shield.guarding = true
+	p.global_position = shield.global_position + Vector2(-60, 0)
+	var r3 := {"hp_damage": 24, "burst": 3, "killed": false}
+	shield.status.hp = 76.0
+	shield.on_hit(r3, 1.0, 0.0)
+	_check(int(shield.status.hp) == 76 and shield.broken_left > 0.0, "shield: injury burst passes the guard and breaks it")
+	# a mage mid-cast is interrupted by any hit
+	var mage: Node = lv._spawned["r2"][0]
+	mage.activate(p)
+	mage.state = mage.S.CAST_BOLT
+	mage.state_time = 0.3
+	mage.on_hit({"hp_damage": 5, "burst": 0, "killed": false}, 1.0, 0.0)
+	_check(mage.state == mage.S.INTERRUPTED, "mage: a hit during the cast interrupts it")
+	# the floor rune is fixed where the player stood when the cast began
+	p.reset_state(1000)
+	p.global_position = Vector2(1000, 300)
+	mage.global_position = Vector2(1180, 300)
+	mage.state = mage.S.IDLE
+	mage.state_time = 0.0
+	mage.casts = 1   # next cast is the ground rune
+	mage.can_retreat = false
+	await _pf(int(0.5 * 120))
+	var cast_started: bool = mage.state == mage.S.CAST_GROUND
+	var zone_x: float = mage.zone.get_center().x
+	p.global_position = Vector2(880, 300)
+	await _pf(int(1.2 * 120))
+	_check(cast_started and absf(zone_x - 1000.0) < 2.0 and p.hp == 100, "mage: ground rune locks to the start position and misses a player who moved", "state=%d zone=%.0f hp=%d" % [mage.state, zone_x, p.hp])
+	# a purify zone flags the player while inside and fades 0.5 s after leaving
+	var z := Node2D.new()
+	z.set_script(preload("res://src/world/purify_zone.gd"))
+	z.position = p.global_position
+	lv.add_child(z)
+	await _pf(2)
+	var inside: bool = p.purified()
+	p.global_position += Vector2(300, 0)
+	await _pf(int(0.7 * 120))
+	_check(inside and not p.purified(), "purify: inside flags the player, gone 0.5 s after leaving", "inside=%s after=%s" % [inside, p.purified()])
+	z.queue_free()
+	# 격석: standing on a plate when it bursts costs 12, unparryable
+	p.reset_state(2180)
+	p.global_position = Vector2(2180, 300)
+	for h in lv.get_children():
+		if h.get("phase") != null and absf(h.position.x - 2180.0) < 1.0:
+			h._t = 0.98
+	await _pf(8)
+	_check(p.hp == 88, "hazard: the plate burst hits 12", "hp=%d" % p.hp)
+
+
+# ---------- B2 미레유 ----------
+
+func _mireille() -> void:
+	Game.save = Game.default_save()
+	Game.session_flags.clear()
+	await _goto("b2")
+	var p := _player()
+	Juice.clear()
+	p.global_position = Vector2(300, 300)
+	await _pf(4)
+	var lv: Level = main.level
+	var boss = lv._spawned["arena"][0]
+	_check(boss != null and main.boss_hud.visible and boss.get("boss_name") == "미레유", "mireille: spawns on entering the arena with a boss bar")
+	boss.rng.seed = 5
+	boss.state = boss.State.IDLE
+	# 좌표 소각 locks the player's position once: stepping out before it fires avoids it
+	p.reset_state(300)
+	p.global_position = Vector2(300, 300)
+	boss.global_position = Vector2(560, 300)
+	boss._start_pattern("burn")
+	await _pf(int(0.15 * 120))
+	var zone: Rect2 = boss._zone_rects.get(1, Rect2())
+	p.global_position = Vector2(120, 300)
+	await _pf(int(0.8 * 120))
+	_check(absf(zone.get_center().x - 300.0) < 2.0 and p.hp == 100, "mireille: 좌표 소각 is saved once and never follows", "zone=%.0f hp=%d" % [zone.get_center().x, p.hp])
+	boss._cancel_pattern()
+	boss.state = boss.State.IDLE
+	p.global_position = Vector2(300, 300)
+	boss._start_pattern("burn")
+	await _pf(int(0.95 * 120))
+	_check(p.hp == 82, "mireille: standing in the saved spot takes 18 (unparryable)", "hp=%d" % p.hp)
+	# 세 칸 봉쇄 seals two different lanes; the third stays safe
+	boss._cancel_pattern()
+	boss.state = boss.State.IDLE
+	p.reset_state(400)
+	p.global_position = Vector2(400, 300)   # middle lane
+	boss.global_position = Vector2(560, 300)
+	boss._start_pattern("seal")
+	await _pf(int(0.45 * 120))
+	var first_lane: int = boss._used_lanes[0] if boss._used_lanes.size() > 0 else -1
+	var second_lane: int = boss._used_lanes[1] if boss._used_lanes.size() > 1 else -1
+	var safe := 3 - first_lane - second_lane
+	p.global_position = Vector2(float(lv.data.lanes[safe][0]) + 133.0, 300)
+	await _pf(int(1.0 * 120))
+	_check(first_lane == 1 and second_lane != 1 and second_lane >= 0 and p.hp == 100, "mireille: 세 칸 봉쇄 takes the player's lane + one other, the third lane is safe", "lanes=%s hp=%d" % [str(boss._used_lanes), p.hp])
+	# 가설 장벽: front hits deal half (bursts pass), then a 0.6 s opening when it drops
+	boss._cancel_pattern()
+	boss.state = boss.State.IDLE
+	boss.global_position = Vector2(560, 300)
+	p.global_position = Vector2(400, 300)
+	boss._start_pattern("barrier")
+	await _pf(int(0.40 * 120))
+	var up: bool = boss.barrier_left > 0.0
+	boss.status.hp = boss.max_hp - 40.0
+	var rb := {"hp_damage": 40, "burst": 0, "killed": false}
+	boss.on_hit(rb, 1.0, 0.0)
+	var half_ok: bool = int(boss.max_hp - boss.status.hp) == 20 and int(rb.hp_damage) == 20
+	var rb2 := {"hp_damage": 40, "burst": 2, "killed": false}
+	boss.status.hp -= 40.0
+	boss.on_hit(rb2, 1.0, 0.0)
+	_check(up and half_ok and int(boss.max_hp - boss.status.hp) == 60, "mireille: 가설 장벽 halves front hits, injury bursts pass", "left=%.1f hp=%.0f" % [boss.barrier_left, boss.status.hp])
+	boss.barrier_left = 0.001
+	boss._cancel_pattern()
+	boss.state = boss.State.IDLE
+	boss.state_time = 10.0
+	await _pf(4)
+	_check(boss.barrier_recover > 0.0 and boss.state == boss.State.IDLE, "mireille: the plate drop leaves 0.6 s with no new pattern", "recover=%.2f state=%d" % [boss.barrier_recover, boss.state])
+	# 좌표 이동 puts her in the lane farthest from the player
+	boss.barrier_recover = 0.0
+	boss.perches = []
+	boss.global_position = Vector2(400, 300)
+	p.global_position = Vector2(150, 300)
+	boss._start_pattern("blink")
+	await _pf(int(0.30 * 120))
+	_check(boss.global_position.x > 600.0, "mireille: blink lands in the far lane", "x=%.0f" % boss.global_position.x)
+	# late: 세 칸 봉쇄 chains into 가설 장벽
+	boss._cancel_pattern()
+	boss.status.hp = boss.max_hp * 0.5
+	boss.on_hit({"hp_damage": 1, "burst": 0, "killed": false}, 1.0, 0.0)
+	boss.cooldowns.clear()
+	boss.state = boss.State.IDLE
+	p.global_position = Vector2(150, 300)
+	boss._start_pattern("seal")
+	var n := 0
+	while boss.state == boss.State.PATTERN and n < 400:
+		await _pf(1)
+		n += 1
+	await _pf(2)
+	_check(boss.late and boss.pattern_id == "barrier", "mireille: late 세 칸 봉쇄 chains straight into 가설 장벽", boss.pattern_id)
+	boss.status.hp = 1.0
+	boss.on_hit({"hp_damage": 1, "burst": 0, "killed": true}, 1.0, 0.0)
+	boss.status.hp = 0.0
+	boss.on_hit({"hp_damage": 0, "burst": 0, "killed": true}, 1.0, 0.0)
+	await _pf(2)
+	_check(Game.flag("b2_mireille_beaten") and Game.flag("picked:b2_transfer_record"), "mireille: defeat sets the flag and hands over the transfer record")
+
+
+# ---------- B3 엘로디 ----------
+
+func _elodie() -> void:
+	Game.save = Game.default_save()
+	Game.session_flags.clear()
+	await _goto("b3")
+	var p := _player()
+	Juice.clear()
+	p.global_position = Vector2(300, 300)
+	await _pf(4)
+	var lv: Level = main.level
+	var boss = lv._spawned["arena"][0]
+	_check(boss != null and boss.get("boss_name") == "엘로디", "elodie: spawns on entering the shrine")
+	boss.rng.seed = 7
+	boss.state = boss.State.IDLE
+	# 정화 기도: inside the disc the player is purified and ticks 6 every 0.35 s
+	p.reset_state(460)
+	p.global_position = Vector2(460, 300)
+	boss.global_position = Vector2(560, 300)
+	boss._start_pattern("prayer")
+	await _pf(int(1.4 * 120))
+	_check(p.purified() and p.hp <= 88 and p.hp >= 76, "elodie: 정화 기도 purifies and ticks 6 inside the disc (knockback too small to eject)", "hp=%d purified=%s" % [p.hp, p.purified()])
+	# 태양 낙인 locks the player's lane at the start; moving lanes avoids it
+	boss._cancel_pattern()
+	boss.state = boss.State.IDLE
+	p.reset_state(400)
+	p.global_position = Vector2(400, 300)
+	boss._start_pattern("brand")
+	await _pf(int(0.1 * 120))
+	var lane: int = boss._used_lanes[0] if boss._used_lanes.size() > 0 else -1
+	p.global_position = Vector2(150, 300)
+	await _pf(int(1.0 * 120))
+	_check(lane == 1 and p.hp == 100, "elodie: 태양 낙인 takes the locked lane only", "lane=%d hp=%d" % [lane, p.hp])
+	# 백향 행렬: the incense wall purifies as it passes and hits 12 unparryable
+	boss._cancel_pattern()
+	boss.state = boss.State.IDLE
+	p.reset_state(400)
+	p.global_position = Vector2(400, 300)
+	boss.global_position = Vector2(560, 300)
+	boss._start_pattern("march")
+	await _pf(int(0.5 * 120))
+	p.press_parry(1.0)
+	await _pf(int(0.8 * 120))
+	_check(p.hp == 88 and p.purified(), "elodie: 백향 행렬 ignores the parry and purifies", "hp=%d" % p.hp)
+	# late: 백향 행렬 chains into 은사슬 횡타
+	boss._cancel_pattern()
+	boss.status.hp = boss.max_hp * 0.5
+	boss.on_hit({"hp_damage": 1, "burst": 0, "killed": false}, 1.0, 0.0)
+	boss.cooldowns.clear()
+	boss.state = boss.State.IDLE
+	boss._start_pattern("march")
+	var n := 0
+	while boss.state == boss.State.PATTERN and n < 500:
+		await _pf(1)
+		n += 1
+	await _pf(2)
+	_check(boss.late and boss.pattern_id == "sweep", "elodie: late 백향 행렬 chains into 은사슬 횡타", boss.pattern_id)
+	# defeat: flag, the bound disciple can be freed, the way home opens
+	boss._cancel_pattern()
+	boss.status.hp = 1.0
+	boss.on_hit({"hp_damage": 1, "burst": 0, "killed": true}, 1.0, 0.0)
+	boss.status.hp = 0.0
+	boss.on_hit({"hp_damage": 0, "burst": 0, "killed": true}, 1.0, 0.0)
+	await _pf(3)
+	var rescue: Node = null
+	for it in get_tree().get_nodes_in_group("interactable"):
+		if it.get("rescue_id") != null:
+			rescue = it
+	var could: bool = rescue != null and rescue.available()
+	if rescue:
+		rescue._use()
+	_check(Game.flag("b3_elodie_beaten") and could and Game.flag("rescued:b3_c"), "elodie: defeat opens the rescue and the flag is permanent", "could=%s" % could)
+
+
 # ---------- screenshots (windowed): `-- --test=qa` ----------
 
 func _qa() -> void:
@@ -430,6 +685,51 @@ func _qa() -> void:
 	p.press_pull()
 	await _pf(3)
 	await _snap("qa-f1-pull")
+	Juice.clear()
+	await _goto("f2")
+	p.global_position = Vector2(400, 300)
+	await _pf(50)
+	await _snap("qa-f2-room1")
+	p.global_position = Vector2(2200, 300)
+	await _pf(70)
+	await _snap("qa-f2-plates")
+	await _goto("b2")
+	p.global_position = Vector2(400, 300)
+	await _pf(4)
+	var m = main.level._spawned["arena"][0]
+	m.state = m.State.IDLE
+	m._start_pattern("seal")
+	await _pf(int(0.85 * 120))
+	await _snap("qa-b2-seal")
+	m._cancel_pattern()
+	m.state = m.State.IDLE
+	m._start_pattern("barrier")
+	await _pf(int(0.6 * 120))
+	await _snap("qa-b2-barrier")
+	await _goto("f3")
+	p.global_position = Vector2(1000, 300)
+	await _pf(40)
+	var keeper: Node = null
+	for e in main.level._spawned.get("r2", []):
+		if e.has_method("_lay_zone"):
+			keeper = e
+	if keeper:
+		keeper._lay_zone()
+	await _pf(10)
+	await _snap("qa-f3-incense")
+	await _goto("b3")
+	p.global_position = Vector2(430, 300)
+	await _pf(4)
+	var el = main.level._spawned["arena"][0]
+	el.state = el.State.IDLE
+	el._start_pattern("prayer")
+	await _pf(int(0.9 * 120))
+	await _snap("qa-b3-prayer")
+	el._cancel_pattern()
+	el.state = el.State.IDLE
+	el._start_pattern("sweep")
+	await _pf(int(0.40 * 120))
+	await _snap("qa-b3-sweep")
 	await _snap("qa-f1-archer")
 	p.global_position = Vector2(1560, 300)
 	await _pf(40)

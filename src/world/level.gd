@@ -76,7 +76,11 @@ func build(d: Dictionary, p: Player, cam: Camera2D) -> void:
 	for pr in d.get("props", []):
 		_build_prop(pr)
 	for rd in d.get("rooms", []):
-		rooms.append({"id": String(rd.id), "name": String(rd.get("name", "")), "x0": float(rd.x0), "x1": float(rd.x1), "lock": bool(rd.get("lock", false)), "enemies": rd.get("enemies", []), "lines": rd.get("lines", []), "entered": false})
+		var room := {"id": String(rd.id), "name": String(rd.get("name", "")), "x0": float(rd.x0), "x1": float(rd.x1), "lock": bool(rd.get("lock", false)), "enemies": rd.get("enemies", []), "lines": rd.get("lines", []), "entered": false}
+		if rd.has("lines_after"):
+			room.lines_after = rd.lines_after
+			room.lines_flag = String(rd.get("lines_flag", ""))
+		rooms.append(room)
 	for r in rooms:   # normal enemies are placed now and sleep; crossing the room line wakes them
 		if r.enemies.is_empty() or cleared(r.id):
 			continue
@@ -94,7 +98,7 @@ func build(d: Dictionary, p: Player, cam: Camera2D) -> void:
 
 
 func _pre_placed(e: Dictionary) -> bool:
-	return String(e.type) in ["soldier", "archer"]
+	return String(e.type) in ["soldier", "archer", "shield", "mage", "incense"]
 
 
 func _alive(list: Array) -> int:
@@ -188,6 +192,22 @@ func _build_prop(pr: Dictionary) -> void:
 			node = Node2D.new()
 			node.set_script(preload("res://src/world/prop_anim.gd"))
 			node.clip = String(pr.get("clip", "disciple_mark"))
+		"hazard":
+			node = Node2D.new()
+			node.set_script(preload("res://src/world/hazard_plate.gd"))
+			node.phase = float(pr.get("phase", 0.0))
+		"rescue":
+			node = Node2D.new()
+			node.set_script(preload("res://src/world/rescue.gd"))
+			node.rescue_id = String(pr.id)
+			node.who = String(pr.get("who", "disciple_m"))
+			node.exit_dir = float(pr.get("exit", -1.0))
+		"pickup":
+			node = Node2D.new()
+			node.set_script(preload("res://src/world/pickup.gd"))
+			node.kind = String(pr.get("kind", "tonic"))
+			node.pickup_id = String(pr.id)
+			node.text = String(pr.get("text", ""))
 		_:
 			return
 	node.position = Vector2(x, y)
@@ -219,7 +239,10 @@ func _physics_process(_dt: float) -> void:
 
 func _enter_room(r: Dictionary) -> void:
 	active_room = r
-	for line in r.lines:
+	var lines: Array = r.lines
+	if r.has("lines_after") and Game.flag(String(r.get("lines_flag", ""))):
+		lines = r.lines_after
+	for line in lines:
 		Dialogue.say(String(line[0]), String(line[1]))
 	if r.enemies.is_empty() or cleared(r.id):
 		return
@@ -251,10 +274,20 @@ func _spawn_enemy(e: Dictionary) -> Node2D:
 			n = Node2D.new()
 			n.set_script(preload("res://src/enemies/scout_archer.gd"))
 			n.human = bool(e.get("human", false))
-		"tianel":
+		"shield":
 			n = Node2D.new()
-			n.set_script(preload("res://src/boss/tianel.gd"))
+			n.set_script(preload("res://src/enemies/shield_soldier.gd"))
+		"mage":
+			n = Node2D.new()
+			n.set_script(preload("res://src/enemies/mage.gd"))
+		"incense":
+			n = Node2D.new()
+			n.set_script(preload("res://src/enemies/incense_keeper.gd"))
+		"tianel", "mireille", "elodie":
+			n = Node2D.new()
+			n.set_script(load("res://src/boss/%s.gd" % {"tianel": "tianel", "mireille": "boss_mireille", "elodie": "boss_elodie"}[String(e.type)]))
 			n.perches = data.get("perches", [])
+			n.lanes = data.get("lanes", [])
 			n.arena_left = float(active_room.x0) + 40.0
 			n.arena_right = float(active_room.x1) - 40.0
 			boss_spawned.emit(n)

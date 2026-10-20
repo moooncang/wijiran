@@ -181,6 +181,56 @@ func _draw_body() -> void:
 	pass
 
 
+## Hitbox-exact translucent red dot field filling in toward the strike (shared by bosses, mages, hazards).
+static func draw_telegraph(node: CanvasItem, local: Rect2, unparryable: bool, progress: float) -> void:
+	var alpha := 0.28 + 0.45 * progress
+	var dot := Color(1.0, 0.22, 0.2, alpha)
+	var pitch := 8.0 if progress < 0.5 else 5.0
+	var y := local.position.y + 2.0
+	var row := 0
+	while y < local.end.y - 1.0:
+		var x := local.position.x + 2.0 + (pitch * 0.5 if row % 2 == 1 else 0.0)
+		while x < local.end.x - 1.0:
+			node.draw_rect(Rect2(x, y, 2, 2), dot)
+			x += pitch
+		y += pitch
+		row += 1
+	node.draw_rect(local, Color(1.0, 0.3, 0.25, 0.55 + 0.4 * progress), false, 2.0)
+	if progress > 0.75:
+		node.draw_rect(local.grow(2.0), Color(1.0, 0.85, 0.7, (progress - 0.75) * 2.0), false, 1.0)
+	if unparryable:
+		node.draw_rect(Rect2(local.position.x, local.end.y - 3.0, local.size.x, 3.0), Color(1.0, 0.25, 0.2, 0.7 + 0.3 * progress))
+
+
+## Same field clipped to a disc (정화 기도 등 원형 판정).
+static func draw_telegraph_disc(node: CanvasItem, centre: Vector2, r: float, progress: float) -> void:
+	var alpha := 0.28 + 0.45 * progress
+	var dot := Color(1.0, 0.22, 0.2, alpha)
+	var pitch := 8.0 if progress < 0.5 else 5.0
+	var y := centre.y - r
+	var row := 0
+	while y < centre.y + r:
+		var x := centre.x - r + (pitch * 0.5 if row % 2 == 1 else 0.0)
+		while x < centre.x + r:
+			if Vector2(x, y).distance_to(centre) <= r:
+				node.draw_rect(Rect2(x, y, 2, 2), dot)
+			x += pitch
+		y += pitch
+		row += 1
+	node.draw_arc(centre, r, 0.0, TAU, 48, Color(1.0, 0.3, 0.25, 0.55 + 0.4 * progress), 2.0)
+
+
+## Greybox humanoid (no sheet yet): body, head, legs; faces `facing`.
+static func draw_figure(node: CanvasItem, h: float, body: Color, head: Color, facing: float, alive := true) -> void:
+	var a := 1.0 if alive else 0.35
+	var b := Color(body.r, body.g, body.b, a)
+	node.draw_rect(Rect2(-9, -h * 0.72, 18, h * 0.5), b)
+	node.draw_rect(Rect2(-7, -h * 0.22, 5, h * 0.22), b)
+	node.draw_rect(Rect2(2, -h * 0.22, 5, h * 0.22), b)
+	node.draw_circle(Vector2(0, -h * 0.84), h * 0.13, Color(head.r, head.g, head.b, a))
+	node.draw_rect(Rect2(facing * 6.0 - 1.0, -h * 0.86, 2, 2), Color(0.1, 0.05, 0.08, a))
+
+
 ## Up to 3 dark-red diamonds beside the torso (shared with dummies).
 static func _draw_injury(node: CanvasItem, stacks: int, at: Vector2) -> void:
 	for i in stacks:

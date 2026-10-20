@@ -10,7 +10,7 @@ var _name: Label
 var _panel: Panel
 var _portrait: TextureRect
 var _frame: NinePatchRect
-const PORTRAITS := {"위지란": "portrait_wi_jiran_neutral", "티아넬": "portrait_tianel_cold", "제자": "portrait_disciple", "레나타": "portrait_renata"}
+const PORTRAITS := {"위지란": "portrait_wi_jiran_neutral", "티아넬": "portrait_tianel_cold", "제자": "portrait_disciple", "레나타": "portrait_renata", "구출된 제자": "portrait_disciple_f"}
 
 
 func _ready() -> void:

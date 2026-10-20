@@ -8,7 +8,13 @@ class_name BossBase
 ##    "moves": [{"from", "to", "dist"|"to_perch", "leap"}], "retargets": [t], "variant_of": id}
 ## Strike shapes: F(w,h,z) forward box, B(r,h,z) both sides, MOVE = F that follows the boss,
 ## PROJ {count, spread, speed, raw} arrows toward the aim locked at (t - lock_lead),
-## WAVE {w, h, speed, travel} a floor box travelling forward for `travel` seconds.
+## WAVE {w, h, speed, travel, purify} a floor box travelling forward for `travel` seconds.
+## ZONE {w, h, lock} a floor box at the player's position captured at pattern time `lock` (never tracks after);
+## LANE {lane: "player"|"other"|int, h, lock} one of the arena's floor sections (level data `lanes`, else 3 equal);
+## AURA {r, tick, dur, purify} a disc around the boss that hits every `tick` s while it lasts;
+## BARRIER {hold} raises the front plate: front hits that are not injury bursts deal half for `hold` s,
+## then 0.6 s of recovery in which no pattern starts. Moves may {"blink": "far"} = teleport to the lane
+## farthest from the player (or a perch, 40%).
 ## Telegraphs: hitbox-exact translucent red dot fields that fill in toward the strike; PROJ draws the
 ## locked aim line; head icon per class. Hit times are data, never animation.
 
@@ -40,6 +46,12 @@ var late := false
 var beaten := false
 var fx_scale := 1.0                  # bosses: effect clips drawn this many times larger
 var _rain: Array = []                # [{x, t_hit, hit_id, s, done}] falling arrow columns
+var lanes: Array = []                # [[x0, x1], ...] floor sections for LANE strikes
+var floor_y := 300.0                 # the arena floor (ground_y moves with perches)
+var barrier_left := 0.0
+var barrier_recover := 0.0
+var _zone_rects: Dictionary = {}     # strike id → resolved ZONE/LANE rect
+var _used_lanes: Array = []
 
 var pattern_id := ""
 var pattern: Dictionary = {}
@@ -71,6 +83,7 @@ func _setup() -> void:
 		if a.begins_with("--seed="):
 			seed_value = int(a.substr(7))
 	rng.seed = seed_value
+	floor_y = ground_y
 	_boss_setup()
 
 
@@ -98,8 +111,8 @@ func reset_state() -> void:
 	last_was_move = false
 	variation_counter = 0
 	_chain_next = ""
-	for w in _waves:
-		pass
+	barrier_left = 0.0
+	barrier_recover = 0.0
 	_waves.clear()
 
 
@@ -115,13 +128,30 @@ func invulnerable() -> bool:
 
 # ---------- hits ----------
 
-func _on_damaged(_r: Dictionary, _push: float) -> void:
+func _on_damaged(r: Dictionary, _push: float) -> void:
+	if barrier_left > 0.0 and int(r.get("burst", 0)) == 0 and status.alive() and player and (player.global_position.x - global_position.x) * facing > 0.0:
+		var refund := int(r.hp_damage) - int(r.hp_damage) / 2   # 가설 장벽: half of a front hit; 내상 폭발 passes
+		status.hp = minf(max_hp, status.hp + refund)
+		r.hp_damage = int(r.hp_damage) - refund
+		_on_barrier_hit()
 	if not late and status.hp <= max_hp * late_fraction and status.alive():
 		late = true
 		_on_late()
 
 
 func _on_late() -> void:
+	pass
+
+
+func _on_barrier_hit() -> void:
+	pass
+
+
+func _on_barrier_down() -> void:
+	pass
+
+
+func _on_blink() -> void:
 	pass
 
 
@@ -175,13 +205,21 @@ func _ai(dt: float) -> void:
 		cooldowns[k] = maxf(0.0, cooldowns[k] - dt)
 	_step_waves(dt)
 	_step_rain(dt)
+	if barrier_left > 0.0:
+		barrier_left = maxf(0.0, barrier_left - dt)
+		if barrier_left == 0.0:
+			barrier_recover = 0.6
+			_on_barrier_down()
+	barrier_recover = maxf(0.0, barrier_recover - dt)
 	match state:
 		State.INTRO:
 			if state_time >= intro_time:
 				_enter(State.IDLE)
 		State.IDLE:
 			facing = -1.0 if player.global_position.x < global_position.x else 1.0
-			if _chain_next != "" or state_time >= decision_wait:
+			if barrier_recover > 0.0:
+				pass   # the plate just fell: open for 0.6 s
+			elif _chain_next != "" or state_time >= decision_wait:
 				_decide()
 		State.PATTERN:
 			_step_pattern(dt)
@@ -284,6 +322,8 @@ func _start_pattern(id: String) -> void:
 	_flashed.clear()
 	_fx_done.clear()
 	_retargets_done.clear()
+	_zone_rects.clear()
+	_used_lanes.clear()
 	_aim_locked = false
 	for m in pattern.get("moves", []):
 		m.erase("px")
@@ -331,6 +371,10 @@ func _step_pattern(dt: float) -> void:
 			if before < f and pattern_time >= f:
 				_teleport_to_perch(m)
 			continue
+		if m.has("blink"):
+			if before < f and pattern_time >= f:
+				_blink()
+			continue
 		if pattern_time > f and before < to:
 			if not m.has("px"):
 				m.px = _resolve_dist(m)
@@ -352,6 +396,21 @@ func _step_pattern(dt: float) -> void:
 		var dur := float(s.dur)
 		var hid := int(s.id)
 		var shape := String(s.shape)
+		if shape in ["ZONE", "LANE"] and not _zone_rects.has(hid) and pattern_time >= float(s.get("lock", 0.0)):
+			_zone_rects[hid] = _resolve_zone(s)
+		if shape == "AURA" and pattern_time >= t and pattern_time < t + dur:
+			var centre := global_position + Vector2(0, -30)
+			var hr := player.hurt_rect()
+			var nearest := Vector2(clampf(centre.x, hr.position.x, hr.end.x), clampf(centre.y, hr.position.y, hr.end.y))
+			if nearest.distance_to(centre) <= float(s.r):
+				if bool(s.get("purify", false)):
+					player.purify(0.5)
+				var k := hid * 100 + int((pattern_time - t) / float(s.get("tick", 0.35)))
+				if not _fired.has(k):
+					_fired[k] = true
+					var tick_s: Dictionary = s.duplicate()
+					tick_s.id = k   # each tick is its own hit for the player's ledger
+					_deliver(tick_s, centre)
 		if shape == "PROJ" and not _aim_locked and pattern_time >= t - float(s.get("lock_lead", 0.15)):
 			_aim = (player.global_position + Vector2(0, -24) - _muzzle()).normalized()
 			_aim_locked = true
@@ -373,7 +432,9 @@ func _step_pattern(dt: float) -> void:
 						_waves.append(_make_wave(r2, -facing * float(s.speed), float(s.travel), hid * 100, back))
 				"RAIN":
 					_start_rain(s)
-		if shape in ["F", "B", "MOVE"] and pattern_time >= t and pattern_time < t + dur and not _fired.has(hid):
+				"BARRIER":
+					barrier_left = float(s.get("hold", 2.5))
+		if shape in ["F", "B", "MOVE", "ZONE", "LANE"] and pattern_time >= t and pattern_time < t + dur and not _fired.has(hid):
 			if _zone_rect(s).intersects(player.hurt_rect()):
 				_fired[hid] = true
 				_deliver(s, _zone_origin(s))
@@ -407,6 +468,67 @@ func _teleport_to_perch(m: Dictionary) -> void:
 
 func _on_perch() -> void:
 	pass
+
+
+## Floor sections for LANE strikes: level data, else three equal parts of the arena.
+func _lanes() -> Array:
+	if not lanes.is_empty():
+		return lanes
+	var x0 := arena_left - 40.0
+	var w := (arena_right + 40.0 - x0) / 3.0
+	return [[x0, x0 + w], [x0 + w, x0 + 2.0 * w], [x0 + 2.0 * w, x0 + 3.0 * w]]
+
+
+func _lane_of(x: float) -> int:
+	var ls := _lanes()
+	for i in ls.size():
+		if x >= float(ls[i][0]) and x < float(ls[i][1]):
+			return i
+	return 0 if x < float(ls[0][0]) else ls.size() - 1
+
+
+func _resolve_zone(s: Dictionary) -> Rect2:
+	var h := float(s.get("h", 40.0))
+	if String(s.shape) == "ZONE":
+		var w := float(s.get("w", 100.0))
+		var cx := clampf(player.global_position.x, arena_left - 40.0 + w * 0.5, arena_right + 40.0 - w * 0.5)
+		return Rect2(cx - w * 0.5, floor_y - h, w, h)
+	var ls := _lanes()
+	var idx := 0
+	var pick = s.get("lane", "player")
+	if pick is String and String(pick) == "other":
+		var pl := _lane_of(player.global_position.x)
+		var options: Array = []
+		for i in ls.size():
+			if i != pl and not _used_lanes.has(i):
+				options.append(i)
+		idx = options[rng.randi() % options.size()] if not options.is_empty() else pl
+	elif pick is String:
+		idx = _lane_of(player.global_position.x)
+	else:
+		idx = int(pick)
+	_used_lanes.append(idx)
+	return Rect2(float(ls[idx][0]), floor_y - h, float(ls[idx][1]) - float(ls[idx][0]), h)
+
+
+## 순간이동: the lane centre farthest from the player, or (40%) the farthest perch.
+func _blink() -> void:
+	_on_blink()
+	if not perches.is_empty() and rng.randf() < 0.4:
+		_teleport_to_perch({})
+		return
+	var ls := _lanes()
+	var best := 0
+	var bd := -1.0
+	for i in ls.size():
+		var cx := (float(ls[i][0]) + float(ls[i][1])) * 0.5
+		var d := absf(cx - player.global_position.x)
+		if d > bd:
+			bd = d
+			best = i
+	global_position = Vector2(clampf((float(ls[best][0]) + float(ls[best][1])) * 0.5, arena_left, arena_right), floor_y)
+	ground_y = floor_y
+	facing = -1.0 if player.global_position.x < global_position.x else 1.0
 
 
 func _resolve_dist(m: Dictionary) -> float:
@@ -490,9 +612,12 @@ func _step_waves(dt: float) -> void:
 		w.rect = r
 		if is_instance_valid(w.art):
 			w.art.position = Vector2(r.get_center().x, ground_y)
-		if r.intersects(player.hurt_rect()) and not _fired.has(int(w.hit_id)):
-			_fired[int(w.hit_id)] = true
-			_deliver(w.s, Vector2(r.get_center().x, ground_y))
+		if r.intersects(player.hurt_rect()):
+			if bool(w.s.get("purify", false)):
+				player.purify(0.5)
+			if not _fired.has(int(w.hit_id)):
+				_fired[int(w.hit_id)] = true
+				_deliver(w.s, Vector2(r.get_center().x, ground_y))
 		if w.left > 0.0 and r.position.x > arena_left - 100.0 and r.end.x < arena_right + 100.0:
 			keep.append(w)
 		elif is_instance_valid(w.art):
@@ -515,6 +640,8 @@ func _zone_rect(s: Dictionary) -> Rect2:
 		"B":
 			var r := float(s.r)
 			return Rect2(gx - r, gy - z - h, r * 2.0, h)
+		"ZONE", "LANE":
+			return _zone_rects.get(int(s.get("id", 0)), Rect2())
 	return Rect2()
 
 
@@ -527,6 +654,8 @@ func _wave_rect(s: Dictionary, x: float) -> Rect2:
 func _zone_origin(s: Dictionary) -> Vector2:
 	if int(s.cls) == U:
 		var r := _zone_rect(s)
+		if r.size == Vector2.ZERO:
+			return global_position
 		return Vector2(clampf(player.global_position.x, r.position.x, r.end.x), ground_y)
 	return global_position + _anchor("staff_tip")
 
@@ -547,7 +676,7 @@ func _deliver(s: Dictionary, origin: Vector2) -> void:
 	hit.origin = origin
 	hit.direction = Vector2(facing, 0)
 	hit.raw_direct = float(s.raw)
-	hit.knockback = float(KNOCKBACK[int(s.cls)])
+	hit.knockback = float(s.get("knockback", KNOCKBACK[int(s.cls)]))
 	hit.hitstun = CombatConfig.HURT_STUN
 	hit.parry_class = int(s.cls)
 	hit.posture_damage = float(POSTURE[int(s.cls)])
@@ -587,6 +716,8 @@ func _fire_volley(s: Dictionary) -> void:
 
 
 func _strike_flash(s: Dictionary) -> void:
+	if String(s.shape) in ["BARRIER", "AURA"]:
+		return
 	if String(s.shape) == "PROJ":
 		Juice.fx("mark_flash", _muzzle())
 	else:
@@ -631,6 +762,15 @@ func _draw() -> void:
 					_draw_zone(path, int(s.cls), progress)
 				"RAIN":
 					draw_string(Anim.font, Vector2(-24, hurt_top - 44), "잿비", HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color(1, 0.6, 0.5))
+				"ZONE", "LANE":
+					if _zone_rects.has(hid):
+						var lock_t := maxf(w0, float(s.get("lock", 0.0)))
+						var zp := clampf((pattern_time - lock_t) / maxf(0.05, float(s.t) - lock_t), 0.0, 1.0)
+						_draw_zone(_zone_rects[hid], int(s.cls), zp)
+				"AURA":
+					draw_telegraph_disc(self, Vector2(0, -30), float(s.r), progress)
+				"BARRIER":
+					pass
 				_:
 					_draw_zone(_zone_rect(s), int(s.cls), progress)
 		var nxt := _next_strike()
@@ -638,6 +778,14 @@ func _draw() -> void:
 			var icon: String = ["!", "!!", "X"][int(nxt.cls)]
 			var col: Color = [Color(1, 0.96, 0.88), Color(1, 0.7, 0.28), Color(0.85, 0.83, 0.78)][int(nxt.cls)]
 			draw_string(Anim.font, Vector2(-5, hurt_top - 30), icon, HORIZONTAL_ALIGNMENT_LEFT, -1, 14, col)
+	if state == State.PATTERN and not pattern.is_empty():
+		for s in pattern.strikes:
+			if String(s.shape) == "AURA" and _fx_done.has(int(s.id)) and pattern_time < float(s.t) + float(s.dur):
+				draw_arc(Vector2(0, -30), float(s.r), 0.0, TAU, 48, Color(1.0, 1.0, 1.0, 0.5 + 0.3 * sin(pattern_time * 20.0)), 3.0)
+	if barrier_left > 0.0:
+		var bx := 12.0 if facing > 0.0 else -32.0
+		draw_rect(Rect2(bx, -100, 20, 90), Color(0.6, 0.8, 1.0, 0.35))
+		draw_rect(Rect2(bx, -100, 20, 90), Color(0.75, 0.9, 1.0, 0.9), false, 2.0)
 	for w in _waves:
 		var r: Rect2 = w.rect
 		draw_rect(Rect2(r.position - global_position, r.size), Color(1.0, 0.3, 0.2, 0.6))
@@ -660,21 +808,4 @@ func _draw_aim(s: Dictionary, progress: float) -> void:
 
 
 func _draw_zone(r: Rect2, cls: int, progress: float) -> void:
-	var local := Rect2(r.position - global_position, r.size)
-	var alpha := 0.28 + 0.45 * progress
-	var dot := Color(1.0, 0.22, 0.2, alpha)
-	var pitch := 8.0 if progress < 0.5 else 5.0
-	var y := local.position.y + 2.0
-	var row := 0
-	while y < local.end.y - 1.0:
-		var x := local.position.x + 2.0 + (pitch * 0.5 if row % 2 == 1 else 0.0)
-		while x < local.end.x - 1.0:
-			draw_rect(Rect2(x, y, 2, 2), dot)
-			x += pitch
-		y += pitch
-		row += 1
-	draw_rect(local, Color(1.0, 0.3, 0.25, 0.55 + 0.4 * progress), false, 2.0)
-	if progress > 0.75:
-		draw_rect(local.grow(2.0), Color(1.0, 0.85, 0.7, (progress - 0.75) * 2.0), false, 1.0)
-	if cls == U:
-		draw_rect(Rect2(local.position.x, local.end.y - 3.0, local.size.x, 3.0), Color(1.0, 0.25, 0.2, 0.7 + 0.3 * progress))
+	draw_telegraph(self, Rect2(r.position - global_position, r.size), cls == U, progress)
