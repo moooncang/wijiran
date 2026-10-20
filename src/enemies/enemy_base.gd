@@ -51,6 +51,11 @@ var _died_emitted := false
 var ground_y := 300.0
 var _pull_to := Vector2.ZERO
 var _pull_left := 0.0
+var room_x0 := -INF            # home room (level sets both): outside it + LEASH the enemy breaks off and walks home
+var room_x1 := INF
+var home_x := NAN
+const LEASH := 140.0
+const LEASH_WALK := 80.0
 var _over: Node2D
 
 
@@ -151,7 +156,24 @@ func _physics_process(dt: float) -> void:
 		return
 	if not active or player == null:
 		return
+	if not status.is_boss and (player.global_position.x < room_x0 - LEASH or player.global_position.x > room_x1 + LEASH):
+		_leash(dt)
+		return
 	_ai(dt)
+
+
+## The player left the room: drop the attack, walk back to the spawn spot, wait there (no cross-room chases,
+## no aiming from off-screen).
+func _leash(dt: float) -> void:
+	_cancel_attack()
+	if is_nan(home_x):
+		home_x = global_position.x
+	var dx := home_x - global_position.x
+	if absf(dx) > 4.0:
+		facing = signf(dx)
+		global_position.x += facing * minf(LEASH_WALK * dt, absf(dx))
+	else:
+		facing = -1.0 if player.global_position.x < global_position.x else 1.0
 
 
 ## 월인: yanked next to the player over 0.16 s; whatever it was doing is cut (bosses never receive this).

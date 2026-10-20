@@ -36,6 +36,15 @@ func _run() -> void:
 	if suite == "qa":
 		await _qa()
 		return
+	if suite == "walk":
+		var bot := Node.new()
+		bot.set_script(preload("res://tests/walk_bot.gd"))
+		bot.main = main
+		add_child(bot)
+		await bot.run()
+		print("WALK anomalies %d %s" % [bot.anomalies.size(), bot.anomalies])
+		get_tree().quit(0)
+		return
 	if suite in ["all", "palm"]:
 		await _palm()
 	if suite in ["all", "save"]:

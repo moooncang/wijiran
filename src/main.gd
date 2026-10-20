@@ -12,6 +12,7 @@ var cam: Camera2D
 var hud: Control
 var boss_hud: Control
 var palm_menu: Control
+var pause_menu: Control
 var touch_controls: Control
 var notice_box: Control        # Game.notice toast: one at a time, centred panel from NOTICE_Y
 var notice_rect := Rect2()     # the toast's panel as last drawn (screen px; meaningful while _notice_text != "")
@@ -58,6 +59,12 @@ func _ready() -> void:
 	_setup_input()
 	Juice.world = self
 	var args := OS.get_cmdline_user_args()
+	if OS.has_feature("web"):   # ?level=f1&spawn=start&wipe&touch → the same switches as the command line (QA)
+		var q = JavaScriptBridge.eval("location.search", true)
+		if q is String:
+			for part in String(q).trim_prefix("?").split("&"):
+				if part != "":
+					args.append("--" + part)
 	if "--wipe" in args:
 		Game.wipe_save()
 	player = Player.new()
@@ -446,6 +453,9 @@ func _build_ui() -> void:
 	palm_menu = Control.new()
 	palm_menu.set_script(preload("res://src/ui/palm_menu.gd"))
 	menu_layer.add_child(palm_menu)
+	pause_menu = Control.new()
+	pause_menu.set_script(preload("res://src/ui/pause_menu.gd"))
+	menu_layer.add_child(pause_menu)
 	add_child(menu_layer)
 	# notices sit above the palm menu (equipping raises "「X」 장착"; drawn under its panels while open)
 	# and below the travel fade
@@ -483,7 +493,7 @@ func _build_ui() -> void:
 
 
 func _touch_device() -> bool:
-	if "--touch" in OS.get_cmdline_user_args():
+	if "--touch" in OS.get_cmdline_user_args() or (OS.has_feature("web") and "touch" in String(JavaScriptBridge.eval("location.search", true))):
 		return true
 	return OS.has_feature("mobile_build")
 
@@ -492,7 +502,7 @@ func _setup_input() -> void:
 	var map := {
 		"move_left": [KEY_A, KEY_LEFT], "move_right": [KEY_D, KEY_RIGHT], "jump": [KEY_W],
 		"dash": [KEY_SHIFT], "walk": [KEY_CTRL], "crouch": [KEY_S], "attack_key": [KEY_J, KEY_X], "reset": [KEY_R],
-		"parry": [KEY_SPACE], "heavy_attack": [KEY_E], "ultimate": [KEY_Q], "interact": [KEY_UP, KEY_W], "menu": [KEY_TAB], "skill_pull": [KEY_F],
+		"parry": [KEY_SPACE], "heavy_attack": [KEY_E], "ultimate": [KEY_Q], "interact": [KEY_UP, KEY_W], "menu": [KEY_TAB], "skill_pull": [KEY_F], "pause": [KEY_ESCAPE],
 	}
 	for action in map:
 		if InputMap.has_action(action):

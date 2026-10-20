@@ -100,7 +100,7 @@ func build(d: Dictionary, p: Player, cam: Camera2D) -> void:
 		var list: Array = []
 		for e in r.enemies:
 			if _pre_placed(e):
-				var n := _spawn_enemy(e)
+				var n := _spawn_enemy(e, r)
 				if n:
 					list.append(n)
 		_spawned[r.id] = list
@@ -270,12 +270,12 @@ func _enter_room(r: Dictionary) -> void:
 	var list: Array = _spawned.get(r.id, [])
 	for e in r.enemies:
 		if not _pre_placed(e):
-			var n := _spawn_enemy(e)
+			var n := _spawn_enemy(e, r)
 			if n:
 				list.append(n)
 	_spawned[r.id] = list
 	for n in list:
-		if is_instance_valid(n) and not n.active and n.status.alive():
+		if is_instance_valid(n) and n.get("active") != true and n.status.alive():   # the demo master has no active flag
 			n.activate(player)
 	_enemy_count = _alive(list)
 	if _enemy_count == 0:
@@ -284,7 +284,7 @@ func _enter_room(r: Dictionary) -> void:
 		_lock(r)
 
 
-func _spawn_enemy(e: Dictionary) -> Node2D:
+func _spawn_enemy(e: Dictionary, r: Dictionary = {}) -> Node2D:
 	var n: Node2D
 	match String(e.type):
 		"soldier":
@@ -319,6 +319,10 @@ func _spawn_enemy(e: Dictionary) -> Node2D:
 		_:
 			return null
 	n.position = Vector2(float(e.x), float(e.get("y", ground_y)))
+	if not r.is_empty() and n.get("room_x0") != null:
+		n.room_x0 = float(r.x0)
+		n.room_x1 = float(r.x1)
+		n.home_x = float(e.x)
 	n.died.connect(_on_enemy_died)
 	add_child(n)
 	return n

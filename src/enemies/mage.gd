@@ -119,6 +119,8 @@ func _retreat_space() -> float:
 	var lv = Game.level
 	if lv and (target < lv.player.world_min_x + 30.0 or target > lv.player.world_max_x - 30.0):
 		return 0.0
+	if target < room_x0 + 20.0 or target > room_x1 - 20.0:   # never hops out of its own room
+		return 0.0
 	return away
 
 

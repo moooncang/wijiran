@@ -22,6 +22,8 @@ const FADED := 0.3         # fill alpha of a control with something under it (it
 const LABEL_FADED := 0.75  # a faded control's name never drops below this, so it reads over busy scenery
 const OVERHEAD := 18.0     # px above an enemy's hurt_top: its HP bar and 무방비 tag
 const COMBAT_ONLY := ["attack", "heavy", "pull", "ult", "parry"]
+const MENU_C := Vector2(28, 28)   # ≡ pause button, top-left (outside the button zone and the status block)
+const MENU_R := 18.0
 const HazardPlate := preload("res://src/world/hazard_plate.gd")
 # name: [centre (viewport px), radius, action, label]
 const BUTTONS := {
@@ -65,6 +67,12 @@ func _input(event: InputEvent) -> void:
 		var idx: int = event.index
 		if event.pressed:
 			if get_tree().paused or _dead() or _card() > 0.0:   # palm menu: it takes its own taps; dead / card: nothing to drive
+				return
+			if event.position.distance_to(MENU_C) <= MENU_R + SLOP:
+				var pm := get_tree().get_first_node_in_group("pause_menu")
+				if pm:
+					pm.open()
+				get_viewport().set_input_as_handled()
 				return
 			var b := _button_at(event.position)
 			if b != "":
@@ -297,6 +305,11 @@ func _draw() -> void:
 	var dead := _dead()
 	var dim := 0.25 if dead else 1.0   # dead: inert, faint under the death card
 	var pulse := 0.5 + 0.5 * sin(Time.get_ticks_msec() * 0.006)
+	# ≡ pause
+	draw_circle(MENU_C, MENU_R, Color(0.12, 0.08, 0.12, 0.55 * dim))
+	draw_arc(MENU_C, MENU_R, 0.0, TAU, 24, Color(1, 0.9, 0.8, 0.6 * dim), 1.5)
+	for i in 3:
+		draw_rect(Rect2(MENU_C.x - 7.0, MENU_C.y - 6.0 + i * 5.0, 14.0, 2.0), Color(1, 0.97, 0.92, 0.9 * dim))
 	# stick
 	var active := pad_touch >= 0
 	var base := _pad_base()
