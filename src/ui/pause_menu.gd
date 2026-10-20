@@ -73,6 +73,11 @@ func _rows() -> Array:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("pause"):
+		var palms := get_tree().get_first_node_in_group("palm_menu")
+		if not _open and palms and palms.visible:   # Esc in the palm menu just closes it
+			palms.close()
+			get_viewport().set_input_as_handled()
+			return
 		if _open:
 			if page == "main":
 				close()
@@ -174,7 +179,7 @@ func _draw() -> void:
 			var where := String(lv.data.get("name", "")) if lv else ""
 			UiText.centered(self, cx, 136, where, UiText.sz(UiText.S), UiText.DIM, 0)
 			_draw_rows(cx, 170)
-			var hint := "W/S 선택 · J/Enter 결정 · Esc 닫기" if not UiText.touch else "항목을 누르세요 · ≡ 닫기"
+			var hint := "W/S 선택 · J/Enter 결정 · Esc 닫기" if not UiText.touch else "항목을 누르세요 · 계속하기로 돌아갑니다"
 			UiText.centered(self, cx, vp.y - 24, hint, UiText.sz(UiText.XS), UiText.DIM, 0)
 
 

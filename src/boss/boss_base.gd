@@ -557,7 +557,7 @@ func _start_rain(s: Dictionary) -> void:
 	for i in n:
 		var col := {"x": arena_left + (i + 0.5) * w, "w": w, "t_hit": 0.55, "safe": safes.has(i), "hit_id": int(s.id) * 1000 + i, "s": s, "fired": false, "art": null}
 		if not col.safe and Anim.effects.has("ash_rain_warn"):
-			col.art = Juice.fx("ash_rain_warn", Vector2(col.x, ground_y))
+			col.art = Juice.fx("ash_rain_warn", Vector2(col.x, floor_y))
 		_rain.append(col)
 
 
@@ -569,7 +569,7 @@ func _step_rain(dt: float) -> void:
 			r.fired = true
 			var p := Node2D.new()
 			p.set_script(preload("res://src/enemies/projectile.gd"))
-			p.position = Vector2(r.x, ground_y - float(r.s.get("h", 400.0)))
+			p.position = Vector2(r.x, floor_y - float(r.s.get("h", 400.0)))
 			p.velocity = Vector2(0, float(r.s.get("speed", 800.0)))
 			p.shooter = self
 			p.radius = 7.0
@@ -600,7 +600,7 @@ func _make_wave(rect: Rect2, vx: float, travel: float, hid: int, s: Dictionary) 
 	var w := {"rect": rect, "vx": vx, "left": travel, "hit_id": hid, "s": s, "art": null}
 	var clip := String(s.get("clip", ""))
 	if clip != "" and Anim.effects.has(clip):
-		w.art = Juice.fx(clip, Vector2(rect.get_center().x, ground_y), Vector2(signf(vx), 0))
+		w.art = Juice.fx(clip, Vector2(rect.get_center().x, floor_y), Vector2(signf(vx), 0))
 	return w
 
 
@@ -612,13 +612,13 @@ func _step_waves(dt: float) -> void:
 		r.position.x += float(w.vx) * dt
 		w.rect = r
 		if is_instance_valid(w.art):
-			w.art.position = Vector2(r.get_center().x, ground_y)
+			w.art.position = Vector2(r.get_center().x, floor_y)
 		if r.intersects(player.hurt_rect()):
 			if bool(w.s.get("purify", false)):
 				player.purify(0.5)
 			if not _fired.has(int(w.hit_id)):
 				_fired[int(w.hit_id)] = true
-				_deliver(w.s, Vector2(r.get_center().x, ground_y))
+				_deliver(w.s, Vector2(r.get_center().x, floor_y))
 		if w.left > 0.0 and r.position.x > arena_left - 100.0 and r.end.x < arena_right + 100.0:
 			keep.append(w)
 		elif is_instance_valid(w.art):
@@ -649,7 +649,7 @@ func _zone_rect(s: Dictionary) -> Rect2:
 func _wave_rect(s: Dictionary, x: float) -> Rect2:
 	var w := float(s.get("w", 40.0))
 	var h := float(s.get("h", 22.0))
-	return Rect2(x + (12.0 if facing > 0.0 else -12.0 - w), ground_y - h, w, h)
+	return Rect2(x + (12.0 if facing > 0.0 else -12.0 - w), floor_y - h, w, h)
 
 
 func _zone_origin(s: Dictionary) -> Vector2:
@@ -657,7 +657,7 @@ func _zone_origin(s: Dictionary) -> Vector2:
 		var r := _zone_rect(s)
 		if r.size == Vector2.ZERO:
 			return global_position
-		return Vector2(clampf(player.global_position.x, r.position.x, r.end.x), ground_y)
+		return Vector2(clampf(player.global_position.x, r.position.x, r.end.x), floor_y)
 	return global_position + _anchor("staff_tip")
 
 
@@ -810,7 +810,7 @@ func _draw_telegraphs() -> void:
 		if r.safe or r.fired:
 			continue
 		var prog := clampf(1.0 - r.t_hit / 0.55, 0.0, 1.0)
-		_draw_zone(Rect2(float(r.x) - float(r.w) * 0.5 + 3.0, ground_y - 400.0, float(r.w) - 6.0, 400.0), U, prog)
+		_draw_zone(Rect2(float(r.x) - float(r.w) * 0.5 + 3.0, floor_y - 400.0, float(r.w) - 6.0, 400.0), U, prog)
 
 
 func _draw_aim(s: Dictionary, progress: float) -> void:

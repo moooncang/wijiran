@@ -36,6 +36,18 @@ func _run() -> void:
 	if suite == "qa":
 		await _qa()
 		return
+	if suite == "deathprobe":
+		await _goto("f2")
+		var p := _player()
+		Game.reach_checkpoint("f2", "mid")
+		p.global_position = Vector2(2118, 300)
+		await _pf(int(0.5 * 120))
+		p._take_damage(999)
+		for i in 14:
+			await _pf(60)
+			print("probe t=%.1f dead=%s x=%.0f hp=%d death_t=%.2f fade_t=%.2f level=%s" % [i * 0.5, p.dead, p.global_position.x, p.hp, main._death_t, main._fade_t, main.level.id])
+		get_tree().quit(0)
+		return
 	if suite == "walk":
 		var bot := Node.new()
 		bot.set_script(preload("res://tests/walk_bot.gd"))
@@ -61,6 +73,8 @@ func _run() -> void:
 		await _pull()
 	if suite in ["all", "tutorial"]:
 		await _tutorial()
+	if suite in ["all", "menu"]:
+		await _menu()
 	if suite in ["all", "minions"]:
 		await _minions()
 	if suite in ["all", "mireille"]:
@@ -422,6 +436,40 @@ func _tianel() -> void:
 	boss.on_hit({"hp_damage": 0, "burst": 0, "killed": true}, 1.0, 0.0)
 	await _pf(2)
 	_check(Game.flag("b1_tianel_beaten") and boss.beaten, "tianel: defeat sets the permanent flag")
+
+
+# ---------- 일시정지 메뉴 · 훈련장 ----------
+
+func _menu() -> void:
+	Game.save = Game.default_save()
+	Game.session_flags.clear()
+	await _goto("f1")
+	var p := _player()
+	Game.reach_checkpoint("f1", "mid")
+	Game.set_flag("b1_tianel_beaten")
+	var pm = main.pause_menu
+	pm.open()
+	await _pf(2)
+	_check(pm.visible and Game.paused, "menu: Esc menu opens and pauses")
+	pm._activate("resume")
+	await _pf(2)
+	_check(not pm.visible and not Game.paused, "menu: 계속하기 resumes")
+	pm.open()
+	pm._activate("reset")
+	_check(pm.page == "confirm", "menu: 처음부터 asks for confirmation")
+	pm._activate("back")
+	_check(pm.page == "main" and Game.flag("b1_tianel_beaten"), "menu: 아니요 keeps the progress")
+	pm._activate("reset")
+	pm._activate("wipe")
+	await _pf(int(0.8 * 120))
+	_check(not Game.paused and main.level.id == "t0" and not Game.flag("b1_tianel_beaten") and Game.save.checkpoint.level == "t0" and main.cutscene.visible, "menu: 예 wipes the save and restarts at T0 with the card", "level=%s paused=%s flag=%s cp=%s card=%s seen=%s" % [main.level.id, Game.paused, Game.flag("b1_tianel_beaten"), Game.save.checkpoint.level, main.cutscene.visible, Game.save.skip_intro_seen])
+	# the parry drill master wakes when its room is entered (regression: crashed on a missing field)
+	p.global_position = Vector2(2400, 300)
+	await _pf(6)
+	var master: Node = null
+	for e in main.level._spawned.get("parry_drill", []):
+		master = e
+	_check(master != null and master.get("_active") == true, "drill: entering the yard's drill room activates 목각교두")
 
 
 # ---------- F2 졸개·장치 ----------

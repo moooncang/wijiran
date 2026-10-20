@@ -23,6 +23,11 @@ var _mark_x := -INF
 var _attack_t := 0.0
 var _boss_seen_t := -1.0
 var _fight_x := 0.0
+var snap := false            # --snap (windowed): screenshots at pattern starts, deaths, room entries, every 6 s
+var _snap_n := 0
+var _snap_t := 0.0
+var _last_pattern := ""
+var _last_room := ""
 var _fight_stuck := 0.0
 
 
@@ -67,6 +72,9 @@ func run() -> void:
 	for a in OS.get_cmdline_user_args():
 		if a.begins_with("--from="):
 			step = maxi(0, ORDER.find(a.substr(7)))
+		if a == "--snap":
+			snap = true
+			DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://shots/walk"))
 	main._load_level(ORDER[step], "start")
 	await _pf(3)
 	while step < ORDER.size():
@@ -115,6 +123,8 @@ func _play_level(id: String) -> bool:
 		_level_t += 1.0 / 120.0
 		frames += 1
 		_invariants(id)
+		if snap:
+			await _maybe_snap(id)
 		if p().dead:
 			_release_all()
 			deaths += 1
@@ -214,7 +224,7 @@ func _fight(e: Node) -> void:
 			_boss_seen_t = _level_t
 			if not main.boss_hud.visible:
 				note("boss-no-bar", "boss active but the boss bar is hidden")
-		if _level_t - _boss_seen_t > 2.0:
+		if _level_t - _boss_seen_t > (28.0 if snap else 2.0):   # snapping: watch the patterns for a while
 			say("cheat-kill boss %s" % String(e.get("boss_name")))
 			e.status.hp = 1.0
 			e.on_hit({"hp_damage": 1, "burst": 0, "killed": true}, 1.0, 0.0)
@@ -343,6 +353,34 @@ func _try_move(level: int) -> void:
 			Input.action_release("jump")
 			pl.press_dash(Vector2(1, -0.6).normalized())
 			await _pf(40)
+
+
+func _maybe_snap(id: String) -> void:
+	if _snap_n >= 80:
+		return
+	_snap_t += 1.0 / 120.0
+	var why := ""
+	var room := String(lv().active_room.get("id", ""))
+	if room != _last_room:
+		_last_room = room
+		why = "room-" + room
+	for d in get_tree().get_nodes_in_group("enemy"):
+		if d.get("pattern_id") != null and d.status.is_boss and d.status.alive():
+			var pid := String(d.pattern_id)
+			if pid != "" and pid != _last_pattern and float(d.pattern_time) >= 0.35:
+				_last_pattern = pid
+				why = "pattern-" + pid
+	if p().dead and why == "":
+		why = "death"
+	if why == "" and _snap_t >= 6.0:
+		why = "t%03d" % int(_level_t)
+	if why == "":
+		return
+	_snap_t = 0.0
+	_snap_n += 1
+	await get_tree().process_frame
+	await RenderingServer.frame_post_draw
+	get_tree().get_root().get_viewport().get_texture().get_image().save_png("res://shots/walk/%02d-%s-%s.png" % [_snap_n, id, why])
 
 
 func _invariants(id: String) -> void:

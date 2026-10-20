@@ -156,6 +156,12 @@ func _physics_process(dt: float) -> void:
 		return
 	if not active or player == null:
 		return
+	if player.dead:   # nobody keeps swinging or aiming at a body: the fight is over until the respawn
+		if has_method("_cancel_pattern"):
+			call("_cancel_pattern")
+		else:
+			_cancel_attack()
+		return
 	if not status.is_boss and (player.global_position.x < room_x0 - LEASH or player.global_position.x > room_x1 + LEASH):
 		_leash(dt)
 		return
