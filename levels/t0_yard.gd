@@ -21,7 +21,7 @@ static func data() -> Dictionary:
 		],
 		"ceilings": [Rect2(1000, 60, 270, 180)],   # 2. the broken bridge: 60px headroom over the 90px pit
 		"props": [
-			{"type": "sign", "x": 220, "text": "A/D 이동 · W 점프 · 공중에서 W 허공답월 · Shift 마우스 방향 잔월보"},
+			{"type": "sign", "x": 220, "text": "A/D 이동 · W 점프 · 공중에서 W 허공답월 · Shift(쉬프트) 마우스 방향 잔월보"},
 			{"type": "checkpoint", "x": 300, "id": "yard"},
 			{"type": "npc", "x": 380, "who": "disciple_m", "face": -1.0}, {"type": "npc", "x": 150, "who": "disciple_f", "face": 1.0},
 			{"type": "sign", "x": 480, "text": "무너진 계단: 점프 중에 W 한 번 더 — 허공답월로만 넘는다"},

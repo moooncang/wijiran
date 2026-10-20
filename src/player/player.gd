@@ -51,6 +51,7 @@ const PULL_SPEED := 1100.0
 var pull_cooldown := 0.0
 var pull_target: Node = null
 var pull_left := 0.0            # seconds of self-pull remaining (boss case)
+var pull_candidate: Node = null  # what a right click would pull right now (enemies draw the reticle)
 
 # --- movement ---
 var facing := 1.0
@@ -291,6 +292,39 @@ func press_pull() -> bool:
 	if qi < PULL_QI:
 		_say("내공 부족")
 		return false
+	var origin := _shoulder_world()
+	var best: Node = _pull_candidate()
+	if best == null:
+		_say("월인: 대상 없음")
+		Juice.fx("pull_fail", _hand_world(), aim)
+		return false
+	qi -= PULL_QI
+	pull_cooldown = PULL_COOLDOWN
+	facing = 1.0 if best.global_position.x >= global_position.x else -1.0
+	var target_p: Vector2 = best.global_position + Vector2(0, -24)
+	var to_target: Vector2 = target_p - origin
+	var bd := to_target.length()
+	# the thread: its stretch band (cell x 20..176 = 156px) scaled to the distance, caps kept proportional
+	Juice.fx("pull_thread", origin, to_target.normalized(), facing, false, null, 1.0, Vector2(maxf(0.3, bd / 156.0), 1.6)).set("life", 0.22)
+	_pull_line(origin, target_p)
+	Juice.fx("pull_cast", origin, to_target.normalized(), 1.0, false, null, 1.4)
+	Juice.fx("pull_hook", target_p, to_target.normalized(), 1.0, false, null, 1.8)
+	Juice.flash(origin, 10.0)
+	Juice.flash(target_p, 14.0)
+	Juice.hitstop(0.05)
+	if best.status.is_boss:
+		pull_target = best
+		pull_left = 0.3
+		_end_swing()
+		Juice.fx("pull_self", TORSO, to_target.normalized(), 1.0, false, self).set("life", 0.3)
+	elif best.has_method("pull_to"):
+		best.pull_to(global_position + Vector2(facing * 34.0, 0))
+		Juice.fx("pull_drag", best.global_position, Vector2(-facing, 0), 1.0, false, null, 1.5).set("life", 0.2)
+	return true
+
+
+## Nearest living enemy inside the 월인 cone and range, or null.
+func _pull_candidate() -> Node:
 	var best: Node = null
 	var bd := INF
 	var origin := _shoulder_world()
@@ -306,28 +340,23 @@ func press_pull() -> bool:
 		if dist < bd:
 			bd = dist
 			best = d
-	if best == null:
-		_say("월인: 대상 없음")
-		Juice.fx("pull_fail", _hand_world(), aim)
-		return false
-	qi -= PULL_QI
-	pull_cooldown = PULL_COOLDOWN
-	facing = 1.0 if best.global_position.x >= global_position.x else -1.0
-	var to_target: Vector2 = best.global_position + Vector2(0, -24) - origin
-	# the thread: its stretch band (cell x 20..176 = 156px) scaled to the distance, caps kept proportional
-	Juice.fx("pull_thread", origin, to_target.normalized(), facing, false, null, 1.0, Vector2(maxf(0.3, bd / 156.0), 1.0))
-	Juice.fx("pull_cast", origin, to_target.normalized())
-	Juice.fx("pull_hook", best.global_position + Vector2(0, -24), to_target.normalized())
-	Juice.hitstop(0.03)
-	if best.status.is_boss:
-		pull_target = best
-		pull_left = 0.3
-		_end_swing()
-		Juice.fx("pull_self", TORSO, to_target.normalized(), 1.0, false, self)
-	elif best.has_method("pull_to"):
-		best.pull_to(global_position + Vector2(facing * 34.0, 0))
-		Juice.fx("pull_drag", best.global_position, Vector2(-facing, 0))
-	return true
+	return best
+
+
+## A bright additive line from the shoulder to the target that fades over 0.3 s: the sprite thread alone is 6px thin.
+func _pull_line(from: Vector2, to: Vector2) -> void:
+	var line := Line2D.new()
+	line.points = PackedVector2Array([from, to])
+	line.width = 4.0
+	line.default_color = Color(1.0, 0.9, 0.55)
+	line.z_index = 42
+	var mat := CanvasItemMaterial.new()
+	mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	line.material = mat
+	Juice.world.add_child(line)
+	var tw := line.create_tween()
+	tw.tween_property(line, "modulate:a", 0.0, 0.3).set_delay(0.06)
+	tw.finished.connect(line.queue_free)
 
 
 func _step_pull(dt: float) -> void:
@@ -641,6 +670,7 @@ func _physics_process(dt: float) -> void:
 	ult_cooldown = maxf(0.0, ult_cooldown - dt)
 	tremor_left = maxf(0.0, tremor_left - dt)
 	pull_cooldown = maxf(0.0, pull_cooldown - dt)
+	pull_candidate = _pull_candidate() if combat_enabled and not dead and pull_cooldown == 0.0 and qi >= PULL_QI else null
 	if pull_left > 0.0:
 		_step_pull(dt)
 	if not dead:

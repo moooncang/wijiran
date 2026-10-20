@@ -77,10 +77,32 @@ func build(d: Dictionary, p: Player, cam: Camera2D) -> void:
 		_build_prop(pr)
 	for rd in d.get("rooms", []):
 		rooms.append({"id": String(rd.id), "name": String(rd.get("name", "")), "x0": float(rd.x0), "x1": float(rd.x1), "lock": bool(rd.get("lock", false)), "enemies": rd.get("enemies", []), "lines": rd.get("lines", []), "entered": false})
+	for r in rooms:   # normal enemies are placed now and sleep; crossing the room line wakes them
+		if r.enemies.is_empty() or cleared(r.id):
+			continue
+		var list: Array = []
+		for e in r.enemies:
+			if _pre_placed(e):
+				var n := _spawn_enemy(e)
+				if n:
+					list.append(n)
+		_spawned[r.id] = list
 	var cb: Dictionary = d.get("camera", {})
 	camera.set_bounds(0, int(cb.get("top", -60)), int(width), int(cb.get("bottom", ground_y + 100)))
 	player.world_min_x = 20.0
 	player.world_max_x = width - 20.0
+
+
+func _pre_placed(e: Dictionary) -> bool:
+	return String(e.type) in ["soldier", "archer"]
+
+
+func _alive(list: Array) -> int:
+	var n := 0
+	for e in list:
+		if is_instance_valid(e) and e.status.alive():
+			n += 1
+	return n
 
 
 func spawn_point(spawn_id: String) -> Vector2:
@@ -201,14 +223,20 @@ func _enter_room(r: Dictionary) -> void:
 		Dialogue.say(String(line[0]), String(line[1]))
 	if r.enemies.is_empty() or cleared(r.id):
 		return
-	var list: Array = []
+	var list: Array = _spawned.get(r.id, [])
 	for e in r.enemies:
-		var n := _spawn_enemy(e)
-		if n:
-			list.append(n)
+		if not _pre_placed(e):
+			var n := _spawn_enemy(e)
+			if n:
+				list.append(n)
 	_spawned[r.id] = list
-	_enemy_count = list.size()
-	if r.lock:
+	for n in list:
+		if is_instance_valid(n) and not n.active and n.status.alive():
+			n.activate(player)
+	_enemy_count = _alive(list)
+	if _enemy_count == 0:
+		_on_enemy_died(null)   # all killed from outside before entering
+	elif r.lock:
 		_lock(r)
 
 
@@ -239,13 +267,14 @@ func _spawn_enemy(e: Dictionary) -> Node2D:
 	n.position = Vector2(float(e.x), float(e.get("y", ground_y)))
 	n.died.connect(_on_enemy_died)
 	add_child(n)
-	n.activate(player)
 	return n
 
 
 func _on_enemy_died(_enemy: Node) -> void:
-	_enemy_count -= 1
-	if _enemy_count <= 0 and not active_room.is_empty():
+	if active_room.is_empty() or cleared(active_room.id):
+		return
+	_enemy_count = _alive(_spawned.get(active_room.id, []))
+	if _enemy_count <= 0:
 		Game.set_flag("cleared:%s:%s" % [id, active_room.id], false)
 		_unlock()
 		Game.notice.emit("구역 정리")

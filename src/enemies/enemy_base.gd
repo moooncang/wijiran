@@ -56,6 +56,8 @@ func reset_state() -> void:
 
 
 func on_hit(r: Dictionary, push: float, kick_px: float) -> void:
+	if not active and Game.player:
+		activate(Game.player)   # hit from outside its room: wakes up instead of standing still
 	flash = 0.12 if r.hp_damage >= 30 else 0.08
 	kick += push * kick_px
 	kick_v = 0.0
@@ -161,6 +163,18 @@ func _draw() -> void:
 		if status.posture > 0.0:
 			draw_rect(Rect2(-22, hurt_top - 15, 44 * status.posture / status.posture_max, 2), Color(0.95, 0.8, 0.3))
 		_draw_injury(self, status.injury, Vector2(20, hurt_top + 12))
+		if Game.player and Game.player.pull_candidate == self:
+			_draw_pull_mark()
+
+
+## 월인 reticle: a pulsing gold crescent + arrow over the enemy the right click would pull right now.
+func _draw_pull_mark() -> void:
+	var a := 0.65 + 0.35 * sin(Time.get_ticks_msec() * 0.012)
+	var gold := Color(1.0, 0.86, 0.45, a)
+	var y := hurt_top - 38.0
+	draw_arc(Vector2(0, y), 9.0, 0.3, PI - 0.3, 14, gold, 2.5, true)
+	draw_colored_polygon(PackedVector2Array([Vector2(0, y + 14), Vector2(-4, y + 7), Vector2(4, y + 7)]), gold)
+	draw_string(Anim.font, Vector2(-8, y - 6), "월인", HORIZONTAL_ALIGNMENT_LEFT, -1, 8, gold)
 
 
 func _draw_body() -> void:

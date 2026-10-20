@@ -271,9 +271,11 @@ func _room() -> void:
 	await _goto("f1")
 	var p := _player()
 	Juice.clear()
+	var lv: Level = main.level
+	var placed: Array = lv._spawned.get("r1", [])
+	_check(placed.size() == 2 and not placed[0].active and lv._walls.is_empty(), "room: soldiers stand in place before entry, asleep, no walls", "n=%d" % placed.size())
 	p.global_position = Vector2(300, 300)
 	await _pf(4)
-	var lv: Level = main.level
 	var locked: bool = lv.active_room.get("id", "") == "r1" and lv._walls.size() == 2 and lv._enemy_count == 2
 	_check(locked, "room: entering r1 spawns 2 soldiers and walls both ends", "walls=%d enemies=%d" % [lv._walls.size(), lv._enemy_count])
 	# the player cannot leave through the wall
@@ -422,6 +424,12 @@ func _qa() -> void:
 	await _goto("f1")
 	p.global_position = Vector2(1000, 300)
 	await _pf(60)
+	p.global_position = Vector2(1490, 300)
+	p.aim = Vector2(1, 0)
+	await _pf(6)
+	p.press_pull()
+	await _pf(3)
+	await _snap("qa-f1-pull")
 	await _snap("qa-f1-archer")
 	p.global_position = Vector2(1560, 300)
 	await _pf(40)
@@ -474,6 +482,8 @@ func _pull() -> void:
 	await _pf(2)
 	var d := await _dummy(140.0)
 	p.aim = Vector2.RIGHT
+	await _pf(2)
+	_check(p.pull_candidate == d, "pull: reticle candidate is the dummy in the cone")
 	var qi0 := p.qi
 	var ok := p.press_pull()
 	await _pf(30)
