@@ -1,0 +1,1326 @@
+{
+  "version": 9,
+  "character": {
+    "file": "boss_mokgak.png",
+    "cell": [
+      128,
+      128
+    ],
+    "columns": 8,
+    "rows": 9,
+    "pivot": [
+      64,
+      116
+    ],
+    "standing_height": 60,
+    "hurt_half_width": 22,
+    "hurt_top": -80,
+    "orientation": "left"
+  },
+  "clips": {
+    "idle": {
+      "first": 0,
+      "count": 4,
+      "fps": 6,
+      "loop": true,
+      "tablet": {
+        "0": [
+          58,
+          92
+        ],
+        "1": [
+          54,
+          92
+        ],
+        "2": [
+          53,
+          93
+        ],
+        "3": [
+          58,
+          91
+        ]
+      },
+      "staff_tip": {
+        "0": [
+          45,
+          101
+        ],
+        "1": [
+          41,
+          101
+        ],
+        "2": [
+          40,
+          102
+        ],
+        "3": [
+          45,
+          100
+        ]
+      },
+      "tablet_visible": {
+        "0": true,
+        "1": true,
+        "2": true,
+        "3": true
+      }
+    },
+    "hop": {
+      "first": 4,
+      "count": 4,
+      "fps": 10,
+      "loop": true,
+      "tablet": {
+        "0": [
+          55,
+          96
+        ],
+        "1": [
+          56,
+          88
+        ],
+        "2": [
+          56,
+          84
+        ],
+        "3": [
+          58,
+          98
+        ]
+      },
+      "staff_tip": {
+        "0": [
+          42,
+          105
+        ],
+        "1": [
+          43,
+          97
+        ],
+        "2": [
+          43,
+          93
+        ],
+        "3": [
+          45,
+          107
+        ]
+      },
+      "tablet_visible": {
+        "0": true,
+        "1": true,
+        "2": true,
+        "3": true
+      }
+    },
+    "thrust_pull": {
+      "first": 8,
+      "count": 2,
+      "fps": 4,
+      "loop": false,
+      "tablet": {
+        "0": [
+          60,
+          93
+        ],
+        "1": [
+          57,
+          93
+        ]
+      },
+      "staff_tip": {
+        "0": [
+          46,
+          93
+        ],
+        "1": [
+          43,
+          87
+        ]
+      },
+      "tablet_visible": {
+        "0": false,
+        "1": true
+      }
+    },
+    "thrust": {
+      "first": 10,
+      "count": 3,
+      "fps": 20,
+      "loop": false,
+      "tablet": {
+        "0": [
+          56,
+          93
+        ],
+        "1": [
+          59,
+          93
+        ],
+        "2": [
+          58,
+          95
+        ]
+      },
+      "staff_tip": {
+        "0": [
+          14,
+          87
+        ],
+        "1": [
+          39,
+          90
+        ],
+        "2": [
+          45,
+          93
+        ]
+      },
+      "impact": 0,
+      "tablet_visible": {
+        "0": true,
+        "1": true,
+        "2": false
+      }
+    },
+    "swing_alt_pull": {
+      "first": 13,
+      "count": 2,
+      "fps": 4,
+      "loop": false,
+      "tablet": {
+        "0": [
+          60,
+          93
+        ],
+        "1": [
+          60,
+          92
+        ]
+      },
+      "staff_tip": {
+        "0": [
+          46,
+          62
+        ],
+        "1": [
+          43,
+          64
+        ]
+      },
+      "tablet_visible": {
+        "0": true,
+        "1": true
+      }
+    },
+    "swing_alt_L": {
+      "first": 15,
+      "count": 2,
+      "fps": 20,
+      "loop": false,
+      "tablet": {
+        "0": [
+          63,
+          93
+        ],
+        "1": [
+          59,
+          92
+        ]
+      },
+      "staff_tip": {
+        "0": [
+          33,
+          99
+        ],
+        "1": [
+          44,
+          104
+        ]
+      },
+      "impact": 0,
+      "tablet_visible": {
+        "0": true,
+        "1": true
+      }
+    },
+    "swing_alt_R": {
+      "first": 17,
+      "count": 2,
+      "fps": 20,
+      "loop": false,
+      "tablet": {
+        "0": [
+          70,
+          94
+        ],
+        "1": [
+          58,
+          93
+        ]
+      },
+      "staff_tip": {
+        "0": [
+          45,
+          109
+        ],
+        "1": [
+          41,
+          106
+        ]
+      },
+      "impact": 0,
+      "tablet_visible": {
+        "0": true,
+        "1": true
+      }
+    },
+    "overhead_pull": {
+      "first": 19,
+      "count": 3,
+      "fps": 4,
+      "loop": false,
+      "tablet": {
+        "0": [
+          59,
+          90
+        ],
+        "1": [
+          59,
+          94
+        ],
+        "2": [
+          67,
+          93
+        ]
+      },
+      "staff_tip": {
+        "0": [
+          40,
+          62
+        ],
+        "1": [
+          55,
+          56
+        ],
+        "2": [
+          89,
+          55
+        ]
+      },
+      "tablet_visible": {
+        "0": true,
+        "1": true,
+        "2": true
+      }
+    },
+    "overhead": {
+      "first": 22,
+      "count": 3,
+      "fps": 20,
+      "loop": false,
+      "tablet": {
+        "0": [
+          66,
+          97
+        ],
+        "1": [
+          72,
+          97
+        ],
+        "2": [
+          60,
+          93
+        ]
+      },
+      "staff_tip": {
+        "0": [
+          43,
+          113
+        ],
+        "1": [
+          38,
+          114
+        ],
+        "2": [
+          43,
+          86
+        ]
+      },
+      "impact": 0,
+      "tablet_visible": {
+        "0": false,
+        "1": false,
+        "2": true
+      }
+    },
+    "sweep_low_pull": {
+      "first": 25,
+      "count": 2,
+      "fps": 4,
+      "loop": false,
+      "tablet": {
+        "0": [
+          61,
+          102
+        ],
+        "1": [
+          64,
+          105
+        ]
+      },
+      "staff_tip": {
+        "0": [
+          99,
+          93
+        ],
+        "1": [
+          37,
+          112
+        ]
+      },
+      "tablet_visible": {
+        "0": true,
+        "1": true
+      }
+    },
+    "sweep_low": {
+      "first": 27,
+      "count": 3,
+      "fps": 20,
+      "loop": false,
+      "tablet": {
+        "0": [
+          71,
+          104
+        ],
+        "1": [
+          59,
+          104
+        ],
+        "2": [
+          59,
+          94
+        ]
+      },
+      "staff_tip": {
+        "0": [
+          27,
+          109
+        ],
+        "1": [
+          105,
+          92
+        ],
+        "2": [
+          39,
+          98
+        ]
+      },
+      "impact": 0,
+      "tablet_visible": {
+        "0": true,
+        "1": true,
+        "2": true
+      }
+    },
+    "guard": {
+      "first": 30,
+      "count": 1,
+      "fps": 1,
+      "loop": false,
+      "tablet": {
+        "0": [
+          60,
+          95
+        ]
+      },
+      "staff_tip": {
+        "0": [
+          77,
+          88
+        ]
+      },
+      "tablet_visible": {
+        "0": false
+      }
+    },
+    "bow": {
+      "first": 31,
+      "count": 3,
+      "fps": 6,
+      "loop": false,
+      "tablet": {
+        "0": [
+          56,
+          94
+        ],
+        "1": [
+          54,
+          98
+        ],
+        "2": [
+          52,
+          96
+        ]
+      },
+      "staff_tip": {
+        "0": [
+          43,
+          103
+        ],
+        "1": [
+          41,
+          107
+        ],
+        "2": [
+          39,
+          105
+        ]
+      },
+      "tablet_visible": {
+        "0": true,
+        "1": true,
+        "2": true
+      }
+    },
+    "stagger_in": {
+      "first": 34,
+      "count": 2,
+      "fps": 12,
+      "loop": false,
+      "tablet": {
+        "0": [
+          52,
+          98
+        ],
+        "1": [
+          52,
+          101
+        ]
+      },
+      "staff_tip": {
+        "0": [
+          39,
+          107
+        ],
+        "1": [
+          39,
+          110
+        ]
+      },
+      "tablet_visible": {
+        "0": true,
+        "1": false
+      }
+    },
+    "stagger": {
+      "first": 36,
+      "count": 4,
+      "fps": 8,
+      "loop": true,
+      "tablet": {
+        "0": [
+          53,
+          98
+        ],
+        "1": [
+          55,
+          98
+        ],
+        "2": [
+          57,
+          97
+        ],
+        "3": [
+          54,
+          97
+        ]
+      },
+      "staff_tip": {
+        "0": [
+          40,
+          107
+        ],
+        "1": [
+          42,
+          107
+        ],
+        "2": [
+          44,
+          106
+        ],
+        "3": [
+          41,
+          106
+        ]
+      },
+      "tablet_visible": {
+        "0": false,
+        "1": false,
+        "2": false,
+        "3": false
+      }
+    },
+    "stagger_out": {
+      "first": 40,
+      "count": 2,
+      "fps": 10,
+      "loop": false,
+      "tablet": {
+        "0": [
+          53,
+          95
+        ],
+        "1": [
+          60,
+          91
+        ]
+      },
+      "staff_tip": {
+        "0": [
+          40,
+          104
+        ],
+        "1": [
+          47,
+          100
+        ]
+      },
+      "tablet_visible": {
+        "0": true,
+        "1": true
+      }
+    },
+    "death": {
+      "first": 42,
+      "count": 5,
+      "fps": 6,
+      "loop": false,
+      "tablet": {
+        "0": [
+          61,
+          94
+        ],
+        "1": [
+          55,
+          99
+        ],
+        "2": [
+          59,
+          105
+        ],
+        "3": [
+          67,
+          107
+        ],
+        "4": [
+          63,
+          111
+        ]
+      },
+      "staff_tip": {
+        "0": [
+          48,
+          103
+        ],
+        "1": [
+          42,
+          108
+        ],
+        "2": [
+          46,
+          114
+        ],
+        "3": [
+          54,
+          116
+        ],
+        "4": [
+          50,
+          120
+        ]
+      },
+      "tablet_visible": {
+        "0": true,
+        "1": true,
+        "2": true,
+        "3": true,
+        "4": false
+      }
+    },
+    "intro": {
+      "first": 47,
+      "count": 4,
+      "fps": 8,
+      "loop": false,
+      "tablet": {
+        "0": [
+          58,
+          72
+        ],
+        "1": [
+          59,
+          80
+        ],
+        "2": [
+          58,
+          99
+        ],
+        "3": [
+          57,
+          93
+        ]
+      },
+      "staff_tip": {
+        "0": [
+          45,
+          81
+        ],
+        "1": [
+          46,
+          89
+        ],
+        "2": [
+          45,
+          108
+        ],
+        "3": [
+          44,
+          102
+        ]
+      },
+      "tablet_visible": {
+        "0": true,
+        "1": true,
+        "2": true,
+        "3": true
+      }
+    },
+    "slide_pull": {
+      "first": 51,
+      "count": 2,
+      "fps": 4,
+      "loop": false,
+      "tablet": {
+        "0": [
+          58,
+          94
+        ],
+        "1": [
+          61,
+          99
+        ]
+      },
+      "staff_tip": {
+        "0": [
+          43,
+          102
+        ],
+        "1": [
+          50,
+          100
+        ]
+      },
+      "tablet_visible": {
+        "0": true,
+        "1": true
+      }
+    },
+    "slide": {
+      "first": 53,
+      "count": 2,
+      "fps": 12,
+      "loop": true,
+      "tablet": {
+        "0": [
+          54,
+          98
+        ],
+        "1": [
+          54,
+          100
+        ]
+      },
+      "staff_tip": {
+        "0": [
+          23,
+          94
+        ],
+        "1": [
+          23,
+          103
+        ]
+      },
+      "tablet_visible": {
+        "0": true,
+        "1": true
+      }
+    },
+    "backstep": {
+      "first": 55,
+      "count": 2,
+      "fps": 12,
+      "loop": false,
+      "tablet": {
+        "0": [
+          65,
+          94
+        ],
+        "1": [
+          54,
+          94
+        ]
+      },
+      "staff_tip": {
+        "0": [
+          47,
+          96
+        ],
+        "1": [
+          42,
+          96
+        ]
+      },
+      "tablet_visible": {
+        "0": false,
+        "1": true
+      }
+    },
+    "swing_high_pull": {
+      "first": 57,
+      "count": 2,
+      "fps": 4,
+      "loop": false,
+      "tablet": {
+        "0": [
+          60,
+          92
+        ],
+        "1": [
+          58,
+          97
+        ]
+      },
+      "staff_tip": {
+        "0": [
+          31,
+          71
+        ],
+        "1": [
+          84,
+          80
+        ]
+      },
+      "tablet_visible": {
+        "0": true,
+        "1": false
+      }
+    },
+    "swing_high": {
+      "first": 59,
+      "count": 3,
+      "fps": 20,
+      "loop": false,
+      "tablet": {
+        "0": [
+          60,
+          93
+        ],
+        "1": [
+          56,
+          92
+        ],
+        "2": [
+          57,
+          93
+        ]
+      },
+      "staff_tip": {
+        "0": [
+          23,
+          84
+        ],
+        "1": [
+          96,
+          85
+        ],
+        "2": [
+          49,
+          92
+        ]
+      },
+      "impact": 0,
+      "tablet_visible": {
+        "0": true,
+        "1": false,
+        "2": false
+      }
+    },
+    "stomp_pull": {
+      "first": 62,
+      "count": 2,
+      "fps": 4,
+      "loop": false,
+      "tablet": {
+        "0": [
+          62,
+          92
+        ],
+        "1": [
+          55,
+          92
+        ]
+      },
+      "staff_tip": {
+        "0": [
+          40,
+          99
+        ],
+        "1": [
+          37,
+          95
+        ]
+      },
+      "tablet_visible": {
+        "0": true,
+        "1": true
+      }
+    },
+    "stomp": {
+      "first": 64,
+      "count": 2,
+      "fps": 20,
+      "loop": false,
+      "tablet": {
+        "0": [
+          58,
+          101
+        ],
+        "1": [
+          59,
+          91
+        ]
+      },
+      "staff_tip": {
+        "0": [
+          42,
+          105
+        ],
+        "1": [
+          43,
+          95
+        ]
+      },
+      "impact": 0,
+      "tablet_visible": {
+        "0": true,
+        "1": true
+      }
+    },
+    "plant": {
+      "first": 66,
+      "count": 1,
+      "fps": 1,
+      "loop": false,
+      "tablet": {
+        "0": [
+          61,
+          95
+        ]
+      },
+      "staff_tip": {
+        "0": [
+          49,
+          113
+        ]
+      },
+      "tablet_visible": {
+        "0": false
+      }
+    },
+    "retarget": {
+      "first": 67,
+      "count": 2,
+      "fps": 10,
+      "loop": false,
+      "tablet": {
+        "0": [
+          67,
+          98
+        ],
+        "1": [
+          70,
+          94
+        ]
+      },
+      "staff_tip": {
+        "0": [
+          75,
+          101
+        ],
+        "1": [
+          87,
+          106
+        ]
+      },
+      "tablet_visible": {
+        "0": false,
+        "1": true
+      }
+    },
+    "nod": {
+      "first": 69,
+      "count": 2,
+      "fps": 10,
+      "loop": false,
+      "tablet": {
+        "0": [
+          59,
+          95
+        ],
+        "1": [
+          61,
+          94
+        ]
+      },
+      "staff_tip": {
+        "0": [
+          46,
+          104
+        ],
+        "1": [
+          48,
+          103
+        ]
+      },
+      "tablet_visible": {
+        "0": true,
+        "1": true
+      }
+    }
+  },
+  "parts": {
+    "tablet_0": {
+      "sheet": "boss_parts.png",
+      "cell": [
+        32,
+        32
+      ],
+      "columns": 8,
+      "first": 0,
+      "count": 1,
+      "pivot": [
+        16,
+        16
+      ],
+      "size": [
+        14,
+        18
+      ]
+    },
+    "tablet_1": {
+      "sheet": "boss_parts.png",
+      "cell": [
+        32,
+        32
+      ],
+      "columns": 8,
+      "first": 1,
+      "count": 1,
+      "pivot": [
+        16,
+        16
+      ],
+      "size": [
+        14,
+        18
+      ]
+    },
+    "tablet_2": {
+      "sheet": "boss_parts.png",
+      "cell": [
+        32,
+        32
+      ],
+      "columns": 8,
+      "first": 2,
+      "count": 1,
+      "pivot": [
+        16,
+        16
+      ],
+      "size": [
+        14,
+        18
+      ]
+    },
+    "tablet_3": {
+      "sheet": "boss_parts.png",
+      "cell": [
+        32,
+        32
+      ],
+      "columns": 8,
+      "first": 3,
+      "count": 1,
+      "pivot": [
+        16,
+        16
+      ],
+      "size": [
+        14,
+        18
+      ]
+    },
+    "tablet_dark": {
+      "sheet": "boss_parts.png",
+      "cell": [
+        32,
+        32
+      ],
+      "columns": 8,
+      "first": 4,
+      "count": 1,
+      "pivot": [
+        16,
+        16
+      ],
+      "size": [
+        14,
+        18
+      ]
+    },
+    "hat_crack": {
+      "sheet": "boss_parts.png",
+      "cell": [
+        32,
+        32
+      ],
+      "columns": 8,
+      "first": 5,
+      "count": 1,
+      "pivot": [
+        16,
+        24
+      ],
+      "size": [
+        24,
+        12
+      ]
+    },
+    "belt_loose": {
+      "sheet": "boss_parts.png",
+      "cell": [
+        32,
+        32
+      ],
+      "columns": 8,
+      "first": 6,
+      "count": 1,
+      "pivot": [
+        16,
+        8
+      ],
+      "size": [
+        20,
+        12
+      ]
+    },
+    "badge_byeon_0": {
+      "sheet": "boss_parts.png",
+      "cell": [
+        32,
+        32
+      ],
+      "columns": 8,
+      "first": 7,
+      "count": 1,
+      "pivot": [
+        16,
+        16
+      ],
+      "size": [
+        20,
+        20
+      ]
+    },
+    "badge_byeon_1": {
+      "sheet": "boss_parts.png",
+      "cell": [
+        32,
+        32
+      ],
+      "columns": 8,
+      "first": 8,
+      "count": 1,
+      "pivot": [
+        16,
+        16
+      ],
+      "size": [
+        20,
+        20
+      ]
+    },
+    "stroke_1": {
+      "sheet": "boss_parts.png",
+      "cell": [
+        32,
+        32
+      ],
+      "columns": 8,
+      "first": 9,
+      "count": 1,
+      "pivot": [
+        16,
+        16
+      ],
+      "size": [
+        4,
+        14
+      ]
+    },
+    "stroke_2": {
+      "sheet": "boss_parts.png",
+      "cell": [
+        32,
+        32
+      ],
+      "columns": 8,
+      "first": 10,
+      "count": 1,
+      "pivot": [
+        16,
+        16
+      ],
+      "size": [
+        11,
+        14
+      ]
+    },
+    "stroke_3": {
+      "sheet": "boss_parts.png",
+      "cell": [
+        32,
+        32
+      ],
+      "columns": 8,
+      "first": 11,
+      "count": 1,
+      "pivot": [
+        16,
+        16
+      ],
+      "size": [
+        18,
+        14
+      ]
+    },
+    "stroke_4": {
+      "sheet": "boss_parts.png",
+      "cell": [
+        32,
+        32
+      ],
+      "columns": 8,
+      "first": 12,
+      "count": 1,
+      "pivot": [
+        16,
+        16
+      ],
+      "size": [
+        25,
+        14
+      ]
+    },
+    "arrow_turn_0": {
+      "sheet": "boss_parts.png",
+      "cell": [
+        32,
+        32
+      ],
+      "columns": 8,
+      "first": 13,
+      "count": 1,
+      "pivot": [
+        16,
+        16
+      ],
+      "size": [
+        24,
+        24
+      ]
+    },
+    "arrow_turn_1": {
+      "sheet": "boss_parts.png",
+      "cell": [
+        32,
+        32
+      ],
+      "columns": 8,
+      "first": 14,
+      "count": 1,
+      "pivot": [
+        16,
+        16
+      ],
+      "size": [
+        24,
+        24
+      ]
+    },
+    "stroke_big": {
+      "sheet": "boss_parts.png",
+      "cell": [
+        32,
+        32
+      ],
+      "columns": 8,
+      "first": 15,
+      "count": 1,
+      "pivot": [
+        16,
+        16
+      ],
+      "size": [
+        8,
+        18
+      ]
+    },
+    "badge_byeon": {
+      "sheet": "boss_parts.png",
+      "cell": [
+        32,
+        32
+      ],
+      "columns": 8,
+      "first": 7,
+      "count": 2,
+      "fps": 6,
+      "loop": true,
+      "pivot": [
+        16,
+        16
+      ]
+    },
+    "arrow_turn": {
+      "sheet": "boss_parts.png",
+      "cell": [
+        32,
+        32
+      ],
+      "columns": 8,
+      "first": 13,
+      "count": 2,
+      "fps": 6,
+      "loop": true,
+      "pivot": [
+        16,
+        16
+      ]
+    }
+  }
+}

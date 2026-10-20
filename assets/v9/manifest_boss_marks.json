@@ -1,0 +1,201 @@
+{
+  "version": 9,
+  "effect_clips": {
+    "mark_n": {
+      "sheet": "boss_marks.png",
+      "cell": [
+        96,
+        96
+      ],
+      "columns": 8,
+      "first": 0,
+      "count": 3,
+      "fps": 8,
+      "pivot": [
+        48,
+        48
+      ],
+      "loop": true,
+      "orientation": "fixed"
+    },
+    "mark_h": {
+      "sheet": "boss_marks.png",
+      "cell": [
+        96,
+        96
+      ],
+      "columns": 8,
+      "first": 3,
+      "count": 3,
+      "fps": 8,
+      "pivot": [
+        48,
+        48
+      ],
+      "loop": true,
+      "orientation": "fixed"
+    },
+    "mark_flash": {
+      "sheet": "boss_marks.png",
+      "cell": [
+        96,
+        96
+      ],
+      "columns": 8,
+      "first": 6,
+      "count": 2,
+      "fps": 30,
+      "pivot": [
+        48,
+        48
+      ],
+      "loop": false,
+      "orientation": "fixed"
+    },
+    "icon_bang": {
+      "sheet": "boss_marks.png",
+      "cell": [
+        96,
+        96
+      ],
+      "columns": 8,
+      "first": 8,
+      "count": 2,
+      "fps": 6,
+      "pivot": [
+        48,
+        80
+      ],
+      "loop": true,
+      "orientation": "fixed"
+    },
+    "icon_bang2": {
+      "sheet": "boss_marks.png",
+      "cell": [
+        96,
+        96
+      ],
+      "columns": 8,
+      "first": 10,
+      "count": 2,
+      "fps": 6,
+      "pivot": [
+        48,
+        80
+      ],
+      "loop": true,
+      "orientation": "fixed"
+    },
+    "icon_x": {
+      "sheet": "boss_marks.png",
+      "cell": [
+        96,
+        96
+      ],
+      "columns": 8,
+      "first": 12,
+      "count": 2,
+      "fps": 6,
+      "pivot": [
+        48,
+        80
+      ],
+      "loop": true,
+      "orientation": "fixed"
+    },
+    "hatch_tile": {
+      "sheet": "boss_marks_128.png",
+      "cell": [
+        128,
+        128
+      ],
+      "columns": 8,
+      "first": 14,
+      "count": 2,
+      "fps": 6,
+      "pivot": [
+        0,
+        48
+      ],
+      "loop": true,
+      "orientation": "fixed",
+      "tile_pitch": 120,
+      "active_x": [
+        4,
+        116
+      ]
+    },
+    "hatch_cap_L": {
+      "sheet": "boss_marks.png",
+      "cell": [
+        96,
+        96
+      ],
+      "columns": 8,
+      "first": 16,
+      "count": 1,
+      "fps": 1,
+      "pivot": [
+        0,
+        48
+      ],
+      "loop": false,
+      "orientation": "fixed"
+    },
+    "hatch_cap_R": {
+      "sheet": "boss_marks.png",
+      "cell": [
+        96,
+        96
+      ],
+      "columns": 8,
+      "first": 17,
+      "count": 1,
+      "fps": 1,
+      "pivot": [
+        0,
+        48
+      ],
+      "loop": false,
+      "orientation": "fixed"
+    },
+    "danger_edge": {
+      "sheet": "boss_marks.png",
+      "cell": [
+        96,
+        96
+      ],
+      "columns": 8,
+      "first": 18,
+      "count": 2,
+      "fps": 6,
+      "pivot": [
+        3,
+        48
+      ],
+      "loop": true,
+      "orientation": "fixed"
+    },
+    "zone_fill": {
+      "sheet": "boss_marks.png",
+      "cell": [
+        96,
+        96
+      ],
+      "columns": 8,
+      "first": 20,
+      "count": 1,
+      "fps": 1,
+      "pivot": [
+        0,
+        48
+      ],
+      "loop": false,
+      "orientation": "fixed"
+    }
+  },
+  "notes": [
+    "120px hatch requires supplemental 128px sheet; main 96px sheet slots14/15 are reserved blank.",
+    "zone_fill is a 96px-wide tile with transparent 2x2 dither."
+  ]
+}

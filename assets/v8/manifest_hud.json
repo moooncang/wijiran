@@ -1,0 +1,17 @@
+{
+  "file": "hud.png",
+  "cell": [
+    16,
+    16
+  ],
+  "columns": 8,
+  "icons": {
+    "hp": 0,
+    "energy": 1,
+    "heat": 2,
+    "ultimate": 3,
+    "tremor": 4,
+    "parry_perfect": 5,
+    "parry_partial": 6
+  }
+}

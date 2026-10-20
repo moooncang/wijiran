@@ -1,0 +1,557 @@
+{
+  "version": 9,
+  "character": {
+    "file": "body.png",
+    "cell": [
+      64,
+      64
+    ],
+    "columns": 8,
+    "pivot": [
+      32,
+      60
+    ],
+    "standing_height": 48
+  },
+  "clips": {
+    "idle": {
+      "first": 0,
+      "count": 2,
+      "shoulder": {
+        "0": [
+          29,
+          32
+        ],
+        "1": [
+          29,
+          33
+        ]
+      },
+      "loop": true
+    },
+    "run": {
+      "first": 2,
+      "count": 6,
+      "shoulder": {
+        "0": [
+          36,
+          37
+        ],
+        "1": [
+          37,
+          37
+        ],
+        "2": [
+          36,
+          38
+        ],
+        "3": [
+          36,
+          37
+        ],
+        "4": [
+          37,
+          37
+        ],
+        "5": [
+          36,
+          38
+        ]
+      },
+      "fps": 12,
+      "loop": true
+    },
+    "jump": {
+      "first": 8,
+      "count": 3,
+      "shoulder": {
+        "0": [
+          30,
+          28
+        ],
+        "1": [
+          31,
+          30
+        ],
+        "2": [
+          31,
+          30
+        ]
+      }
+    },
+    "land": {
+      "first": 11,
+      "count": 1,
+      "shoulder": {
+        "0": [
+          31,
+          43
+        ]
+      }
+    },
+    "dash": {
+      "first": 12,
+      "count": 2,
+      "shoulder": {
+        "0": [
+          37,
+          38
+        ],
+        "1": [
+          37,
+          42
+        ]
+      }
+    },
+    "parry": {
+      "first": 14,
+      "count": 2,
+      "shoulder": {
+        "0": [
+          29,
+          36
+        ],
+        "1": [
+          30,
+          36
+        ]
+      }
+    },
+    "hurt": {
+      "first": 16,
+      "count": 1,
+      "shoulder": {
+        "0": [
+          30,
+          37
+        ]
+      }
+    },
+    "death": {
+      "first": 17,
+      "count": 3,
+      "shoulder": {
+        "0": [
+          33,
+          49
+        ],
+        "1": [
+          34,
+          54
+        ],
+        "2": [
+          34,
+          56
+        ]
+      }
+    },
+    "crouch": {
+      "first": 20,
+      "count": 2,
+      "shoulder": {
+        "0": [
+          30,
+          42
+        ],
+        "1": [
+          29,
+          42
+        ]
+      },
+      "loop": true
+    },
+    "victory": {
+      "first": 22,
+      "count": 2,
+      "shoulder": {
+        "0": [
+          29,
+          32
+        ],
+        "1": [
+          29,
+          33
+        ]
+      },
+      "loop": true
+    }
+  },
+  "parts": {
+    "arm_sleeve": {
+      "file": "arm_v2.png",
+      "slot": 0,
+      "cell": [
+        32,
+        32
+      ],
+      "columns": 4,
+      "pivot": [
+        4,
+        16
+      ],
+      "wrist": [
+        22,
+        16
+      ]
+    },
+    "hand_open": {
+      "file": "arm_v2.png",
+      "slot": 1,
+      "cell": [
+        32,
+        32
+      ],
+      "columns": 4,
+      "pivot": [
+        2,
+        16
+      ]
+    },
+    "hand_palm": {
+      "file": "arm_v2.png",
+      "slot": 2,
+      "cell": [
+        32,
+        32
+      ],
+      "columns": 4,
+      "pivot": [
+        2,
+        16
+      ]
+    },
+    "arm_guard": {
+      "file": "arm_v2.png",
+      "slot": 3,
+      "cell": [
+        32,
+        32
+      ],
+      "columns": 4,
+      "pivot": [
+        4,
+        16
+      ]
+    },
+    "qi_palm": {
+      "file": "qi_v2.png",
+      "first": 0,
+      "count": 2,
+      "cell": [
+        32,
+        32
+      ],
+      "columns": 4,
+      "pivot": [
+        16,
+        16
+      ],
+      "loop": true
+    },
+    "qi_moon": {
+      "file": "qi_v2.png",
+      "first": 2,
+      "count": 2,
+      "cell": [
+        32,
+        32
+      ],
+      "columns": 4,
+      "pivot": [
+        16,
+        16
+      ],
+      "loop": true
+    }
+  },
+  "effects": {
+    "file": "effects_v9.png",
+    "cell": [
+      96,
+      96
+    ],
+    "columns": 8,
+    "pivot": [
+      16,
+      48
+    ],
+    "rows": 24
+  },
+  "effect_clips": {
+    "smear_small": {
+      "first": 0,
+      "count": 3,
+      "fps": 30,
+      "pivot": [
+        16,
+        48
+      ],
+      "orientation": "hit_direction"
+    },
+    "dash_streak": {
+      "first": 8,
+      "count": 3,
+      "fps": 24,
+      "pivot": [
+        16,
+        48
+      ],
+      "orientation": "hit_direction"
+    },
+    "dash_burst": {
+      "first": 16,
+      "count": 3,
+      "fps": 24,
+      "pivot": [
+        48,
+        48
+      ],
+      "orientation": "hit_direction"
+    },
+    "hit_small": {
+      "first": 24,
+      "count": 3,
+      "fps": 30,
+      "pivot": [
+        16,
+        48
+      ],
+      "orientation": "hit_direction"
+    },
+    "smear_big": {
+      "first": 32,
+      "count": 4,
+      "fps": 30,
+      "pivot": [
+        16,
+        48
+      ],
+      "orientation": "hit_direction"
+    },
+    "hit_big": {
+      "first": 40,
+      "count": 4,
+      "fps": 30,
+      "pivot": [
+        16,
+        48
+      ],
+      "orientation": "hit_direction"
+    },
+    "dash_end": {
+      "first": 48,
+      "count": 2,
+      "fps": 24,
+      "pivot": [
+        48,
+        80
+      ],
+      "orientation": "facing"
+    },
+    "run_dust": {
+      "first": 64,
+      "count": 3,
+      "fps": 24,
+      "pivot": [
+        48,
+        80
+      ],
+      "orientation": "facing"
+    },
+    "land_dust": {
+      "first": 72,
+      "count": 2,
+      "fps": 24,
+      "pivot": [
+        48,
+        48
+      ],
+      "orientation": "fixed"
+    },
+    "speed_lines": {
+      "first": 80,
+      "count": 4,
+      "fps": 24,
+      "pivot": [
+        48,
+        48
+      ],
+      "orientation": "fixed",
+      "loop": true
+    },
+    "air_jump_fx": {
+      "first": 88,
+      "count": 2,
+      "fps": 24,
+      "pivot": [
+        48,
+        48
+      ],
+      "orientation": "fixed"
+    },
+    "parry_perfect_fx": {
+      "first": 96,
+      "count": 6,
+      "fps": 48,
+      "pivot": [
+        48,
+        48
+      ],
+      "orientation": "fixed"
+    },
+    "parry_partial_fx": {
+      "first": 104,
+      "count": 4,
+      "fps": 30,
+      "pivot": [
+        28,
+        48
+      ],
+      "orientation": "facing"
+    },
+    "dash_aura": {
+      "first": 112,
+      "count": 3,
+      "fps": 24,
+      "pivot": [
+        48,
+        48
+      ],
+      "orientation": "hit_direction",
+      "loop": true
+    },
+    "thrust_line": {
+      "first": 120,
+      "count": 4,
+      "fps": 30,
+      "pivot": [
+        16,
+        48
+      ],
+      "orientation": "hit_direction"
+    },
+    "thrust_hit": {
+      "first": 128,
+      "count": 4,
+      "fps": 30,
+      "pivot": [
+        16,
+        48
+      ],
+      "orientation": "hit_direction"
+    },
+    "rush_aura": {
+      "first": 136,
+      "count": 3,
+      "fps": 24,
+      "pivot": [
+        48,
+        48
+      ],
+      "orientation": "hit_direction"
+    },
+    "spin_whirl": {
+      "sheet": "effects_v9_spin_liquid.png",
+      "cell": 128,
+      "first": 0,
+      "count": 12,
+      "fps": 60,
+      "pivot": [
+        64,
+        64
+      ],
+      "orientation": "fixed"
+    },
+    "spin_hit": {
+      "first": 152,
+      "count": 4,
+      "fps": 30,
+      "pivot": [
+        16,
+        48
+      ],
+      "orientation": "hit_direction"
+    },
+    "gather": {
+      "sheet": "effects_v9_128.png",
+      "cell": 128,
+      "first": 8,
+      "count": 5,
+      "fps": 20,
+      "pivot": [
+        64,
+        64
+      ],
+      "orientation": "fixed"
+    },
+    "burst_core": {
+      "sheet": "effects_v9_128.png",
+      "cell": 128,
+      "first": 16,
+      "count": 5,
+      "fps": 24,
+      "pivot": [
+        64,
+        64
+      ],
+      "orientation": "fixed"
+    },
+    "burst_hit": {
+      "sheet": "effects_v9_128.png",
+      "cell": 128,
+      "first": 24,
+      "count": 4,
+      "fps": 30,
+      "pivot": [
+        24,
+        64
+      ],
+      "orientation": "hit_direction"
+    },
+    "dash_aura_in": {
+      "first": 184,
+      "count": 1,
+      "fps": 24,
+      "pivot": [
+        48,
+        48
+      ],
+      "orientation": "hit_direction"
+    },
+    "air_dash_spark": {
+      "first": 56,
+      "count": 2,
+      "fps": 24,
+      "pivot": [
+        48,
+        48
+      ],
+      "orientation": "fixed"
+    },
+    "spin_whirl_back": {
+      "sheet": "effects_v9_spin_liquid_back.png",
+      "cell": 128,
+      "first": 0,
+      "count": 12,
+      "fps": 60,
+      "pivot": [
+        64,
+        64
+      ],
+      "orientation": "hit_direction",
+      "z": -1
+    },
+    "spin_whirl_front": {
+      "sheet": "effects_v9_spin_liquid_front.png",
+      "cell": 128,
+      "first": 0,
+      "count": 12,
+      "fps": 60,
+      "pivot": [
+        64,
+        64
+      ],
+      "orientation": "hit_direction"
+    }
+  }
+}

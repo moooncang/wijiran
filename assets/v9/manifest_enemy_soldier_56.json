@@ -1,0 +1,149 @@
+{
+  "version": 9,
+  "character": {
+    "file": "enemy_soldier_56.png",
+    "cell": [
+      96,
+      96
+    ],
+    "columns": 8,
+    "pivot": [
+      48,
+      88
+    ],
+    "standing_height": 56
+  },
+  "clips": {
+    "idle": {
+      "first": 0,
+      "count": 4,
+      "loop": true
+    },
+    "walk": {
+      "first": 4,
+      "count": 6,
+      "loop": true
+    },
+    "attack_slash": {
+      "first": 10,
+      "count": 6,
+      "impact": 3,
+      "contact": {
+        "2": [
+          81,
+          58
+        ],
+        "3": [
+          80,
+          55
+        ],
+        "4": [
+          29,
+          45
+        ]
+      }
+    },
+    "attack_triple": {
+      "first": 16,
+      "count": 9,
+      "impacts": [
+        1,
+        4,
+        7
+      ],
+      "contact": {
+        "0": [
+          60,
+          27
+        ],
+        "1": [
+          81,
+          61
+        ],
+        "2": [
+          67,
+          74
+        ],
+        "3": [
+          53,
+          28
+        ],
+        "4": [
+          81,
+          84
+        ],
+        "5": [
+          67,
+          82
+        ],
+        "6": [
+          53,
+          82
+        ],
+        "7": [
+          81,
+          70
+        ],
+        "8": [
+          67,
+          80
+        ]
+      }
+    },
+    "attack_slam": {
+      "first": 25,
+      "count": 7,
+      "impact": 4,
+      "contact": {
+        "3": [
+          73,
+          87
+        ],
+        "4": [
+          64,
+          87
+        ],
+        "5": [
+          66,
+          39
+        ]
+      }
+    },
+    "attack_stomp": {
+      "first": 32,
+      "count": 6,
+      "impact": 2,
+      "contact": {
+        "1": [
+          61,
+          86
+        ],
+        "2": [
+          66,
+          88
+        ],
+        "3": [
+          65,
+          88
+        ]
+      }
+    },
+    "hurt": {
+      "first": 38,
+      "count": 2
+    },
+    "stagger": {
+      "first": 40,
+      "count": 4,
+      "loop": true
+    },
+    "recoil": {
+      "first": 44,
+      "count": 2
+    },
+    "death": {
+      "first": 46,
+      "count": 5
+    }
+  }
+}

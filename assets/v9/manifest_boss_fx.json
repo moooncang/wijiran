@@ -1,0 +1,1091 @@
+{
+  "version": 9,
+  "effect_clips": {
+    "thrust_wave": {
+      "sheet": "boss_fx_192.png",
+      "cell": [
+        192,
+        192
+      ],
+      "columns": 4,
+      "first": 0,
+      "count": 4,
+      "fps": 30,
+      "pivot": [
+        24,
+        96
+      ],
+      "orientation": "hit_direction",
+      "loop": false,
+      "mirror_half": false,
+      "palette": [
+        "#fff6e0",
+        "#f0c870",
+        "#ffb347",
+        "#3a2a1e"
+      ],
+      "visual_bounds": [
+        {
+          "left": 24,
+          "top": 91,
+          "width": 35,
+          "height": 10
+        },
+        {
+          "left": 24,
+          "top": 76,
+          "width": 98,
+          "height": 40
+        },
+        {
+          "left": 52,
+          "top": 82,
+          "width": 70,
+          "height": 28
+        },
+        {
+          "left": 87,
+          "top": 88,
+          "width": 35,
+          "height": 15
+        }
+      ],
+      "hitbox_from_foot": [
+        12,
+        -52,
+        98,
+        40
+      ],
+      "visual_origin_from_foot": [
+        12,
+        -32
+      ],
+      "placement_note": "Canonical +x attack. Flip x offsets together with art for left-facing. This is a visual anchor, not the gameplay hit origin."
+    },
+    "swing_alt_wave": {
+      "sheet": "boss_fx_192.png",
+      "cell": [
+        192,
+        192
+      ],
+      "columns": 4,
+      "first": 4,
+      "count": 4,
+      "fps": 30,
+      "pivot": [
+        24,
+        96
+      ],
+      "orientation": "hit_direction",
+      "loop": false,
+      "mirror_half": false,
+      "palette": [
+        "#fff6e0",
+        "#f0c870",
+        "#ffb347",
+        "#3a2a1e"
+      ],
+      "visual_bounds": [
+        {
+          "left": 24,
+          "top": 74,
+          "width": 32,
+          "height": 14
+        },
+        {
+          "left": 24,
+          "top": 73,
+          "width": 113,
+          "height": 46
+        },
+        {
+          "left": 52,
+          "top": 81,
+          "width": 85,
+          "height": 38
+        },
+        {
+          "left": 89,
+          "top": 98,
+          "width": 48,
+          "height": 21
+        }
+      ],
+      "hitbox_from_foot": [
+        12,
+        -54,
+        113,
+        46
+      ],
+      "visual_origin_from_foot": [
+        12,
+        -31
+      ],
+      "placement_note": "Canonical +x attack. Flip x offsets together with art for left-facing. This is a visual anchor, not the gameplay hit origin."
+    },
+    "swing_high_half": {
+      "sheet": "boss_fx_192.png",
+      "cell": [
+        192,
+        192
+      ],
+      "columns": 4,
+      "first": 8,
+      "count": 4,
+      "fps": 30,
+      "pivot": [
+        0,
+        96
+      ],
+      "orientation": "hit_direction",
+      "loop": false,
+      "mirror_half": true,
+      "palette": [
+        "#fff6e0",
+        "#f0c870",
+        "#ffb347",
+        "#3a2a1e"
+      ],
+      "visual_bounds": [
+        {
+          "left": 2,
+          "top": 92,
+          "width": 43,
+          "height": 9
+        },
+        {
+          "left": 2,
+          "top": 75,
+          "width": 143,
+          "height": 42
+        },
+        {
+          "left": 33,
+          "top": 80,
+          "width": 112,
+          "height": 32
+        },
+        {
+          "left": 83,
+          "top": 86,
+          "width": 62,
+          "height": 24
+        }
+      ],
+      "hitbox_from_foot": [
+        -145,
+        -82,
+        290,
+        42
+      ],
+      "visual_origin_from_foot": [
+        0,
+        -61
+      ],
+      "placement_note": "Canonical +x attack. Flip x offsets together with art for left-facing. This is a visual anchor, not the gameplay hit origin."
+    },
+    "overhead_smash": {
+      "sheet": "boss_fx_192.png",
+      "cell": [
+        192,
+        192
+      ],
+      "columns": 4,
+      "first": 12,
+      "count": 5,
+      "fps": 24,
+      "pivot": [
+        96,
+        176
+      ],
+      "orientation": "hit_direction",
+      "loop": false,
+      "mirror_half": false,
+      "palette": [
+        "#fff6e0",
+        "#f0c870",
+        "#ffb347",
+        "#3a2a1e"
+      ],
+      "visual_bounds": [
+        {
+          "left": 93,
+          "top": 147,
+          "width": 6,
+          "height": 29
+        },
+        {
+          "left": 66,
+          "top": 94,
+          "width": 59,
+          "height": 82
+        },
+        {
+          "left": 52,
+          "top": 128,
+          "width": 88,
+          "height": 48
+        },
+        {
+          "left": 52,
+          "top": 142,
+          "width": 88,
+          "height": 34
+        },
+        {
+          "left": 64,
+          "top": 160,
+          "width": 63,
+          "height": 16
+        }
+      ],
+      "hitbox_from_foot": [
+        12,
+        -88,
+        88,
+        88
+      ],
+      "visual_origin_from_foot": [
+        56,
+        0
+      ],
+      "placement_note": "Canonical +x attack. Flip x offsets together with art for left-facing. This is a visual anchor, not the gameplay hit origin."
+    },
+    "sweep_low_half": {
+      "sheet": "boss_fx_192.png",
+      "cell": [
+        192,
+        192
+      ],
+      "columns": 4,
+      "first": 17,
+      "count": 4,
+      "fps": 30,
+      "pivot": [
+        0,
+        176
+      ],
+      "orientation": "hit_direction",
+      "loop": false,
+      "mirror_half": true,
+      "palette": [
+        "#fff6e0",
+        "#f0c870",
+        "#ffb347",
+        "#3a2a1e"
+      ],
+      "visual_bounds": [
+        {
+          "left": 2,
+          "top": 170,
+          "width": 40,
+          "height": 6
+        },
+        {
+          "left": 6,
+          "top": 158,
+          "width": 124,
+          "height": 18
+        },
+        {
+          "left": 38,
+          "top": 162,
+          "width": 92,
+          "height": 14
+        },
+        {
+          "left": 71,
+          "top": 166,
+          "width": 32,
+          "height": 10
+        }
+      ],
+      "hitbox_from_foot": [
+        -130,
+        -18,
+        260,
+        18
+      ],
+      "visual_origin_from_foot": [
+        0,
+        0
+      ],
+      "placement_note": "Canonical +x attack. Flip x offsets together with art for left-facing. This is a visual anchor, not the gameplay hit origin."
+    },
+    "stomp_pulse_half": {
+      "sheet": "boss_fx_192.png",
+      "cell": [
+        192,
+        192
+      ],
+      "columns": 4,
+      "first": 21,
+      "count": 5,
+      "fps": 30,
+      "pivot": [
+        0,
+        176
+      ],
+      "orientation": "hit_direction",
+      "loop": false,
+      "mirror_half": true,
+      "palette": [
+        "#fff6e0",
+        "#f0c870",
+        "#ffb347",
+        "#3a2a1e"
+      ],
+      "visual_bounds": [
+        {
+          "left": 3,
+          "top": 164,
+          "width": 27,
+          "height": 12
+        },
+        {
+          "left": 3,
+          "top": 156,
+          "width": 51,
+          "height": 20
+        },
+        {
+          "left": 18,
+          "top": 156,
+          "width": 104,
+          "height": 20
+        },
+        {
+          "left": 42,
+          "top": 157,
+          "width": 138,
+          "height": 19
+        },
+        {
+          "left": 60,
+          "top": 164,
+          "width": 120,
+          "height": 12
+        }
+      ],
+      "hitbox_from_foot": [
+        -180,
+        -20,
+        360,
+        20
+      ],
+      "visual_origin_from_foot": [
+        0,
+        0
+      ],
+      "placement_note": "Canonical +x attack. Flip x offsets together with art for left-facing. This is a visual anchor, not the gameplay hit origin."
+    },
+    "lane_pulse": {
+      "sheet": "boss_fx_192.png",
+      "cell": [
+        192,
+        192
+      ],
+      "columns": 4,
+      "first": 26,
+      "count": 4,
+      "fps": 24,
+      "pivot": [
+        96,
+        176
+      ],
+      "orientation": "fixed",
+      "loop": false,
+      "mirror_half": false,
+      "palette": [
+        "#fff6e0",
+        "#f0c870",
+        "#ffb347",
+        "#3a2a1e"
+      ],
+      "visual_bounds": [
+        {
+          "left": 40,
+          "top": 171,
+          "width": 110,
+          "height": 5
+        },
+        {
+          "left": 40,
+          "top": 156,
+          "width": 112,
+          "height": 20
+        },
+        {
+          "left": 42,
+          "top": 166,
+          "width": 109,
+          "height": 10
+        },
+        {
+          "left": 44,
+          "top": 170,
+          "width": 106,
+          "height": 6
+        }
+      ],
+      "hitbox_from_foot": [
+        -56,
+        -20,
+        112,
+        20
+      ],
+      "visual_origin_from_foot": [
+        0,
+        0
+      ],
+      "placement_note": "Canonical +x attack. Flip x offsets together with art for left-facing. This is a visual anchor, not the gameplay hit origin."
+    },
+    "lane_warn": {
+      "sheet": "boss_fx_192.png",
+      "cell": [
+        192,
+        192
+      ],
+      "columns": 4,
+      "first": 30,
+      "count": 2,
+      "fps": 6,
+      "pivot": [
+        96,
+        176
+      ],
+      "orientation": "fixed",
+      "loop": true,
+      "mirror_half": false,
+      "palette": [
+        "#fff6e0",
+        "#f0c870",
+        "#ffb347",
+        "#3a2a1e"
+      ],
+      "visual_bounds": [
+        {
+          "left": 40,
+          "top": 164,
+          "width": 112,
+          "height": 12
+        },
+        {
+          "left": 40,
+          "top": 164,
+          "width": 112,
+          "height": 12
+        }
+      ]
+    },
+    "slide_trail": {
+      "sheet": "boss_fx_192.png",
+      "cell": [
+        192,
+        192
+      ],
+      "columns": 4,
+      "first": 32,
+      "count": 3,
+      "fps": 24,
+      "pivot": [
+        160,
+        176
+      ],
+      "orientation": "facing",
+      "loop": true,
+      "mirror_half": false,
+      "palette": [
+        "#fff6e0",
+        "#f0c870",
+        "#ffb347",
+        "#3a2a1e"
+      ],
+      "visual_bounds": [
+        {
+          "left": 10,
+          "top": 146,
+          "width": 150,
+          "height": 30
+        },
+        {
+          "left": 11,
+          "top": 146,
+          "width": 149,
+          "height": 30
+        },
+        {
+          "left": 10,
+          "top": 146,
+          "width": 150,
+          "height": 30
+        }
+      ]
+    },
+    "hop_dust": {
+      "sheet": "boss_fx_192.png",
+      "cell": [
+        192,
+        192
+      ],
+      "columns": 4,
+      "first": 35,
+      "count": 2,
+      "fps": 24,
+      "pivot": [
+        96,
+        176
+      ],
+      "orientation": "hit_direction",
+      "loop": false,
+      "mirror_half": false,
+      "palette": [
+        "#fff6e0",
+        "#f0c870",
+        "#ffb347",
+        "#3a2a1e"
+      ],
+      "visual_bounds": [
+        {
+          "left": 70,
+          "top": 162,
+          "width": 52,
+          "height": 14
+        },
+        {
+          "left": 66,
+          "top": 165,
+          "width": 60,
+          "height": 11
+        }
+      ]
+    },
+    "backstep_dust": {
+      "sheet": "boss_fx_192.png",
+      "cell": [
+        192,
+        192
+      ],
+      "columns": 4,
+      "first": 37,
+      "count": 2,
+      "fps": 24,
+      "pivot": [
+        96,
+        176
+      ],
+      "orientation": "hit_direction",
+      "loop": false,
+      "mirror_half": false,
+      "palette": [
+        "#fff6e0",
+        "#f0c870",
+        "#ffb347",
+        "#3a2a1e"
+      ],
+      "visual_bounds": [
+        {
+          "left": 78,
+          "top": 164,
+          "width": 38,
+          "height": 12
+        },
+        {
+          "left": 72,
+          "top": 166,
+          "width": 45,
+          "height": 10
+        }
+      ]
+    },
+    "hit_player": {
+      "sheet": "boss_fx_192.png",
+      "cell": [
+        192,
+        192
+      ],
+      "columns": 4,
+      "first": 39,
+      "count": 4,
+      "fps": 30,
+      "pivot": [
+        24,
+        96
+      ],
+      "orientation": "hit_direction",
+      "loop": false,
+      "mirror_half": false,
+      "palette": [
+        "#fff6e0",
+        "#f0c870",
+        "#ffb347",
+        "#3a2a1e"
+      ],
+      "visual_bounds": [
+        {
+          "left": 21,
+          "top": 92,
+          "width": 7,
+          "height": 9
+        },
+        {
+          "left": 12,
+          "top": 62,
+          "width": 80,
+          "height": 69
+        },
+        {
+          "left": 12,
+          "top": 56,
+          "width": 100,
+          "height": 80
+        },
+        {
+          "left": 12,
+          "top": 60,
+          "width": 100,
+          "height": 72
+        }
+      ]
+    },
+    "sawdust": {
+      "sheet": "boss_fx_192.png",
+      "cell": [
+        192,
+        192
+      ],
+      "columns": 4,
+      "first": 43,
+      "count": 3,
+      "fps": 30,
+      "pivot": [
+        96,
+        96
+      ],
+      "orientation": "fixed",
+      "loop": false,
+      "mirror_half": false,
+      "palette": [
+        "#f0c870",
+        "#a8742c"
+      ],
+      "visual_bounds": [
+        {
+          "left": 75,
+          "top": 75,
+          "width": 42,
+          "height": 42
+        },
+        {
+          "left": 66,
+          "top": 66,
+          "width": 60,
+          "height": 60
+        },
+        {
+          "left": 66,
+          "top": 66,
+          "width": 60,
+          "height": 60
+        }
+      ]
+    },
+    "sawdust_burst": {
+      "sheet": "boss_fx_192.png",
+      "cell": [
+        192,
+        192
+      ],
+      "columns": 4,
+      "first": 46,
+      "count": 5,
+      "fps": 24,
+      "pivot": [
+        96,
+        96
+      ],
+      "orientation": "fixed",
+      "loop": false,
+      "mirror_half": false,
+      "palette": [
+        "#fff6e0",
+        "#f0c870",
+        "#ffb347",
+        "#3a2a1e"
+      ],
+      "visual_bounds": [
+        {
+          "left": 86,
+          "top": 86,
+          "width": 19,
+          "height": 17
+        },
+        {
+          "left": 51,
+          "top": 51,
+          "width": 90,
+          "height": 89
+        },
+        {
+          "left": 26,
+          "top": 26,
+          "width": 140,
+          "height": 140
+        },
+        {
+          "left": 26,
+          "top": 26,
+          "width": 140,
+          "height": 140
+        },
+        {
+          "left": 26,
+          "top": 31,
+          "width": 140,
+          "height": 129
+        }
+      ]
+    },
+    "parry_spark_n": {
+      "sheet": "boss_fx_192.png",
+      "cell": [
+        192,
+        192
+      ],
+      "columns": 4,
+      "first": 51,
+      "count": 4,
+      "fps": 30,
+      "pivot": [
+        96,
+        96
+      ],
+      "orientation": "hit_direction",
+      "loop": false,
+      "mirror_half": false,
+      "palette": [
+        "#fff6e0",
+        "#f0c870",
+        "#ffb347",
+        "#3a2a1e"
+      ],
+      "visual_bounds": [
+        {
+          "left": 92,
+          "top": 92,
+          "width": 8,
+          "height": 8
+        },
+        {
+          "left": 61,
+          "top": 61,
+          "width": 70,
+          "height": 70
+        },
+        {
+          "left": 61,
+          "top": 61,
+          "width": 70,
+          "height": 70
+        },
+        {
+          "left": 66,
+          "top": 66,
+          "width": 60,
+          "height": 60
+        }
+      ]
+    },
+    "parry_spark_h": {
+      "sheet": "boss_fx_192.png",
+      "cell": [
+        192,
+        192
+      ],
+      "columns": 4,
+      "first": 55,
+      "count": 4,
+      "fps": 30,
+      "pivot": [
+        96,
+        96
+      ],
+      "orientation": "hit_direction",
+      "loop": false,
+      "mirror_half": false,
+      "palette": [
+        "#fff6e0",
+        "#f0c870",
+        "#ffb347",
+        "#3a2a1e"
+      ],
+      "visual_bounds": [
+        {
+          "left": 90,
+          "top": 94,
+          "width": 12,
+          "height": 5
+        },
+        {
+          "left": 41,
+          "top": 42,
+          "width": 110,
+          "height": 109
+        },
+        {
+          "left": 41,
+          "top": 43,
+          "width": 108,
+          "height": 108
+        },
+        {
+          "left": 46,
+          "top": 46,
+          "width": 100,
+          "height": 100
+        }
+      ]
+    },
+    "hat_spin": {
+      "sheet": "boss_fx_192.png",
+      "cell": [
+        192,
+        192
+      ],
+      "columns": 4,
+      "first": 59,
+      "count": 4,
+      "fps": 12,
+      "pivot": [
+        96,
+        96
+      ],
+      "orientation": "fixed",
+      "loop": true,
+      "mirror_half": false,
+      "palette": [
+        "#fff6e0",
+        "#f0c870",
+        "#ffb347",
+        "#3a2a1e"
+      ],
+      "visual_bounds": [
+        {
+          "left": 74,
+          "top": 84,
+          "width": 44,
+          "height": 24
+        },
+        {
+          "left": 76,
+          "top": 86,
+          "width": 40,
+          "height": 20
+        },
+        {
+          "left": 74,
+          "top": 84,
+          "width": 44,
+          "height": 24
+        },
+        {
+          "left": 76,
+          "top": 86,
+          "width": 40,
+          "height": 20
+        }
+      ]
+    },
+    "knot_fall": {
+      "sheet": "boss_fx_192.png",
+      "cell": [
+        192,
+        192
+      ],
+      "columns": 4,
+      "first": 63,
+      "count": 2,
+      "fps": 12,
+      "pivot": [
+        96,
+        96
+      ],
+      "orientation": "fixed",
+      "loop": false,
+      "mirror_half": false,
+      "palette": [
+        "#b8302c",
+        "#d54b36",
+        "#751e25",
+        "#1a1016"
+      ],
+      "visual_bounds": [
+        {
+          "left": 81,
+          "top": 81,
+          "width": 30,
+          "height": 22
+        },
+        {
+          "left": 84,
+          "top": 88,
+          "width": 24,
+          "height": 30
+        }
+      ]
+    },
+    "tablet_glow": {
+      "sheet": "boss_fx_192.png",
+      "cell": [
+        192,
+        192
+      ],
+      "columns": 4,
+      "first": 65,
+      "count": 4,
+      "fps": 24,
+      "pivot": [
+        96,
+        96
+      ],
+      "orientation": "fixed",
+      "loop": false,
+      "mirror_half": false,
+      "palette": [
+        "#fff6e0",
+        "#f0c870",
+        "#ffb347",
+        "#3a2a1e"
+      ],
+      "visual_bounds": [
+        {
+          "left": 84,
+          "top": 84,
+          "width": 24,
+          "height": 24
+        },
+        {
+          "left": 51,
+          "top": 51,
+          "width": 90,
+          "height": 90
+        },
+        {
+          "left": 66,
+          "top": 66,
+          "width": 60,
+          "height": 60
+        },
+        {
+          "left": 80,
+          "top": 80,
+          "width": 32,
+          "height": 32
+        }
+      ]
+    },
+    "phase_ring": {
+      "sheet": "boss_fx_192.png",
+      "cell": [
+        192,
+        192
+      ],
+      "columns": 4,
+      "first": 69,
+      "count": 4,
+      "fps": 24,
+      "pivot": [
+        96,
+        96
+      ],
+      "orientation": "fixed",
+      "loop": false,
+      "mirror_half": false,
+      "palette": [
+        "#fff6e0",
+        "#f0c870",
+        "#ffb347",
+        "#3a2a1e"
+      ],
+      "visual_bounds": [
+        {
+          "left": 66,
+          "top": 66,
+          "width": 60,
+          "height": 60
+        },
+        {
+          "left": 36,
+          "top": 36,
+          "width": 120,
+          "height": 120
+        },
+        {
+          "left": 11,
+          "top": 11,
+          "width": 170,
+          "height": 170
+        },
+        {
+          "left": 11,
+          "top": 11,
+          "width": 170,
+          "height": 170
+        }
+      ]
+    },
+    "death_straw": {
+      "sheet": "boss_fx_192.png",
+      "cell": [
+        192,
+        192
+      ],
+      "columns": 4,
+      "first": 73,
+      "count": 4,
+      "fps": 12,
+      "pivot": [
+        96,
+        176
+      ],
+      "orientation": "fixed",
+      "loop": false,
+      "mirror_half": false,
+      "palette": [
+        "#f0c870",
+        "#a8742c"
+      ],
+      "visual_bounds": [
+        {
+          "left": 61,
+          "top": 96,
+          "width": 51,
+          "height": 80
+        },
+        {
+          "left": 28,
+          "top": 112,
+          "width": 136,
+          "height": 64
+        },
+        {
+          "left": 21,
+          "top": 136,
+          "width": 150,
+          "height": 40
+        },
+        {
+          "left": 21,
+          "top": 158,
+          "width": 150,
+          "height": 18
+        }
+      ]
+    }
+  },
+  "notes": [
+    "Attack visuals scaled to strict gameplay hitboxes.",
+    "Each clip palette <=4; cloth knot uses red cloth palette and straw uses two colors.",
+    "192px x 4 columns = 768px wide. Blank slots 77..79."
+  ]
+}
