@@ -225,6 +225,7 @@ func _build_ui() -> void:
 	fade_layer.add_child(_fade)
 	add_child(fade_layer)
 	if _touch_device():
+		UiText.touch = true
 		player.touch_mode = true
 		hud.show_skills = false
 		for a in ["attack", "skill_pull"]:

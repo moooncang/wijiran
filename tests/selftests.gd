@@ -667,80 +667,76 @@ func _elodie() -> void:
 # ---------- screenshots (windowed): `-- --test=qa` ----------
 
 func _qa() -> void:
+	# Every screen a player sees, one capture each (names: qa-<area>-<state>; touch runs add "touch-").
 	var p := _player()
 	p.input_locked = true
-	Game.save.skip_intro_seen = ["departure", "route"]   # captures without the cutscene overlay
+	Game.save.skip_intro_seen = ["departure", "route"]   # the cutscene gets its own capture below
+	# --- T0: intro dialogue + map title + first sign, then the long signs, dummies, door
 	await _goto("t0")
-	p.global_position = Vector2(700, 300)
-	await _snap("qa-t0")
+	p.global_position = Vector2(220, 300)
+	await _pf(30)
+	await _snap("qa-t0-intro")
+	Dialogue.clear()
+	p.global_position = Vector2(940, 300)
+	await _pf(4)
+	await _snap("qa-t0-sign-long")
 	p.global_position = Vector2(1300, 300)
-	await _pf(2)
+	await _pf(4)
 	await _snap("qa-t0-cliff")
+	p.global_position = Vector2(1830, 300)
+	p.aim = Vector2.RIGHT
+	await _pf(4)
+	Juice.clear()
+	p.press_attack()
+	await _pf(40)
+	await _snap("qa-t0-dummies-damage")
+	p._say("내공 부족")
+	Game.notice.emit("장법 「쇄진장」을 발견했습니다. 다음 휴식 지점에서 장착할 수 있습니다.")
+	await _pf(4)
+	await _snap("qa-t0-notices")
+	p.global_position = Vector2(2920, 300)
+	await _pf(4)
+	await _snap("qa-t0-door")
+	# --- cutscene overlay on first entry
+	Game.save.skip_intro_seen = []
+	await _goto("t0")
+	await _pf(100)
+	await _snap("qa-t0-cutscene")
+	Game.save.skip_intro_seen = ["departure", "route"]
+	# --- F1: archer, room fight, pull reticle + cast, manual on the roof, rest point + palm menu
 	await _goto("f1")
 	p.global_position = Vector2(1000, 300)
 	await _pf(60)
+	await _snap("qa-f1-archer")
 	p.global_position = Vector2(1490, 300)
 	p.aim = Vector2(1, 0)
 	await _pf(6)
+	await _snap("qa-f1-pull-reticle")
 	p.press_pull()
 	await _pf(3)
 	await _snap("qa-f1-pull")
 	Juice.clear()
-	await _goto("f2")
-	p.global_position = Vector2(400, 300)
-	await _pf(50)
-	await _snap("qa-f2-room1")
-	p.global_position = Vector2(2200, 300)
-	await _pf(70)
-	await _snap("qa-f2-plates")
-	await _goto("b2")
-	p.global_position = Vector2(400, 300)
+	p.global_position = Vector2(1695, 70)
 	await _pf(4)
-	var m = main.level._spawned["arena"][0]
-	m.state = m.State.IDLE
-	m._start_pattern("seal")
-	await _pf(int(0.85 * 120))
-	await _snap("qa-b2-seal")
-	m._cancel_pattern()
-	m.state = m.State.IDLE
-	m._start_pattern("barrier")
-	await _pf(int(0.6 * 120))
-	await _snap("qa-b2-barrier")
-	await _goto("f3")
-	p.global_position = Vector2(1000, 300)
-	await _pf(40)
-	var keeper: Node = null
-	for e in main.level._spawned.get("r2", []):
-		if e.has_method("_lay_zone"):
-			keeper = e
-	if keeper:
-		keeper._lay_zone()
-	await _pf(10)
-	await _snap("qa-f3-incense")
-	await _goto("b3")
-	p.global_position = Vector2(430, 300)
-	await _pf(4)
-	var el = main.level._spawned["arena"][0]
-	el.state = el.State.IDLE
-	el._start_pattern("prayer")
-	await _pf(int(0.9 * 120))
-	await _snap("qa-b3-prayer")
-	el._cancel_pattern()
-	el.state = el.State.IDLE
-	el._start_pattern("sweep")
-	await _pf(int(0.40 * 120))
-	await _snap("qa-b3-sweep")
-	await _snap("qa-f1-archer")
-	p.global_position = Vector2(1560, 300)
-	await _pf(40)
-	await _snap("qa-f1-room3")
-	p.global_position = Vector2(3060, 300)
+	await _snap("qa-f1-manual-prompt")
+	Game.collect_manual("f1_outpost_manual")
+	p.global_position = Vector2(3050, 300)
 	await _pf(20)
 	await _snap("qa-f1-rest")
-	Game.save = Game.default_save()
+	main.palm_menu.open()
+	await _pf(2)
+	await _snap("qa-menu-palm")
+	main.palm_menu.selected = 2
+	main.palm_menu.queue_redraw()
+	await _pf(2)
+	await _snap("qa-menu-palm-locked")
+	main.palm_menu.close()
+	await _pf(2)
+	# --- B1 boss: entry dialogue + boss bar, patterns
 	await _goto("b1")
 	p.global_position = Vector2(320, 300)
-	await _pf(4)
+	await _pf(20)
+	await _snap("qa-b1-entry")
 	var boss = main.level._spawned["arena"][0]
 	boss.state = boss.State.IDLE
 	boss._start_pattern("leaf_fan")
@@ -756,8 +752,114 @@ func _qa() -> void:
 	boss._start_pattern("root_ripple")
 	await _pf(int(0.75 * 120))
 	await _snap("qa-b1-root")
+	boss._cancel_pattern()
+	boss.status.stagger_left = 1.5
+	boss.state = boss.State.STAGGER
+	await _pf(4)
+	await _snap("qa-b1-stagger")
+	# --- H0 hub
+	Dialogue.clear()
 	await _goto("h0")
+	await _pf(20)
 	await _snap("qa-h0")
+	p.global_position = Vector2(640, 300)
+	await _pf(4)
+	await _snap("qa-h0-renata")
+	# --- F2: room 1 (shield + soldiers), mage cast, plates, rescue + pickup prompts
+	await _goto("f2")
+	p.global_position = Vector2(400, 300)
+	await _pf(50)
+	await _snap("qa-f2-room1")
+	var shield: Node = null
+	for e in main.level._spawned.get("r1", []):
+		if e.get("guarding") != null:
+			shield = e
+	if shield:
+		shield.broken_left = 0.5
+		await _pf(2)
+		await _snap("qa-f2-shield-broken")
+	p.global_position = Vector2(1000, 300)
+	await _pf(70)
+	await _snap("qa-f2-mage")
+	p.global_position = Vector2(2200, 300)
+	await _pf(70)
+	await _snap("qa-f2-plates")
+	for r in main.level.rooms:
+		r.entered = true
+	main.level.active_room = {}
+	main.level._enemy_count = 0
+	p.global_position = Vector2(3040, 300)
+	await _pf(4)
+	await _snap("qa-f2-rescue-prompt")
+	p.global_position = Vector2(2640, 300)
+	await _pf(4)
+	await _snap("qa-f2-pickup-prompt")
+	# --- B2 미레유
+	await _goto("b2")
+	p.global_position = Vector2(400, 300)
+	await _pf(20)
+	await _snap("qa-b2-entry")
+	var m = main.level._spawned["arena"][0]
+	m.state = m.State.IDLE
+	m._start_pattern("seal")
+	await _pf(int(0.85 * 120))
+	await _snap("qa-b2-seal")
+	m._cancel_pattern()
+	m.state = m.State.IDLE
+	m._start_pattern("barrier")
+	await _pf(int(0.6 * 120))
+	await _snap("qa-b2-barrier")
+	m._cancel_pattern()
+	m.state = m.State.IDLE
+	m._start_pattern("burn")
+	await _pf(int(0.4 * 120))
+	await _snap("qa-b2-burn")
+	# --- F3: incense zone, purify HUD line, archer on the steps
+	await _goto("f3")
+	p.global_position = Vector2(1000, 300)
+	await _pf(40)
+	var keeper: Node = null
+	for e in main.level._spawned.get("r2", []):
+		if e.has_method("_lay_zone"):
+			keeper = e
+	if keeper:
+		keeper._lay_zone()
+		p.global_position = Vector2(keeper.global_position.x - 20.0, 300)
+	await _pf(10)
+	await _snap("qa-f3-incense")
+	p.global_position = Vector2(1760, 300)
+	await _pf(40)
+	await _snap("qa-f3-steps")
+	# --- B3 엘로디
+	await _goto("b3")
+	p.global_position = Vector2(430, 300)
+	await _pf(20)
+	await _snap("qa-b3-entry")
+	var el = main.level._spawned["arena"][0]
+	el.state = el.State.IDLE
+	el._start_pattern("prayer")
+	await _pf(int(0.9 * 120))
+	await _snap("qa-b3-prayer")
+	el._cancel_pattern()
+	el.state = el.State.IDLE
+	el._start_pattern("sweep")
+	await _pf(int(0.40 * 120))
+	await _snap("qa-b3-sweep")
+	el._cancel_pattern()
+	el.status.hp = 0.0
+	el.on_hit({"hp_damage": 0, "burst": 0, "killed": true}, 1.0, 0.0)
+	await _pf(30)
+	p.global_position = Vector2(660, 300)
+	await _pf(4)
+	await _snap("qa-b3-after")
+	# --- low HP + tremor + death
+	p.hp = 12
+	p.tremor_left = 2.0
+	await _pf(4)
+	await _snap("qa-status-low")
+	p._take_damage(999)
+	await _pf(60)
+	await _snap("qa-death")
 	print("QA saved")
 	get_tree().quit(0)
 
@@ -767,7 +869,8 @@ func _snap(name: String) -> void:
 		await get_tree().process_frame
 	await RenderingServer.frame_post_draw
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://shots"))
-	get_viewport().get_texture().get_image().save_png("res://shots/%s.png" % name)
+	var prefix := "touch-" if main.touch_controls != null else ""
+	get_viewport().get_texture().get_image().save_png("res://shots/%s%s.png" % [prefix, name])
 
 
 # ---------- 월인 ----------
