@@ -48,6 +48,60 @@ func _run() -> void:
 			print("probe t=%.1f dead=%s x=%.0f hp=%d death_t=%.2f fade_t=%.2f level=%s" % [i * 0.5, p.dead, p.global_position.x, p.hp, main._death_t, main._fade_t, main.level.id])
 		get_tree().quit(0)
 		return
+	if suite == "fxleak":
+		await _goto("t0")
+		var p := _player()
+		p.global_position = Vector2(1800, 300)
+		await _pf(2)
+		for style in PalmStyles.ids():
+			Game.save.palms.unlocked = PalmStyles.ids().duplicate()
+			Game.save.palms.equipped = style
+			p.style_id = style
+			p.on_palm_changed()
+			for d in get_tree().get_nodes_in_group("enemy"):
+				if d.has_method("reset_state"):
+					d.reset_state()
+			p.reset_state(1840)
+			p.global_position = Vector2(1840, 300)
+			p.qi = 100.0
+			p.gauge = 100.0
+			await _pf(2)
+			for n in 2:
+				await _swing(p, 3)
+				await _pf(30)
+			Juice.clear()
+			p.qi = 100.0
+			p.aim = Vector2.RIGHT
+			p.press_heavy()
+			await _pf(90)
+			Juice.clear()
+			p.press_dash(Vector2(1, 0))
+			await _pf(40)
+			p.global_position = Vector2(1840, 300)
+			p.aim = Vector2.RIGHT
+			p.pull_cooldown = 0.0
+			p.qi = 100.0
+			p.press_pull()
+			await _pf(60)
+			Juice.clear()
+			p.press_parry(1.0)
+			await _pf(60)
+			p.qi = 100.0
+			p.gauge = 100.0
+			p.tremor_left = 0.0
+			p.ult_cooldown = 0.0
+			p.press_ultimate()
+			await _pf(int(3.0 * 120))
+			Juice.clear()
+		await _pf(int(4.0 * 120))
+		var left: Array = []
+		for n in get_tree().get_root().find_children("*", "", true, false):
+			var scr = n.get_script()
+			if scr and (scr.resource_path.ends_with("fx.gd") or scr.resource_path.ends_with("ghost.gd")):
+				left.append("%s first=%s count=%s loop=%s life=%s parent=%s" % [n.name, n.get("first"), n.get("count"), n.get("loop"), n.get("life"), n.get_parent().name])
+		print("FXLEAK frozen=%s left=%d %s" % [Juice.frozen(), left.size(), left])
+		get_tree().quit(0)
+		return
 	if suite == "walk":
 		var bot := Node.new()
 		bot.set_script(preload("res://tests/walk_bot.gd"))

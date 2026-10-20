@@ -160,10 +160,11 @@ var _title_left := 0.0
 
 
 func _on_travel(level_id: String, spawn_id: String) -> void:
-	if _fade_t >= 0.0:
-		return
-	_pending = [level_id, spawn_id]
-	_fade_t = 0.0
+	_pending = [level_id, spawn_id]   # a request during a running fade replaces its destination instead of being dropped
+	if _fade_t >= 0.3:
+		_fade_t = 0.0   # the old level is already up: fade again
+	elif _fade_t < 0.0:
+		_fade_t = 0.0
 
 
 func _on_boss_spawned(boss: Node) -> void:

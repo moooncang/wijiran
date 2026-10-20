@@ -127,6 +127,7 @@ var sprite: Sprite2D
 var arm_root: Node2D
 var _aura: Sprite2D     # dash_aura, lives while dashing
 var _gather: Sprite2D   # gather clip, lives while the burst winds up
+var _rush: Sprite2D     # looping rush aura (쇄진장 관진), freed when the swing ends
 var sleeve: Sprite2D
 var hand: Sprite2D
 var qi_fx: Sprite2D
@@ -458,7 +459,9 @@ func _release_swing() -> void:
 	if kind == "thrust":
 		Juice.fx(smear, _shoulder_world(), aim, facing, swing_dir < 0.0, null, mag)
 		if aura != "":
-			Juice.fx(aura, TORSO, aim, 1.0, false, self)  # wind shell on the body during the rush
+			_free(_rush)
+			_rush = Juice.fx(aura, TORSO, aim, 1.0, false, self)  # wind shell on the body during the rush
+			_rush.set("life", 0.6)   # looping clip: a hard cap so it can never outlive the swing
 	elif kind == "spin":
 		# orbit in two layers so it wraps the body: back sheet behind, front sheet in front
 		var c: Dictionary = Anim.effects.get(smear, {})
@@ -490,6 +493,7 @@ func _free(n) -> void:  # untyped: a freed reference is a valid argument here
 
 func _end_swing() -> void:
 	_free(_gather)
+	_free(_rush)
 	if swing.is_empty():
 		return
 	swing_cooldown = float(swing.cooldown) + _recovery_extra
