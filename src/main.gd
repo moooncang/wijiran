@@ -188,6 +188,25 @@ func _on_boss_spawned(boss: Node) -> void:
 
 # ---------- frame ----------
 
+var _dbg_t := 0.0
+
+
+## Web QA: window.WIJIRAN_STATE mirrors the level, the player and the nearest usable thing twice a second.
+func _web_state(delta: float) -> void:
+	if not OS.has_feature("web"):
+		return
+	_dbg_t += delta
+	if _dbg_t < 0.5:
+		return
+	_dbg_t = 0.0
+	var usable := ""
+	for it in get_tree().get_nodes_in_group("interactable"):
+		if it.near:
+			usable = "%s near avail=%s" % [it.label, it.available()]
+	var st := {"level": Game.level_id, "x": roundf(player.global_position.x), "y": roundf(player.global_position.y), "paused": Game.paused, "fade": _fade_t, "usable": usable, "dead": player.dead}
+	JavaScriptBridge.eval("window.WIJIRAN_STATE=%s" % JSON.stringify(st), true)
+
+
 func _process(delta: float) -> void:
 	if Input.is_action_just_pressed("interact") and not Game.paused:
 		for it in get_tree().get_nodes_in_group("interactable"):
@@ -196,6 +215,7 @@ func _process(delta: float) -> void:
 	if Input.is_action_just_pressed("reset") and not Game.paused:
 		Game.respawn()
 	_step_fade(delta)
+	_web_state(delta)
 	if _cut_t >= 0.0:
 		_cut_t += delta
 		# the art fades in over the wash; at the end wash and art fade out together and the HUD comes back

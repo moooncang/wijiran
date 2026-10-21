@@ -212,6 +212,32 @@ func _run() -> void:
 		print("probe inn door used=%s level=%s" % [used, main.level.id])
 		get_tree().quit(0)
 		return
+	if suite == "doorprobe":
+		Game.save = Game.default_save()
+		await _goto("f1", "from_b1")
+		var p := _player()
+		await _pf(2)
+		Input.action_press("move_right")
+		await _pf(84)
+		Input.action_release("move_right")
+		Input.action_press("move_left")
+		await _pf(19)
+		Input.action_release("move_left")
+		await _pf(10)
+		var door: Node = null
+		for it in get_tree().get_nodes_in_group("interactable"):
+			if String(it.get_script().resource_path.get_file()) == "door.gd":
+				door = it
+		print("probe px=%.0f door x=%.0f near=%s avail=%s label=%s" % [p.global_position.x, door.global_position.x, door.near, door.available(), door.label])
+		Input.action_press("interact")
+		Input.action_press("jump")
+		await _pf(2)
+		Input.action_release("interact")
+		Input.action_release("jump")
+		await _pf(int(0.9 * 120))
+		print("probe after W: level=%s fade=%.2f" % [main.level.id, main._fade_t])
+		get_tree().quit(0)
+		return
 	if suite == "walk":
 		var bot := Node.new()
 		bot.set_script(preload("res://tests/walk_bot.gd"))
