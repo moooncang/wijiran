@@ -88,6 +88,19 @@ func _ready() -> void:
 		elif a.begins_with("--spawn="):
 			start_spawn = a.substr(8)
 	_load_level(start_level, start_spawn)
+	if "--debug" in args:
+		var dl := CanvasLayer.new()
+		dl.layer = 12
+		_dbg_label = Label.new()
+		_dbg_label.position = Vector2(4, 4)
+		_dbg_label.size = Vector2(792, 60)
+		_dbg_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		_dbg_label.add_theme_font_size_override("font_size", 9)
+		_dbg_label.add_theme_color_override("font_color", Color(1, 1, 0.6))
+		_dbg_label.add_theme_color_override("font_outline_color", Color.BLACK)
+		_dbg_label.add_theme_constant_override("outline_size", 3)
+		dl.add_child(_dbg_label)
+		add_child(dl)
 	for a in args:
 		if a.begins_with("--test="):
 			var t := Node.new()
@@ -191,6 +204,14 @@ func _on_boss_spawned(boss: Node) -> void:
 var _dbg_t := 0.0
 
 
+func _web_build() -> String:
+	if OS.has_feature("web"):
+		var v = JavaScriptBridge.eval("window.WIJIRAN_BUILD || \"\"", true)
+		if v is String:
+			return String(v)
+	return "dev"
+
+
 ## Web QA: window.WIJIRAN_STATE mirrors the level, the player and the nearest usable thing twice a second.
 func _web_state(delta: float) -> void:
 	if not OS.has_feature("web"):
@@ -207,11 +228,29 @@ func _web_state(delta: float) -> void:
 	JavaScriptBridge.eval("window.WIJIRAN_STATE=%s" % JSON.stringify(st), true)
 
 
-func _process(delta: float) -> void:
+var _dbg_label: Label
+var _dbg_presses := 0
+var _dbg_used := ""
+
+
+## Interact is polled in the physics tick, where the player already reads jump: the same W press reaches
+## both the same way (polling it from _process missed presses on some browsers).
+func _physics_process(_dt: float) -> void:
 	if Input.is_action_just_pressed("interact") and not Game.paused:
+		_dbg_presses += 1
 		for it in get_tree().get_nodes_in_group("interactable"):
 			if it.try_use():
+				_dbg_used = "%s @%d" % [it.label, _dbg_presses]
 				break
+
+
+func _process(delta: float) -> void:
+	if _dbg_label:
+		var usable := ""
+		for it in get_tree().get_nodes_in_group("interactable"):
+			if it.near:
+				usable += "[%s near=%s avail=%s focused=%s] " % [it.label, it.near, it.available(), it.focused()]
+		_dbg_label.text = "build %s | level %s x=%d | paused=%s fade=%.2f cut=%.1f death=%.1f | interact presses=%d used=%s | %s | flags=%s" % [_web_build(), Game.level_id, int(player.global_position.x), Game.paused, _fade_t, _cut_t, _death_t, _dbg_presses, _dbg_used, usable, Game.save.flags.keys()]
 	if Input.is_action_just_pressed("reset") and not Game.paused:
 		Game.respawn()
 	_step_fade(delta)
