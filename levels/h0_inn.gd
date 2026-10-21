@@ -4,7 +4,7 @@ class_name LevelH0
 
 static func data() -> Dictionary:
 	return {
-		"id": "h0", "name": "쌍등객잔", "width": 900.0, "ground_y": 300.0, "backdrop": "inn", "no_combat": true, "map_key": "H0", "cutscene": "route",
+		"id": "h0", "name": "쌍등객잔", "width": 900.0, "ground_y": 300.0, "backdrop": "inn", "no_combat": true, "map_key": "H0", "cutscene": "route", "cutscene_after": [["b3_elodie_beaten", "b3"], ["b3_elodie_beaten", "return"]],
 		"decor": [["h0_lantern_blue_0", 300, 220, false], ["h0_lantern_red_0", 560, 220, false], ["h0_dumplings", 470, 262, false]],
 		"spawns": {"start": Vector2(80, 300)},
 		"platforms": [],

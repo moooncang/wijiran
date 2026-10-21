@@ -129,6 +129,7 @@ var _aura: Sprite2D     # dash_aura, lives while dashing
 var _gather: Sprite2D   # gather clip, lives while the burst winds up
 var _rush: Sprite2D     # looping rush aura (쇄진장 관진), freed when the swing ends
 var _drop_left := 0.0   # seconds left ignoring one-way ledges (S or a down dash on a ledge)
+var _purify_fx: Sprite2D # purified_aura loop while 정화 is on
 var sleeve: Sprite2D
 var hand: Sprite2D
 var qi_fx: Sprite2D
@@ -368,18 +369,14 @@ func purified() -> bool:
 	return purify_left > 0.0
 
 
-func _draw() -> void:
+## 11차 purified_aura loop around the torso while 정화 is on.
+func _step_purify_fx() -> void:
 	if purified() and not dead:
-		# faint glow + slow dashed ring, dark under-stroke then the HUD 정화 tint (same look as the HUD marker):
-		# dashed, not solid, because a solid throbbing outline read as a telegraph; the under-stroke keeps it a
-		# ring over pale incense haze instead of loose specks
-		var ms := Time.get_ticks_msec()
-		var a := 0.5 + 0.5 * sin(ms * 0.004)
-		draw_circle(TORSO, 24.0, Color(0.9, 0.95, 1.0, 0.03 + 0.03 * a))
-		for i in 28:
-			var t := TAU * i / 28.0 + ms * 0.0003
-			draw_arc(TORSO, 30.0, t, t + 0.13, 3, Color(UiText.OUTLINE, 0.45), 3.0)
-			draw_arc(TORSO, 30.0, t, t + 0.13, 3, Color(0.86, 0.93, 1.0, 0.3 + 0.2 * a), 1.5)
+		if not is_instance_valid(_purify_fx):
+			_purify_fx = Juice.fx("purified_aura", TORSO, Vector2.RIGHT, 1.0, false, self)
+			_purify_fx.z_index = 4
+	else:
+		_free(_purify_fx)
 
 
 ## Nearest living enemy inside the 월인 cone and range, or null.
@@ -741,6 +738,7 @@ func _physics_process(dt: float) -> void:
 	tremor_left = maxf(0.0, tremor_left - dt)
 	pull_cooldown = maxf(0.0, pull_cooldown - dt)
 	purify_left = maxf(0.0, purify_left - dt)
+	_step_purify_fx()
 	if _drop_left > 0.0:
 		_drop_left = maxf(0.0, _drop_left - dt)
 		if _drop_left == 0.0:

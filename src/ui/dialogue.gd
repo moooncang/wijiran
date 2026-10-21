@@ -7,7 +7,7 @@ extends CanvasLayer
 ## on the screen axis within x 214–586 (the boss bar's span) from y 46: clear of the player status to
 ## the right and the notice toast below.
 
-const PORTRAITS := {"위지란": "portrait_wi_jiran_neutral", "티아넬": "portrait_tianel_cold", "제자": "portrait_disciple", "레나타": "portrait_renata", "구출된 제자": "portrait_disciple_f"}
+const PORTRAITS := {"위지란": "portrait_wi_jiran_neutral", "티아넬": "portrait_tianel_cold", "제자": "portrait_disciple", "레나타": "portrait_renata", "구출된 제자": "portrait_disciple_relieved", "미레유": "portrait_mireille_proud", "엘로디": "portrait_elodie_serene"}
 const BossHud := preload("res://src/ui/boss_hud.gd")   # CRESTS: the bar's bust for bosses without art
 const AXIS_X := 400.0   # screen centre: the boss bar, notice toast and map title share it
 const MAX_W := 372.0    # 2 × (boss bar end 586 − axis): always centred, never past the bar's ends

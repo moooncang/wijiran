@@ -1,0 +1,167 @@
+{
+  "version": 11,
+  "assets": {
+    "portrait_mireille_proud": {
+      "file": "ui_portraits_r11.png",
+      "rect": [
+        0,
+        0,
+        48,
+        48
+      ]
+    },
+    "portrait_mireille_shaken": {
+      "file": "ui_portraits_r11.png",
+      "rect": [
+        48,
+        0,
+        48,
+        48
+      ]
+    },
+    "portrait_elodie_serene": {
+      "file": "ui_portraits_r11.png",
+      "rect": [
+        96,
+        0,
+        48,
+        48
+      ]
+    },
+    "portrait_elodie_doubt": {
+      "file": "ui_portraits_r11.png",
+      "rect": [
+        144,
+        0,
+        48,
+        48
+      ]
+    },
+    "portrait_disciple_relieved": {
+      "file": "ui_portraits_r11.png",
+      "rect": [
+        192,
+        0,
+        48,
+        48
+      ]
+    },
+    "mireille_hud_portrait": {
+      "file": "ui/mireille_hud_portrait.png",
+      "rect": [
+        0,
+        0,
+        32,
+        32
+      ]
+    },
+    "elodie_hud_portrait": {
+      "file": "ui/elodie_hud_portrait.png",
+      "rect": [
+        0,
+        0,
+        32,
+        32
+      ]
+    },
+    "purified": {
+      "file": "ui/purified.png",
+      "rect": [
+        0,
+        0,
+        16,
+        16
+      ],
+      "status_rule": {
+        "internal_burst_damage_multiplier": 0.7,
+        "normal_attack_unchanged": true,
+        "grace_after_exit_seconds": 0.5
+      }
+    },
+    "barrier": {
+      "file": "ui/barrier.png",
+      "rect": [
+        0,
+        0,
+        16,
+        16
+      ]
+    },
+    "internal_injury": {
+      "file": "ui/internal_injury.png",
+      "rect": [
+        0,
+        0,
+        16,
+        16
+      ]
+    },
+    "objective_knot": {
+      "file": "ui/objective_knot.png",
+      "rect": [
+        0,
+        0,
+        16,
+        16
+      ]
+    },
+    "objective_banner": {
+      "file": "ui/objective_banner.png",
+      "rect": [
+        0,
+        0,
+        400,
+        30
+      ],
+      "nine_slice": [
+        6,
+        6,
+        6,
+        6
+      ]
+    },
+    "pickup_notification": {
+      "file": "ui/pickup_notification.png",
+      "rect": [
+        0,
+        0,
+        200,
+        40
+      ],
+      "nine_slice": [
+        6,
+        6,
+        6,
+        6
+      ]
+    }
+  },
+  "boss_hud_frame": {
+    "reuse": "reuse/boss_hud.png"
+  },
+  "reused_protagonist_portraits": {
+    "file": "reuse/ui_portraits.png",
+    "rects": [
+      [
+        0,
+        0,
+        48,
+        48
+      ],
+      [
+        48,
+        0,
+        48,
+        48
+      ],
+      [
+        96,
+        0,
+        48,
+        48
+      ]
+    ]
+  },
+  "objective_text": "제자 3명 구출 · 남은 인원 이송 기록",
+  "objective_text_rendering": "code"
+}

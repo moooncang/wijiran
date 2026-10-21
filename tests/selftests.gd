@@ -918,7 +918,7 @@ func _qa() -> void:
 	# Every screen a player sees, one capture each (names: qa-<area>-<state>; touch runs add "touch-").
 	var p := _player()
 	p.input_locked = true
-	Game.save.skip_intro_seen = ["departure", "route"]   # the cutscene gets its own capture below
+	Game.save.skip_intro_seen = ["departure", "route", "b2", "b3", "return"]   # the cutscene gets its own capture below
 	# --- T0: intro dialogue + map title + first sign, then the long signs, dummies, door
 	await _goto("t0")
 	p.global_position = Vector2(220, 300)
@@ -1026,12 +1026,14 @@ func _qa() -> void:
 		shield.broken_left = 0.5
 		await _pf(2)
 		await _snap("qa-f2-shield-broken")
+	_clear_rooms()
 	p.global_position = Vector2(1000, 300)
 	await _pf(70)
 	await _snap("qa-f2-mage")
 	p.global_position = Vector2(2200, 300)
 	await _pf(70)
 	await _snap("qa-f2-plates")
+	_clear_rooms()
 	for r in main.level.rooms:
 		r.entered = true
 	main.level.active_room = {}
@@ -1075,6 +1077,7 @@ func _qa() -> void:
 		p.global_position = Vector2(keeper.global_position.x - 20.0, 300)
 	await _pf(10)
 	await _snap("qa-f3-incense")
+	_clear_rooms()
 	p.global_position = Vector2(1760, 300)
 	await _pf(40)
 	await _snap("qa-f3-steps")
@@ -1110,6 +1113,18 @@ func _qa() -> void:
 	await _snap("qa-death")
 	print("QA saved")
 	get_tree().quit(0)
+
+
+## Kill every enemy of the current level and open its walls (QA: teleporting past locked rooms).
+func _clear_rooms() -> void:
+	var lv: Level = main.level
+	for rid in lv._spawned:
+		for e in lv._spawned[rid]:
+			if is_instance_valid(e) and e.status.alive():
+				e.status.hp = 0.0
+				e.on_hit({"hp_damage": 0, "burst": 0, "killed": true}, 1.0, 0.0)
+	lv._enemy_count = 0
+	lv._unlock()
 
 
 func _snap(name: String) -> void:

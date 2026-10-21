@@ -1,0 +1,216 @@
+{
+  "version": 11,
+  "props": {
+    "file": "props_r11.png",
+    "cell": 64,
+    "columns": 8,
+    "pivot": [
+      32,
+      60
+    ]
+  },
+  "clips": {
+    "specimen_tank": {
+      "first": 0,
+      "count": 2,
+      "fps": 8,
+      "loop": true,
+      "art_size": [
+        40,
+        60
+      ],
+      "layers": [
+        {
+          "sheet": "props_r11_top.png",
+          "offset": [
+            0,
+            -48
+          ],
+          "cell": 64,
+          "columns": 8,
+          "first": 0,
+          "count": 2
+        }
+      ]
+    },
+    "stone_plate_off": {
+      "first": 2,
+      "count": 1,
+      "fps": 8,
+      "loop": false,
+      "art_size": [
+        48,
+        16
+      ]
+    },
+    "stone_plate_hot": {
+      "first": 3,
+      "count": 2,
+      "fps": 8,
+      "loop": true,
+      "art_size": [
+        48,
+        16
+      ]
+    },
+    "stone_plate_burst": {
+      "first": 5,
+      "count": 3,
+      "fps": 8,
+      "loop": false,
+      "art_size": [
+        48,
+        40
+      ]
+    },
+    "cell_door_open": {
+      "first": 8,
+      "count": 2,
+      "fps": 8,
+      "loop": true,
+      "art_size": [
+        60,
+        90
+      ],
+      "layers": [
+        {
+          "sheet": "props_r11_top.png",
+          "offset": [
+            0,
+            -48
+          ],
+          "cell": 64,
+          "columns": 8,
+          "first": 8,
+          "count": 2
+        }
+      ]
+    },
+    "cell_door_locked": {
+      "first": 10,
+      "count": 1,
+      "fps": 8,
+      "loop": false,
+      "art_size": [
+        60,
+        90
+      ],
+      "layers": [
+        {
+          "sheet": "props_r11_top.png",
+          "offset": [
+            0,
+            -48
+          ],
+          "cell": 64,
+          "columns": 8,
+          "first": 10,
+          "count": 1
+        }
+      ]
+    },
+    "rescue_disciple_sit": {
+      "first": 11,
+      "count": 4,
+      "fps": 8,
+      "loop": true,
+      "art_size": [
+        36,
+        38
+      ]
+    },
+    "rescue_disciple_leave": {
+      "first": 15,
+      "count": 6,
+      "fps": 8,
+      "loop": false,
+      "art_size": [
+        28,
+        48
+      ]
+    },
+    "transfer_record": {
+      "first": 21,
+      "count": 4,
+      "fps": 8,
+      "loop": true,
+      "art_size": [
+        22,
+        14
+      ]
+    },
+    "war_record": {
+      "first": 25,
+      "count": 4,
+      "fps": 8,
+      "loop": true,
+      "art_size": [
+        22,
+        14
+      ]
+    },
+    "tonic": {
+      "first": 29,
+      "count": 4,
+      "fps": 8,
+      "loop": true,
+      "art_size": [
+        14,
+        18
+      ]
+    },
+    "tonic_pickup": {
+      "first": 33,
+      "count": 3,
+      "fps": 8,
+      "loop": false,
+      "art_size": [
+        28,
+        28
+      ]
+    },
+    "censer_stand": {
+      "first": 36,
+      "count": 2,
+      "fps": 8,
+      "loop": false,
+      "art_size": [
+        60,
+        40
+      ]
+    },
+    "sun_banner": {
+      "first": 38,
+      "count": 2,
+      "fps": 8,
+      "loop": true,
+      "art_size": [
+        24,
+        60
+      ],
+      "layers": [
+        {
+          "sheet": "props_r11_top.png",
+          "offset": [
+            0,
+            -48
+          ],
+          "cell": 64,
+          "columns": 8,
+          "first": 38,
+          "count": 2
+        }
+      ]
+    },
+    "incense_smoke": {
+      "first": 40,
+      "count": 3,
+      "fps": 8,
+      "loop": true,
+      "art_size": [
+        20,
+        40
+      ]
+    }
+  }
+}

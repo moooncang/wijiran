@@ -1,0 +1,408 @@
+{
+  "version": 11,
+  "effects": {
+    "file": "boss_mireille_fx.png",
+    "cell": 256,
+    "columns": 4
+  },
+  "effect_clips": {
+    "observe_orb": {
+      "sheet": "boss_mireille_fx.png",
+      "cell": 256,
+      "columns": 4,
+      "first": 0,
+      "count": 2,
+      "fps": 12,
+      "loop": true,
+      "pivot": [
+        128,
+        128
+      ],
+      "orientation": "right",
+      "art_size": [
+        88,
+        28
+      ],
+      "render_scale": 1,
+      "ground": false,
+      "palette": [
+        "#fff9eb",
+        "#ffd060",
+        "#f0a030",
+        "#2c3446"
+      ],
+      "hitbox": {
+        "type": "projectile",
+        "diameter": 28
+      },
+      "non_damaging_trail": {
+        "length": 60,
+        "direction": "-x",
+        "head_center": [
+          128,
+          128
+        ]
+      }
+    },
+    "observe_orb_hit": {
+      "sheet": "boss_mireille_fx.png",
+      "cell": 256,
+      "columns": 4,
+      "first": 2,
+      "count": 3,
+      "fps": 24,
+      "loop": false,
+      "pivot": [
+        128,
+        128
+      ],
+      "orientation": "fixed",
+      "art_size": [
+        70,
+        70
+      ],
+      "render_scale": 1,
+      "ground": false,
+      "palette": [
+        "#fff9eb",
+        "#ffd060",
+        "#f0a030",
+        "#2c3446"
+      ],
+      "lead_in_frames": 1
+    },
+    "observe_orb_parried": {
+      "sheet": "boss_mireille_fx.png",
+      "cell": 256,
+      "columns": 4,
+      "first": 5,
+      "count": 3,
+      "fps": 24,
+      "loop": false,
+      "pivot": [
+        128,
+        128
+      ],
+      "orientation": "fixed",
+      "art_size": [
+        80,
+        80
+      ],
+      "render_scale": 1,
+      "ground": false,
+      "palette": [
+        "#fff9eb",
+        "#ffd060",
+        "#f0a030",
+        "#2c3446"
+      ],
+      "lead_in_frames": 1
+    },
+    "orb_charge": {
+      "sheet": "boss_mireille_fx.png",
+      "cell": 256,
+      "columns": 4,
+      "first": 8,
+      "count": 3,
+      "fps": 12,
+      "loop": true,
+      "pivot": [
+        128,
+        128
+      ],
+      "orientation": "fixed",
+      "art_size": [
+        40,
+        40
+      ],
+      "render_scale": 1,
+      "ground": false,
+      "palette": [
+        "#fff9eb",
+        "#ffd060",
+        "#f0a030",
+        "#2c3446"
+      ]
+    },
+    "burn_circle": {
+      "sheet": "boss_mireille_fx.png",
+      "cell": 256,
+      "columns": 4,
+      "first": 11,
+      "count": 3,
+      "fps": 12,
+      "loop": true,
+      "pivot": [
+        128,
+        232
+      ],
+      "orientation": "fixed",
+      "art_size": [
+        140,
+        60
+      ],
+      "render_scale": 1,
+      "ground": true,
+      "palette": [
+        "#fff9eb",
+        "#ffd060",
+        "#f0a030",
+        "#2c3446"
+      ],
+      "hitbox": {
+        "type": "circle",
+        "radius": 70
+      }
+    },
+    "burn_flash": {
+      "sheet": "boss_mireille_fx.png",
+      "cell": 256,
+      "columns": 4,
+      "first": 14,
+      "count": 2,
+      "fps": 24,
+      "loop": false,
+      "pivot": [
+        128,
+        232
+      ],
+      "orientation": "fixed",
+      "art_size": [
+        160,
+        100
+      ],
+      "render_scale": 1,
+      "ground": true,
+      "palette": [
+        "#fff9eb",
+        "#ffd060",
+        "#f0a030",
+        "#2c3446"
+      ],
+      "lead_in_frames": 1
+    },
+    "seal_rune": {
+      "sheet": "boss_mireille_fx_320.png",
+      "cell": 320,
+      "columns": 4,
+      "first": 0,
+      "count": 3,
+      "fps": 12,
+      "loop": true,
+      "pivot": [
+        160,
+        296
+      ],
+      "orientation": "fixed",
+      "art_size": [
+        266,
+        160
+      ],
+      "render_scale": 1,
+      "ground": true,
+      "palette": [
+        "#f8f7ff",
+        "#9fc4ff",
+        "#d8b14a",
+        "#2c3446"
+      ],
+      "hitbox": {
+        "type": "rect",
+        "width": 266,
+        "height": 160,
+        "x": -133,
+        "y": -160
+      },
+      "expanded_from_cell": 256
+    },
+    "seal_burst": {
+      "sheet": "boss_mireille_fx_320.png",
+      "cell": 320,
+      "columns": 4,
+      "first": 3,
+      "count": 3,
+      "fps": 24,
+      "loop": false,
+      "pivot": [
+        160,
+        296
+      ],
+      "orientation": "fixed",
+      "art_size": [
+        266,
+        180
+      ],
+      "render_scale": 1,
+      "ground": true,
+      "palette": [
+        "#f8f7ff",
+        "#9fc4ff",
+        "#d8b14a",
+        "#2c3446"
+      ],
+      "lead_in_frames": 1,
+      "expanded_from_cell": 256
+    },
+    "barrier_plate": {
+      "sheet": "boss_mireille_fx.png",
+      "cell": 256,
+      "columns": 4,
+      "first": 16,
+      "count": 3,
+      "fps": 12,
+      "loop": true,
+      "pivot": [
+        128,
+        128
+      ],
+      "orientation": "fixed",
+      "art_size": [
+        20,
+        90
+      ],
+      "render_scale": 1,
+      "ground": false,
+      "palette": [
+        "#f8f7ff",
+        "#c0dfff",
+        "#8faac8",
+        "#2c3446"
+      ]
+    },
+    "barrier_hit": {
+      "sheet": "boss_mireille_fx.png",
+      "cell": 256,
+      "columns": 4,
+      "first": 19,
+      "count": 2,
+      "fps": 24,
+      "loop": false,
+      "pivot": [
+        128,
+        128
+      ],
+      "orientation": "fixed",
+      "art_size": [
+        50,
+        50
+      ],
+      "render_scale": 1,
+      "ground": false,
+      "palette": [
+        "#f8f7ff",
+        "#c0dfff",
+        "#8faac8",
+        "#2c3446"
+      ],
+      "lead_in_frames": 1
+    },
+    "barrier_crack": {
+      "sheet": "boss_mireille_fx.png",
+      "cell": 256,
+      "columns": 4,
+      "first": 21,
+      "count": 3,
+      "fps": 24,
+      "loop": false,
+      "pivot": [
+        128,
+        128
+      ],
+      "orientation": "fixed",
+      "art_size": [
+        100,
+        100
+      ],
+      "render_scale": 1,
+      "ground": false,
+      "palette": [
+        "#f8f7ff",
+        "#c0dfff",
+        "#8faac8",
+        "#2c3446"
+      ],
+      "lead_in_frames": 1
+    },
+    "blink_pages": {
+      "sheet": "boss_mireille_fx.png",
+      "cell": 256,
+      "columns": 4,
+      "first": 24,
+      "count": 3,
+      "fps": 24,
+      "loop": false,
+      "pivot": [
+        128,
+        128
+      ],
+      "orientation": "fixed",
+      "art_size": [
+        80,
+        80
+      ],
+      "render_scale": 1,
+      "ground": false,
+      "palette": [
+        "#f8f7ef",
+        "#d4d8de",
+        "#9eabbc",
+        "#2c3446"
+      ],
+      "lead_in_frames": 1
+    },
+    "orb_twin_split": {
+      "sheet": "boss_mireille_fx.png",
+      "cell": 256,
+      "columns": 4,
+      "first": 27,
+      "count": 2,
+      "fps": 24,
+      "loop": false,
+      "pivot": [
+        128,
+        128
+      ],
+      "orientation": "fixed",
+      "art_size": [
+        60,
+        40
+      ],
+      "render_scale": 1,
+      "ground": false,
+      "palette": [
+        "#fff9eb",
+        "#ffd060",
+        "#f0a030",
+        "#2c3446"
+      ],
+      "lead_in_frames": 1
+    },
+    "ring_break": {
+      "sheet": "boss_mireille_fx.png",
+      "cell": 256,
+      "columns": 4,
+      "first": 29,
+      "count": 4,
+      "fps": 24,
+      "loop": false,
+      "pivot": [
+        128,
+        232
+      ],
+      "orientation": "fixed",
+      "art_size": [
+        200,
+        100
+      ],
+      "render_scale": 1,
+      "ground": true,
+      "palette": [
+        "#fff9eb",
+        "#ffd060",
+        "#f0a030",
+        "#2c3446"
+      ],
+      "lead_in_frames": 1
+    }
+  }
+}

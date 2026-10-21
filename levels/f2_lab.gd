@@ -5,7 +5,11 @@ class_name LevelF2
 
 static func data() -> Dictionary:
 	return {
-		"id": "f2", "name": "단층 임시 연구소", "width": 3400.0, "ground_y": 300.0, "backdrop": "lab",
+		"id": "f2", "name": "단층 임시 연구소", "width": 3400.0, "ground_y": 300.0, "backdrop": "lab", "map_key": "F2",
+		"art": {"p0": "f2_crate_stack_0", "p1": "f2_desk", "p2": "f2_shelf_0", "p3": "f2_shelf_1", "p4": "f2_measuring_step", "v0": "f2_cover_0", "v1": "f2_cover_1"},
+		"decor": [["f2_pillar", 300, 300], ["f2_lamp", 700, 190], ["f2_pillar", 1000, 300], ["f2_instrument", 1140, 236], ["f2_papers", 1210, 236], ["f2_pillar", 1450, 300],
+			["f2_tank_a", 1520, 300], ["f2_tank_b", 1640, 300], ["f2_lamp", 1900, 190], ["f2_pillar", 2050, 300], ["f2_chain", 2400, 200], ["f2_pillar", 2700, 300],
+			["f2_cell_door", 2990, 300], ["f2_bars", 3160, 300], ["f2_lamp", 3300, 190]],
 		"spawns": {"start": Vector2(80, 300), "from_b2": Vector2(3300, 300)},
 		"platforms": [
 			Rect2(480, 240, 120, 60),                        # 1. crate stack (over the shield line)

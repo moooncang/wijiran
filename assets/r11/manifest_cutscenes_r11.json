@@ -1,0 +1,34 @@
+{
+  "version": 11,
+  "assets": {
+    "b2": {
+      "file": "cutscene_b2.png",
+      "size": [
+        320,
+        180
+      ]
+    },
+    "b3": {
+      "file": "cutscene_b3.png",
+      "size": [
+        320,
+        180
+      ]
+    },
+    "return": {
+      "file": "cutscene_return.png",
+      "size": [
+        320,
+        180
+      ]
+    },
+    "departure": {
+      "file": "reuse/cutscene_departure.png",
+      "size": [
+        320,
+        180
+      ],
+      "revision_note": "기존 컷에는 키 안내 문자가 없어 그대로 재사용. 대시 키는 Shift."
+    }
+  }
+}

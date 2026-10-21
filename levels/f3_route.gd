@@ -5,7 +5,12 @@ class_name LevelF3
 
 static func data() -> Dictionary:
 	return {
-		"id": "f3", "name": "백향 이송로", "width": 3400.0, "ground_y": 300.0, "backdrop": "shrine",
+		"id": "f3", "name": "백향 이송로", "width": 3400.0, "ground_y": 300.0, "backdrop": "shrine", "map_key": "F3",
+		"art": {"p0": "f3_cart_platform", "p1": "f3_post_platform", "p2": "f3_stair_0", "p3": "f3_stair_1", "p4": "f3_stair_2", "p5": "f3_wall", "p6": "f3_chapel_step", "v0": "f3_cover_0", "v1": "f3_cover_1"},
+		"decor": [["f3_tent", 300, 300], ["f3_sun_flag_0", 430, 300], ["f3_cart_wreck", 560, 300], ["f3_censer_base", 1130, 230], ["f3_sun_flag_1", 1250, 300], ["f3_tent", 1330, 300],
+			["f3_cloth", 1500, 300], ["f3_gate_pillar", 1660, 300], ["f3_gate_pillar", 2060, 300], ["f3_sun_flag_0", 2200, 300], ["f3_cloth", 2560, 300], ["f3_tent", 2650, 300],
+			["f3_stone_lantern", 2800, 300], ["f3_bindings", 3060, 300, false], ["f3_sun_flag_1", 3250, 300]],
+		"cutscene": "b2",
 		"spawns": {"start": Vector2(80, 300), "from_b3": Vector2(3300, 300)},
 		"platforms": [
 			Rect2(560, 260, 130, 40),                                   # 1. the abandoned cart → manual

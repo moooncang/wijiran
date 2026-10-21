@@ -1,0 +1,157 @@
+{
+  "version": 11,
+  "effects": {
+    "file": "fx_pull.png",
+    "columns": 8,
+    "cell": 96
+  },
+  "effect_clips": {
+    "pull_thread": {
+      "sheet": "fx_pull_256.png",
+      "cell": 256,
+      "columns": 8,
+      "first": 0,
+      "count": 3,
+      "fps": 24,
+      "loop": true,
+      "pivot": [
+        16,
+        128
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        180,
+        12
+      ],
+      "render_scale": 1,
+      "front_only": true,
+      "stretch": {
+        "axis": "x",
+        "start": 20,
+        "end": 176,
+        "cap_start": 4,
+        "cap_end": 20
+      },
+      "revision": 2,
+      "knot_count": 3
+    },
+    "pull_cast": {
+      "sheet": "fx_pull.png",
+      "cell": 96,
+      "columns": 8,
+      "first": 0,
+      "count": 3,
+      "fps": 30,
+      "loop": false,
+      "pivot": [
+        48,
+        48
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        40,
+        40
+      ],
+      "render_scale": 1,
+      "lead_in_frames": 1
+    },
+    "pull_hook": {
+      "sheet": "fx_pull.png",
+      "cell": 96,
+      "columns": 8,
+      "first": 3,
+      "count": 3,
+      "fps": 30,
+      "loop": false,
+      "pivot": [
+        48,
+        48
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        50,
+        50
+      ],
+      "render_scale": 1,
+      "lead_in_frames": 1
+    },
+    "pull_drag": {
+      "sheet": "fx_pull.png",
+      "cell": 96,
+      "columns": 8,
+      "first": 6,
+      "count": 2,
+      "fps": 24,
+      "loop": true,
+      "pivot": [
+        48,
+        80
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        60,
+        12
+      ],
+      "render_scale": 1,
+      "ground": true
+    },
+    "pull_self": {
+      "sheet": "fx_pull.png",
+      "cell": 96,
+      "columns": 8,
+      "first": 8,
+      "count": 3,
+      "fps": 24,
+      "loop": true,
+      "pivot": [
+        48,
+        48
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        70,
+        40
+      ],
+      "render_scale": 1
+    },
+    "pull_fail": {
+      "sheet": "fx_pull.png",
+      "cell": 96,
+      "columns": 8,
+      "first": 11,
+      "count": 2,
+      "fps": 24,
+      "loop": false,
+      "pivot": [
+        48,
+        48
+      ],
+      "orientation": "hit_direction",
+      "art_size": [
+        30,
+        30
+      ],
+      "render_scale": 1,
+      "lead_in_frames": 1
+    },
+    "pull_mark": {
+      "sheet": "fx_pull.png",
+      "cell": 96,
+      "columns": 8,
+      "first": 13,
+      "count": 2,
+      "fps": 8,
+      "loop": true,
+      "pivot": [
+        48,
+        48
+      ],
+      "orientation": "fixed",
+      "art_size": [
+        20,
+        20
+      ],
+      "render_scale": 1
+    }
+  }
+}

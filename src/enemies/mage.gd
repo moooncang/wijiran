@@ -2,7 +2,7 @@ extends "res://src/enemies/enemy_base.gd"
 ## 백은 마탑 견습 마법사 (본편 §9, F2). Two casts that alternate: a straight bolt after a 0.7 s hold, and a
 ## floor rune (90×26, unparryable) fixed at the player's feet when the cast starts, firing after 1.0 s.
 ## Any hit during a cast interrupts it (0.8 s helpless). One short step back when the player closes in,
-## never twice in a row. Greybox body until the 11차 sheet.
+## never twice in a row. 11차 sheet (96 cell, hand anchor) + fx_minions clips.
 
 const KEEP_MIN := 140.0
 const RETREAT_RANGE := 90.0
@@ -22,25 +22,35 @@ var locked := false
 var can_retreat := true
 var casts := 0
 var zone := Rect2()
+var sprite: ClipSprite
 var _retreat_from := 0.0
 var _retreat_dir := 1.0
+var _release_t := 0.0
+var _glow: Sprite2D
+var _rune: Sprite2D
 
 
 func _setup() -> void:
-	hurt_top = -52.0
+	hurt_top = -54.0
 	hurt_half_width = 10.0
 	status.max_hp = 55.0
 	status.hp = 55.0
+	sprite = ClipSprite.new()
+	sprite.setup(Anim.sheets["mage"])
+	sprite.z_index = 2
+	add_child(sprite)
 
 
 func _cancel_attack() -> void:
 	state = S.RECOVER
 	state_time = 0.0
+	_free_cast_fx()
 
 
 func _on_stagger() -> void:
 	state = S.RECOVER
 	state_time = -1.0
+	_free_cast_fx()
 
 
 func _on_damaged(_r: Dictionary, _push: float) -> void:
@@ -48,11 +58,20 @@ func _on_damaged(_r: Dictionary, _push: float) -> void:
 		state = S.INTERRUPTED
 		state_time = 0.0
 		instance += 1
-		Juice.flash(global_position + Vector2(facing * 12.0, -36.0), 8.0)
+		_free_cast_fx()
+		Juice.flash(_hand(), 8.0)
+
+
+func _free_cast_fx() -> void:
+	for n in [_glow, _rune]:
+		if is_instance_valid(n):
+			n.queue_free()
+	_glow = null
+	_rune = null
 
 
 func _hand() -> Vector2:
-	return global_position + Vector2(facing * 12.0, -34.0)
+	return global_position + sprite.anchor("hand")
 
 
 func _ai(dt: float) -> void:
@@ -70,12 +89,14 @@ func _ai(dt: float) -> void:
 				casts += 1
 				state_time = 0.0
 				locked = false
+				_glow = Juice.fx("cast_glow", sprite.anchor("hand"), Vector2.RIGHT, 1.0, false, self)
 				if casts % 2 == 1:
 					state = S.CAST_BOLT
 				else:
 					state = S.CAST_GROUND
 					var px := player.global_position.x
 					zone = Rect2(px - 45.0, player.global_position.y - 26.0 if player.is_on_floor() else ground_y - 26.0, 90.0, 26.0)
+					_rune = Juice.fx("ground_rune", Vector2(zone.get_center().x, zone.end.y))
 		S.CAST_BOLT:
 			if not locked:
 				facing = -1.0 if dx < 0.0 else 1.0
@@ -90,8 +111,9 @@ func _ai(dt: float) -> void:
 		S.CAST_GROUND:
 			if state_time >= GROUND_TIME:
 				_strike(1, zone, 14.0, CombatConfig.ParryClass.UNPARRYABLE, 90.0, 0.0, Vector2(clampf(player.global_position.x, zone.position.x, zone.end.x), zone.end.y), "바닥 주문")
-				Juice.fx("land_dust", Vector2(zone.get_center().x, zone.end.y))
-				Juice.flash(zone.get_center(), 14.0)
+				_free_cast_fx()
+				Juice.fx("ground_burst", Vector2(zone.get_center().x, zone.end.y))
+				_release_t = 0.15
 				state = S.RECOVER
 				state_time = -0.3
 				can_retreat = true
@@ -111,6 +133,8 @@ func _ai(dt: float) -> void:
 				global_position.y = ground_y
 				state = S.IDLE
 				state_time = 0.2
+	if is_instance_valid(_glow):
+		_glow.position = sprite.anchor("hand")
 
 
 func _retreat_space() -> float:
@@ -134,6 +158,8 @@ func _begin_retreat() -> void:
 
 
 func _shoot() -> void:
+	_free_cast_fx()
+	_release_t = 0.15
 	var p := Node2D.new()
 	p.set_script(preload("res://src/enemies/projectile.gd"))
 	p.position = _hand()
@@ -152,34 +178,52 @@ func _shoot() -> void:
 	hit.parry_class = CombatConfig.ParryClass.NORMAL
 	hit.posture_damage = CombatConfig.POSTURE_NORMAL
 	hit.label = "직선 탄"
+	hit.hit_fx = "mage_bolt_hit"
 	p.hit = hit
 	get_parent().add_child(p)
 	Juice.fx("mark_flash", _hand())
 
 
-func _draw_body() -> void:
-	draw_figure(self, 50.0, Color(0.88, 0.88, 0.94), Color(0.85, 0.72, 0.6), facing, status.alive(), true)
+func _process(delta: float) -> void:
+	super(delta)
+	if Juice.frozen():
+		return
+	_release_t = maxf(0.0, _release_t - delta)
+	sprite.set_facing(facing)
+	sprite.position = Vector2(kick, 0)
+	sprite.modulate = Color(2, 2, 2) if flash > 0.0 else (Color(1, 1, 1, 0.5) if not status.alive() else Color.WHITE)
+	if not status.alive():
+		sprite.play("death")
+	elif status.staggered():
+		sprite.play("stagger")
+	elif state == S.INTERRUPTED:
+		sprite.play("interrupted")
+	elif hurt_left > 0.0 and state not in [S.CAST_BOLT, S.CAST_GROUND]:
+		sprite.play("hurt")
+	elif state == S.CAST_BOLT:
+		sprite.play("cast_bolt")
+	elif state == S.CAST_GROUND:
+		sprite.play("cast_ground")
+	elif _release_t > 0.0:
+		sprite.play("bolt_release")
+	elif state == S.RETREAT:
+		sprite.play("step_back")
+	else:
+		sprite.play("idle")
+	sprite.tick(delta)
+
+
+func _draw_telegraphs() -> void:
 	if not status.alive():
 		return
-	var book := Rect2(-facing * 14.0 - 5.0, -46.0 + sin(clock * 2.5) * 1.5, 10, 7)   # floating book
-	draw_rect(book, Color(0.2, 0.25, 0.45))
-	draw_rect(book, Color(0.07, 0.04, 0.07), false, 1.0)
-	draw_line(book.position + Vector2(5, 1), book.position + Vector2(5, 6), Color(0.85, 0.7, 0.3), 1.0)
 	match state:
 		S.CAST_BOLT:
 			var from := _hand() - global_position
 			var col := Color(1, 0.3, 0.25, 0.9) if locked else Color(0.6, 0.75, 1.0, 0.5)
-			# until it locks the line tracks the player live: aim_dir lags one tick behind IDLE → CAST_BOLT
 			var d := aim_dir if locked or player == null else (player.global_position + Vector2(0, -24) - _hand()).normalized()
 			draw_line(from, from + d * 480.0, col, 2.0 if locked else 1.0)
-			draw_circle(from, 3.0 + 4.0 * clampf(state_time / BOLT_TIME, 0.0, 1.0), Color(0.7, 0.85, 1.0, 0.8))
 		S.CAST_GROUND:
 			draw_telegraph(self, Rect2(zone.position - global_position, zone.size), true, clampf(state_time / GROUND_TIME, 0.0, 1.0))
-
-
-func _draw_dress(a: float) -> void:
-	draw_hair(self, 50.0, Color(0.24, 0.3, 0.55, a), facing, 6.0, 30.0)   # apprentice hood (마탑 blue)
-	draw_line(Vector2(-8, -35), Vector2(8, -35), Color(0.24, 0.3, 0.55, a), 2.0)   # blue collar
 
 
 func _tag() -> Array:

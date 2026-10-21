@@ -1,0 +1,955 @@
+{
+  "version": 11,
+  "maps": {
+    "T0": {
+      "parallax": [
+        0.15,
+        0.4,
+        0.8
+      ],
+      "ground_tiles": [
+        "reuse/r10/terrain/t0_stone.png",
+        "reuse/r10/terrain/t0_cracked.png",
+        "reuse/r10/terrain/t0_rope_plank.png",
+        "reuse/r10/terrain/t0_cutface.png"
+      ],
+      "platform_tiles": {
+        "t0_platform_left": {
+          "file": "reuse/r10/terrain/t0_platform_left.png",
+          "size": [
+            32,
+            16
+          ],
+          "kind": "platform"
+        },
+        "t0_platform_mid": {
+          "file": "reuse/r10/terrain/t0_platform_mid.png",
+          "size": [
+            32,
+            16
+          ],
+          "kind": "platform"
+        },
+        "t0_platform_right": {
+          "file": "reuse/r10/terrain/t0_platform_right.png",
+          "size": [
+            32,
+            16
+          ],
+          "kind": "platform"
+        },
+        "t0_wall": {
+          "file": "reuse/r10/terrain/t0_wall.png",
+          "size": [
+            240,
+            115
+          ],
+          "kind": "terrain"
+        },
+        "t0_bridge_ceiling": {
+          "file": "reuse/r10/terrain/t0_bridge_ceiling.png",
+          "size": [
+            270,
+            180
+          ],
+          "kind": "terrain"
+        },
+        "t0_cliff": {
+          "file": "reuse/r10/terrain/t0_cliff.png",
+          "size": [
+            60,
+            180
+          ],
+          "kind": "terrain"
+        },
+        "t0_lip": {
+          "file": "reuse/r10/terrain/t0_lip.png",
+          "size": [
+            120,
+            14
+          ],
+          "kind": "platform"
+        },
+        "t0_pit_left": {
+          "file": "reuse/r10/terrain/t0_pit_left.png",
+          "size": [
+            16,
+            48
+          ],
+          "kind": "terrain"
+        },
+        "t0_pit_right": {
+          "file": "reuse/r10/terrain/t0_pit_right.png",
+          "size": [
+            16,
+            48
+          ],
+          "kind": "terrain"
+        },
+        "t0_return_0": {
+          "file": "reuse/r10/terrain/t0_return_0.png",
+          "size": [
+            48,
+            48
+          ],
+          "kind": "return"
+        },
+        "t0_return_1": {
+          "file": "reuse/r10/terrain/t0_return_1.png",
+          "size": [
+            48,
+            48
+          ],
+          "kind": "return"
+        }
+      },
+      "far": "reuse/r10/bg_t0_far.png",
+      "repeat_mid_x": true,
+      "mid": "reuse/r10/bg_t0_mid.png",
+      "near": "reuse/r10/bg_t0_near.png",
+      "layer_size": [
+        1600,
+        450
+      ],
+      "visual_ground_y": 450,
+      "ground_fill": "#1b1a24"
+    },
+    "F1": {
+      "parallax": [
+        0.15,
+        0.4,
+        0.8
+      ],
+      "ground_tiles": [
+        "reuse/r10/terrain/f1_ash.png",
+        "reuse/r10/terrain/f1_burnt_root.png",
+        "reuse/r10/terrain/f1_earth.png",
+        "reuse/r10/terrain/f1_moss.png"
+      ],
+      "platform_tiles": {
+        "f1_log_a": {
+          "file": "reuse/r10/terrain/f1_log_a.png",
+          "size": [
+            128,
+            20
+          ],
+          "kind": "platform"
+        },
+        "f1_log_b": {
+          "file": "reuse/r10/terrain/f1_log_b.png",
+          "size": [
+            128,
+            20
+          ],
+          "kind": "platform"
+        },
+        "f1_root_a": {
+          "file": "reuse/r10/terrain/f1_root_a.png",
+          "size": [
+            100,
+            16
+          ],
+          "kind": "platform"
+        },
+        "f1_root_b": {
+          "file": "reuse/r10/terrain/f1_root_b.png",
+          "size": [
+            100,
+            16
+          ],
+          "kind": "platform"
+        },
+        "f1_roof_a": {
+          "file": "reuse/r10/terrain/f1_roof_a.png",
+          "size": [
+            70,
+            12
+          ],
+          "kind": "platform"
+        },
+        "f1_roof_b": {
+          "file": "reuse/r10/terrain/f1_roof_b.png",
+          "size": [
+            70,
+            12
+          ],
+          "kind": "platform"
+        },
+        "f1_roof_c": {
+          "file": "reuse/r10/terrain/f1_roof_c.png",
+          "size": [
+            70,
+            12
+          ],
+          "kind": "platform"
+        },
+        "f1_cover_a": {
+          "file": "reuse/r10/terrain/f1_cover_a.png",
+          "size": [
+            40,
+            40
+          ],
+          "kind": "cover"
+        },
+        "f1_cover_b": {
+          "file": "reuse/r10/terrain/f1_cover_b.png",
+          "size": [
+            40,
+            40
+          ],
+          "kind": "cover"
+        },
+        "f1_tree_0": {
+          "file": "reuse/r10/terrain/f1_tree_0.png",
+          "size": [
+            100,
+            220
+          ],
+          "kind": "tree"
+        },
+        "f1_tree_1": {
+          "file": "reuse/r10/terrain/f1_tree_1.png",
+          "size": [
+            90,
+            200
+          ],
+          "kind": "tree"
+        },
+        "f1_tree_2": {
+          "file": "reuse/r10/terrain/f1_tree_2.png",
+          "size": [
+            110,
+            240
+          ],
+          "kind": "tree"
+        },
+        "f1_tree_3": {
+          "file": "reuse/r10/terrain/f1_tree_3.png",
+          "size": [
+            90,
+            210
+          ],
+          "kind": "tree"
+        },
+        "f1_tree_4": {
+          "file": "reuse/r10/terrain/f1_tree_4.png",
+          "size": [
+            110,
+            220
+          ],
+          "kind": "tree"
+        },
+        "f1_tree_5": {
+          "file": "reuse/r10/terrain/f1_tree_5.png",
+          "size": [
+            100,
+            230
+          ],
+          "kind": "tree"
+        },
+        "f1_vine_0": {
+          "file": "reuse/r10/terrain/f1_vine_0.png",
+          "size": [
+            140,
+            60
+          ],
+          "kind": "vine"
+        },
+        "f1_vine_1": {
+          "file": "reuse/r10/terrain/f1_vine_1.png",
+          "size": [
+            80,
+            160
+          ],
+          "kind": "vine"
+        },
+        "f1_vine_2": {
+          "file": "reuse/r10/terrain/f1_vine_2.png",
+          "size": [
+            120,
+            90
+          ],
+          "kind": "vine"
+        },
+        "f1_outpost": {
+          "file": "reuse/r10/terrain/f1_outpost.png",
+          "size": [
+            220,
+            150
+          ],
+          "kind": "ruin"
+        }
+      },
+      "far": "reuse/r10/bg_f1_far.png",
+      "mid": "reuse/r10/bg_f1_mid.png",
+      "near": "reuse/r10/bg_f1_near.png",
+      "layer_size": [
+        1600,
+        450
+      ],
+      "visual_ground_y": 450,
+      "ground_fill": "#3a3540"
+    },
+    "B1": {
+      "parallax": [
+        0.15,
+        0.4,
+        0.8
+      ],
+      "ground_tiles": [
+        "reuse/r10/terrain/b1_ash.png",
+        "reuse/r10/terrain/b1_root.png"
+      ],
+      "platform_tiles": {
+        "b1_perch_left": {
+          "file": "reuse/r10/terrain/b1_perch_left.png",
+          "size": [
+            110,
+            14
+          ],
+          "kind": "platform"
+        },
+        "b1_perch_right": {
+          "file": "reuse/r10/terrain/b1_perch_right.png",
+          "size": [
+            110,
+            14
+          ],
+          "kind": "platform"
+        },
+        "b1_cover_a": {
+          "file": "reuse/r10/terrain/b1_cover_a.png",
+          "size": [
+            34,
+            38
+          ],
+          "kind": "cover"
+        },
+        "b1_cover_b": {
+          "file": "reuse/r10/terrain/b1_cover_b.png",
+          "size": [
+            34,
+            38
+          ],
+          "kind": "cover"
+        },
+        "b1_wall_left": {
+          "file": "reuse/r10/terrain/b1_wall_left.png",
+          "size": [
+            64,
+            180
+          ],
+          "kind": "wall"
+        },
+        "b1_wall_right": {
+          "file": "reuse/r10/terrain/b1_wall_right.png",
+          "size": [
+            64,
+            180
+          ],
+          "kind": "wall"
+        }
+      },
+      "far": "reuse/r10/bg_b1_far.png",
+      "mid": "reuse/r10/bg_b1_mid.png",
+      "near": "reuse/r10/bg_b1_near.png",
+      "layer_size": [
+        800,
+        450
+      ],
+      "visual_ground_y": 450,
+      "ground_fill": "#3a3540"
+    },
+    "H0": {
+      "parallax": [
+        0.15,
+        0.4,
+        0.8
+      ],
+      "ground_tiles": [
+        "reuse/r10/terrain/h0_wood.png",
+        "reuse/r10/terrain/h0_stone.png"
+      ],
+      "platform_tiles": {
+        "h0_lantern_blue_0": {
+          "file": "reuse/r10/terrain/h0_lantern_blue_0.png",
+          "size": [
+            32,
+            48
+          ],
+          "kind": "lantern_blue"
+        },
+        "h0_lantern_blue_1": {
+          "file": "reuse/r10/terrain/h0_lantern_blue_1.png",
+          "size": [
+            32,
+            48
+          ],
+          "kind": "lantern_blue"
+        },
+        "h0_lantern_blue_2": {
+          "file": "reuse/r10/terrain/h0_lantern_blue_2.png",
+          "size": [
+            32,
+            48
+          ],
+          "kind": "lantern_blue"
+        },
+        "h0_lantern_red_0": {
+          "file": "reuse/r10/terrain/h0_lantern_red_0.png",
+          "size": [
+            32,
+            48
+          ],
+          "kind": "lantern_red"
+        },
+        "h0_lantern_red_1": {
+          "file": "reuse/r10/terrain/h0_lantern_red_1.png",
+          "size": [
+            32,
+            48
+          ],
+          "kind": "lantern_red"
+        },
+        "h0_lantern_red_2": {
+          "file": "reuse/r10/terrain/h0_lantern_red_2.png",
+          "size": [
+            32,
+            48
+          ],
+          "kind": "lantern_red"
+        },
+        "h0_dumplings": {
+          "file": "reuse/r10/terrain/h0_dumplings.png",
+          "size": [
+            40,
+            20
+          ],
+          "kind": "prop"
+        }
+      },
+      "far": "reuse/r10/bg_h0_far.png",
+      "mid": "reuse/r10/bg_h0_mid.png",
+      "near": "reuse/r10/bg_h0_near.png",
+      "layer_size": [
+        900,
+        450
+      ],
+      "visual_ground_y": 450,
+      "ground_fill": "#5a3d26"
+    },
+    "F2": {
+      "parallax": [
+        0.15,
+        0.4,
+        0.8
+      ],
+      "ground_tiles": [
+        "terrain/f2_ground_0.png",
+        "terrain/f2_ground_1.png",
+        "terrain/f2_ground_2.png",
+        "terrain/f2_ground_3.png"
+      ],
+      "platform_tiles": {
+        "f2_crate_stack_0": {
+          "file": "terrain/f2_crate_stack_0.png",
+          "size": [
+            120,
+            60
+          ],
+          "kind": "block"
+        },
+        "f2_crate_stack_1": {
+          "file": "terrain/f2_crate_stack_1.png",
+          "size": [
+            120,
+            60
+          ],
+          "kind": "block"
+        },
+        "f2_desk": {
+          "file": "terrain/f2_desk.png",
+          "size": [
+            140,
+            16
+          ],
+          "kind": "platform"
+        },
+        "f2_shelf_0": {
+          "file": "terrain/f2_shelf_0.png",
+          "size": [
+            110,
+            14
+          ],
+          "kind": "platform"
+        },
+        "f2_shelf_1": {
+          "file": "terrain/f2_shelf_1.png",
+          "size": [
+            110,
+            14
+          ],
+          "kind": "platform"
+        },
+        "f2_measuring_step": {
+          "file": "terrain/f2_measuring_step.png",
+          "size": [
+            200,
+            24
+          ],
+          "kind": "platform"
+        },
+        "f2_cell_door": {
+          "file": "terrain/f2_cell_door.png",
+          "size": [
+            60,
+            90
+          ],
+          "kind": "decoration"
+        },
+        "f2_cover_0": {
+          "file": "terrain/f2_cover_0.png",
+          "size": [
+            40,
+            40
+          ],
+          "kind": "cover"
+        },
+        "f2_cover_1": {
+          "file": "terrain/f2_cover_1.png",
+          "size": [
+            40,
+            40
+          ],
+          "kind": "cover"
+        },
+        "f2_lamp": {
+          "file": "terrain/f2_lamp.png",
+          "size": [
+            28,
+            42
+          ],
+          "kind": "decoration"
+        },
+        "f2_tank_a": {
+          "file": "terrain/f2_tank_a.png",
+          "size": [
+            40,
+            60
+          ],
+          "kind": "decoration"
+        },
+        "f2_tank_b": {
+          "file": "terrain/f2_tank_b.png",
+          "size": [
+            40,
+            60
+          ],
+          "kind": "decoration"
+        },
+        "f2_instrument": {
+          "file": "terrain/f2_instrument.png",
+          "size": [
+            72,
+            44
+          ],
+          "kind": "decoration"
+        },
+        "f2_papers": {
+          "file": "terrain/f2_papers.png",
+          "size": [
+            40,
+            18
+          ],
+          "kind": "decoration"
+        },
+        "f2_chain": {
+          "file": "terrain/f2_chain.png",
+          "size": [
+            16,
+            96
+          ],
+          "kind": "decoration"
+        },
+        "f2_pillar": {
+          "file": "terrain/f2_pillar.png",
+          "size": [
+            40,
+            150
+          ],
+          "kind": "decoration"
+        },
+        "f2_bars": {
+          "file": "terrain/f2_bars.png",
+          "size": [
+            80,
+            90
+          ],
+          "kind": "decoration"
+        },
+        "f2_stone_plate_0": {
+          "file": "terrain/f2_stone_plate_0.png",
+          "size": [
+            48,
+            16
+          ],
+          "kind": "decoration"
+        },
+        "f2_stone_plate_1": {
+          "file": "terrain/f2_stone_plate_1.png",
+          "size": [
+            48,
+            16
+          ],
+          "kind": "decoration"
+        },
+        "f2_stone_plate_2": {
+          "file": "terrain/f2_stone_plate_2.png",
+          "size": [
+            48,
+            16
+          ],
+          "kind": "decoration"
+        }
+      },
+      "layer_size": [
+        1600,
+        450
+      ],
+      "visual_ground_y": 450,
+      "ground_fill": "#202636",
+      "far": "bg_f2_far.png",
+      "repeat_mid_x": true,
+      "mid": "bg_f2_mid.png",
+      "near": "bg_f2_near.png"
+    },
+    "B2": {
+      "parallax": [
+        0.15,
+        0.4,
+        0.8
+      ],
+      "ground_tiles": [
+        "terrain/b2_ground_0.png",
+        "terrain/b2_ground_1.png"
+      ],
+      "platform_tiles": {
+        "b2_partition": {
+          "file": "terrain/b2_partition.png",
+          "size": [
+            8,
+            48
+          ],
+          "kind": "decoration"
+        },
+        "b2_platform": {
+          "file": "terrain/b2_platform.png",
+          "size": [
+            140,
+            14
+          ],
+          "kind": "platform"
+        },
+        "b2_observation_ring_0": {
+          "file": "terrain/b2_observation_ring_0.png",
+          "size": [
+            200,
+            200
+          ],
+          "kind": "decoration"
+        },
+        "b2_observation_ring_1": {
+          "file": "terrain/b2_observation_ring_1.png",
+          "size": [
+            200,
+            200
+          ],
+          "kind": "decoration"
+        },
+        "b2_instrument_0": {
+          "file": "terrain/b2_instrument_0.png",
+          "size": [
+            80,
+            160
+          ],
+          "kind": "decoration"
+        },
+        "b2_instrument_1": {
+          "file": "terrain/b2_instrument_1.png",
+          "size": [
+            80,
+            160
+          ],
+          "kind": "decoration"
+        }
+      },
+      "layer_size": [
+        800,
+        450
+      ],
+      "visual_ground_y": 450,
+      "ground_fill": "#504e55",
+      "far": "bg_b2_far.png",
+      "mid": "bg_b2_mid.png",
+      "near": "bg_b2_near.png",
+      "floor_sections": [
+        {
+          "x": 0,
+          "width": 266,
+          "ground_tile": "terrain/b2_ground_1.png"
+        },
+        {
+          "x": 266,
+          "width": 267,
+          "ground_tile": "terrain/b2_ground_0.png"
+        },
+        {
+          "x": 533,
+          "width": 267,
+          "ground_tile": "terrain/b2_ground_1.png"
+        }
+      ]
+    },
+    "F3": {
+      "parallax": [
+        0.15,
+        0.4,
+        0.8
+      ],
+      "ground_tiles": [
+        "terrain/f3_ground_0.png",
+        "terrain/f3_ground_1.png",
+        "terrain/f3_ground_2.png",
+        "terrain/f3_ground_3.png",
+        "terrain/f3_purified.png"
+      ],
+      "platform_tiles": {
+        "f3_cart_platform": {
+          "file": "terrain/f3_cart_platform.png",
+          "size": [
+            130,
+            40
+          ],
+          "kind": "block"
+        },
+        "f3_post_platform": {
+          "file": "terrain/f3_post_platform.png",
+          "size": [
+            120,
+            14
+          ],
+          "kind": "platform"
+        },
+        "f3_stair_0": {
+          "file": "terrain/f3_stair_0.png",
+          "size": [
+            100,
+            16
+          ],
+          "kind": "platform"
+        },
+        "f3_stair_1": {
+          "file": "terrain/f3_stair_1.png",
+          "size": [
+            100,
+            16
+          ],
+          "kind": "platform"
+        },
+        "f3_stair_2": {
+          "file": "terrain/f3_stair_2.png",
+          "size": [
+            100,
+            16
+          ],
+          "kind": "platform"
+        },
+        "f3_wall": {
+          "file": "terrain/f3_wall.png",
+          "size": [
+            160,
+            50
+          ],
+          "kind": "block"
+        },
+        "f3_chapel_step": {
+          "file": "terrain/f3_chapel_step.png",
+          "size": [
+            200,
+            24
+          ],
+          "kind": "platform"
+        },
+        "f3_cover_0": {
+          "file": "terrain/f3_cover_0.png",
+          "size": [
+            40,
+            40
+          ],
+          "kind": "cover"
+        },
+        "f3_cover_1": {
+          "file": "terrain/f3_cover_1.png",
+          "size": [
+            40,
+            40
+          ],
+          "kind": "cover"
+        },
+        "f3_sun_flag_0": {
+          "file": "terrain/f3_sun_flag_0.png",
+          "size": [
+            30,
+            70
+          ],
+          "kind": "decoration"
+        },
+        "f3_sun_flag_1": {
+          "file": "terrain/f3_sun_flag_1.png",
+          "size": [
+            30,
+            70
+          ],
+          "kind": "decoration"
+        },
+        "f3_tent": {
+          "file": "terrain/f3_tent.png",
+          "size": [
+            130,
+            100
+          ],
+          "kind": "decoration"
+        },
+        "f3_censer_base": {
+          "file": "terrain/f3_censer_base.png",
+          "size": [
+            60,
+            40
+          ],
+          "kind": "decoration"
+        },
+        "f3_cart_wreck": {
+          "file": "terrain/f3_cart_wreck.png",
+          "size": [
+            100,
+            54
+          ],
+          "kind": "decoration"
+        },
+        "f3_stone_lantern": {
+          "file": "terrain/f3_stone_lantern.png",
+          "size": [
+            40,
+            70
+          ],
+          "kind": "decoration"
+        },
+        "f3_gate_pillar": {
+          "file": "terrain/f3_gate_pillar.png",
+          "size": [
+            48,
+            150
+          ],
+          "kind": "decoration"
+        },
+        "f3_bindings": {
+          "file": "terrain/f3_bindings.png",
+          "size": [
+            36,
+            14
+          ],
+          "kind": "decoration"
+        },
+        "f3_cloth": {
+          "file": "terrain/f3_cloth.png",
+          "size": [
+            50,
+            26
+          ],
+          "kind": "decoration"
+        }
+      },
+      "layer_size": [
+        1600,
+        450
+      ],
+      "visual_ground_y": 450,
+      "ground_fill": "#504e55",
+      "far": "bg_f3_far.png",
+      "repeat_mid_x": true,
+      "mid": "bg_f3_mid.png",
+      "near": "bg_f3_near.png"
+    },
+    "B3": {
+      "parallax": [
+        0.15,
+        0.4,
+        0.8
+      ],
+      "ground_tiles": [
+        "terrain/b3_ground_0.png",
+        "terrain/b3_ground_1.png"
+      ],
+      "platform_tiles": {
+        "b3_censer_stand_0": {
+          "file": "terrain/b3_censer_stand_0.png",
+          "size": [
+            120,
+            80
+          ],
+          "kind": "decoration"
+        },
+        "b3_censer_stand_1": {
+          "file": "terrain/b3_censer_stand_1.png",
+          "size": [
+            120,
+            80
+          ],
+          "kind": "decoration"
+        },
+        "b3_hanging_0": {
+          "file": "terrain/b3_hanging_0.png",
+          "size": [
+            60,
+            150
+          ],
+          "kind": "decoration"
+        },
+        "b3_hanging_1": {
+          "file": "terrain/b3_hanging_1.png",
+          "size": [
+            60,
+            150
+          ],
+          "kind": "decoration"
+        }
+      },
+      "layer_size": [
+        800,
+        450
+      ],
+      "visual_ground_y": 450,
+      "ground_fill": "#504e55",
+      "far": "bg_b3_far.png",
+      "mid": "bg_b3_mid.png",
+      "near": "bg_b3_near.png",
+      "floor_sections": [
+        {
+          "x": 0,
+          "width": 266,
+          "ground_tile": "terrain/b3_ground_0.png"
+        },
+        {
+          "x": 266,
+          "width": 267,
+          "ground_tile": "terrain/b3_ground_1.png"
+        },
+        {
+          "x": 533,
+          "width": 267,
+          "ground_tile": "terrain/b3_ground_0.png"
+        }
+      ]
+    }
+  }
+}

@@ -144,7 +144,17 @@ func add_decor(name: String, at: Vector2, behind := true) -> void:
 	s.centered = false
 	s.position = pos
 	s.z_index = -2 if behind else 2
+	s.name = name
 	add_child(s)
+
+
+## Replace a decor piece's art (the B2 observation ring breaks, the B3 censer stand goes out). Returns it.
+func swap_decor(from: String, to: String) -> Node2D:
+	var s := get_node_or_null(NodePath(from)) as Sprite2D
+	if s == null or not Anim.terrain.has(to):
+		return null
+	s.texture = Anim.tex(String(Anim.terrain[to].file).get_file())
+	return s
 
 
 func _draw() -> void:

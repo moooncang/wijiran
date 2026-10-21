@@ -5,7 +5,8 @@ extends Node
 const ROOT := "res://assets/v9/"
 const V8 := "res://assets/v8/"
 const R10 := "res://assets/r10/"
-const ROOTS := [ROOT, R10]           # manifests name files relative to one of these
+const R11 := "res://assets/r11/"
+const ROOTS := [R11, ROOT, R10]      # manifests name files relative to one of these (newest first: r11 replaces fx_pull)
 
 var manifest: Dictionary = {}
 var clips: Dictionary = {}
@@ -30,6 +31,9 @@ var boss_hud_texture: Texture2D
 # 10차 (본편 1구간)
 var sheets: Dictionary = {}          # name → {texture, cell, columns, pivot, clips}: scout, scout_human, tianel, disciple_m/f, renata
 var props: Dictionary = {}           # manifest_props.json clips
+var props_r11: Dictionary = {}       # manifest_props_r11.json clips (own sheet + a top layer sheet for tall props)
+var props_r11_texture: Texture2D
+var props_r11_top: Texture2D
 var props_texture: Texture2D
 var ui: Dictionary = {}              # key → {file, rect, nine_slice}
 var bg: Dictionary = {}              # manifest_bg.json maps
@@ -52,7 +56,7 @@ func _ready() -> void:
 		var f: String = parts[name].file
 		if not part_textures.has(f):
 			part_textures[f] = load(ROOT + f)
-	enemy = load_sheet("manifest_enemy_soldier_56.json")
+	enemy = load_sheet("manifest_soldier.json")   # 11차 96px 검병 (same clips/impacts as the 56px demo sheet)
 	ultimate_texture = load(V8 + "ultimate.png")
 	var hud: Dictionary = _load_json(V8 + "manifest_hud.json")
 	hud_texture = load(V8 + hud.file)
@@ -72,22 +76,29 @@ func _ready() -> void:
 	boss_hud = _load_json(ROOT + "manifest_boss_hud.json")
 	boss_hud_texture = load(ROOT + boss_hud.file)
 	# 10차: effect clips (each names its sheet/cell), character sheets, props, ui, backgrounds, terrain
-	for file in ["manifest_tianel_fx.json", "manifest_arrow.json", "manifest_pull.json", "manifest_palms.json"]:
-		var fxm: Dictionary = _load_json(R10 + file)
+	for file in ["manifest_tianel_fx.json", "manifest_arrow.json", "manifest_pull.json", "manifest_palms.json", "manifest_mireille_fx.json", "manifest_elodie_fx.json", "manifest_minion_fx.json", "manifest_player_add.json"]:
+		var fxm: Dictionary = _load_json(_find(file))   # r11 first: its manifest_pull.json (thread v2 + pull_mark) replaces the 10차 one
 		if fxm.has("effect_clips"):
 			fxm = fxm.effect_clips
 		for k in fxm:
 			if fxm[k] is Dictionary and fxm[k].has("first"):
 				effects[k] = fxm[k]
-	for name in ["scout", "scout_human", "tianel", "disciple_m", "disciple_f", "renata"]:
+	for name in ["scout", "scout_human", "tianel", "disciple_m", "disciple_f", "renata", "mireille", "elodie", "shield", "mage", "incense"]:
 		sheets[name] = load_sheet("manifest_%s.json" % name)
 	var pm: Dictionary = _load_json(R10 + "manifest_props.json")
 	props = pm.clips
 	props_texture = load(R10 + pm.props.file)
+	var pm11: Dictionary = _load_json(R11 + "manifest_props_r11.json")
+	props_r11 = pm11.clips
+	props_r11_texture = load(R11 + pm11.props.file)
+	props_r11_top = load(R11 + "props_r11_top.png")
 	ui = _load_json(R10 + "manifest_ui.json").assets
-	bg = _load_json(R10 + "manifest_bg.json").maps
+	ui.merge(_load_json(R11 + "manifest_ui_r11.json").assets)
+	bg = _load_json(R11 + "manifest_bg.json").maps   # 11차 lists all eight maps (the r10 ones via reuse/ paths: tex() falls back to the file name)
 	terrain = _load_json(R10 + "manifest_terrain.json").assets
+	terrain.merge(_load_json(R11 + "manifest_terrain_r11.json").assets)
 	cutscenes = _load_json(R10 + "manifest_cutscenes.json").assets
+	cutscenes.merge(_load_json(R11 + "manifest_cutscenes_r11.json").assets)
 
 
 ## Sheet for an effect clip: the default effects file, or the clip's own "sheet" file.
@@ -108,6 +119,8 @@ func tex(file: String) -> Texture2D:
 			if ResourceLoader.exists(r + sub + file):
 				_tex_cache[file] = load(r + sub + file)
 				return _tex_cache[file]
+	if file.get_file() != file:   # manifests may name a path (terrain/x.png, reuse/r10/x.png): the file name alone is unique
+		return tex(file.get_file())
 	push_error("Anim: missing texture " + file)
 	return null
 
@@ -130,20 +143,33 @@ func ui_tex(key: String) -> Texture2D:
 
 
 ## Sprite2D playing one prop clip (checkpoint, door, manual, dummy, ...); pivot (32,60) at the origin.
+## 11차 props live on their own sheet; tall ones carry a second "top" layer drawn 48 px higher.
 func prop_sprite(clip: String) -> Sprite2D:
 	var s := Sprite2D.new()
-	s.texture = props_texture
+	var r11 := props_r11.has(clip) and not props.has(clip)
+	s.texture = props_r11_texture if r11 else props_texture
 	s.hframes = 8
-	s.vframes = int(props_texture.get_height() / 64)
+	s.vframes = int(s.texture.get_height() / 64)
 	s.centered = false
 	s.offset = Vector2(-32, -60)
+	if r11 and props_r11[clip].has("layers"):
+		var t := Sprite2D.new()
+		t.texture = props_r11_top
+		t.hframes = 8
+		t.vframes = int(props_r11_top.get_height() / 64)
+		t.centered = false
+		t.offset = Vector2(-32, -60 - 48)
+		s.add_child(t)
+		s.set_meta("top", t)
 	prop_frame(s, clip, 0)
 	return s
 
 
 func prop_frame(s: Sprite2D, clip: String, i: int) -> void:
-	var c: Dictionary = props[clip]
+	var c: Dictionary = props[clip] if props.has(clip) else props_r11[clip]
 	s.frame = int(c.first) + (i % int(c.count))
+	if s.has_meta("top"):
+		(s.get_meta("top") as Sprite2D).frame = s.frame
 
 
 ## Per-frame anchor (bow_tip, muzzle, arrow_tip, hand_ground) of a 10차 sheet, as a feet-relative offset.

@@ -124,11 +124,16 @@ func _on_death() -> void:
 
 ## Perfect parry on one of our strikes: normal enemies recoil, bosses only build posture.
 func on_parried(posture_damage: float) -> void:
+	_on_parried_fx()
 	if status.add_posture(posture_damage):
 		_on_stagger()
 	elif not status.is_boss:
 		_cancel_attack()
 		status.recoil_left = CombatConfig.NORMAL_ENEMY_RECOIL
+
+
+func _on_parried_fx() -> void:
+	pass
 
 
 func _on_stagger() -> void:
@@ -523,17 +528,22 @@ static func _draw_chevron(node: CanvasItem, at: Vector2, dir: float, col: Color)
 ## the reticle is above it, +1: below it) — what a right click would pull now. The label is a pale, slightly
 ## dim gold so it reads as a targeting mark, not as another state tag.
 static func _draw_pull_mark(node: CanvasItem, tip: Vector2, k: float, dir := -1.0) -> void:
-	var a := 0.7 + 0.3 * sin(Time.get_ticks_msec() * 0.012)
-	var gold := Color(1.0, 0.86, 0.45)
-	var x := tip.x
-	var cy := tip.y + dir * 14.0 * k
-	var a0 := 0.3 if dir < 0.0 else PI + 0.3   # cup opening away from the body
-	node.draw_arc(Vector2(x, cy), 9.0 * k, a0, a0 + PI - 0.6, 14, UiText.OUTLINE, 5.0 * k, true)   # dark rim: reads on bright walls
-	node.draw_arc(Vector2(x, cy), 9.0 * k, a0, a0 + PI - 0.6, 14, Color(gold, a), 2.5 * k, true)
-	node.draw_colored_polygon(PackedVector2Array([Vector2(x, tip.y - dir * 1.5), Vector2(x - 5.5 * k, cy - dir * 6.0 * k), Vector2(x + 5.5 * k, cy - dir * 6.0 * k)]), UiText.OUTLINE)
-	node.draw_colored_polygon(PackedVector2Array([tip, Vector2(x - 4.0 * k, cy - dir * 7.0 * k), Vector2(x + 4.0 * k, cy - dir * 7.0 * k)]), Color(gold, a))
+	# 11차 pull_mark (20×20 crescent + arrow, 2 frames at 8 fps) centred over the tip; flipped when it points up
+	var c: Dictionary = Anim.effects["pull_mark"]
+	var cell := int(c.cell)
+	var cols := int(c.columns)
+	var slot := int(c.first) + (int(Time.get_ticks_msec() / 125) % int(c.count))
+	var aw := float(c.art_size[0])
+	var ah := float(c.art_size[1])
+	var src := Rect2((slot % cols) * cell + float(c.pivot[0]) - aw * 0.5, int(slot / cols) * cell + float(c.pivot[1]) - ah * 0.5, aw, ah)
+	var dst := Rect2(tip.x - aw * 0.5 * k, tip.y + (dir * ah * k if dir > 0.0 else -ah * k), aw * k, ah * k)
+	if dir > 0.0:
+		dst = Rect2(dst.position.x, dst.position.y + dst.size.y, dst.size.x, -dst.size.y)   # pointing up: mirrored
+	var a := 0.75 + 0.25 * sin(Time.get_ticks_msec() * 0.012)
+	node.draw_texture_rect_region(Anim.effect_sheet(String(c.sheet)), dst, src, Color(1, 1, 1, a))
 	var fs := UiText.sz(UiText.XS)
-	UiText.centered(node, x, cy - 3.0 * k if dir < 0.0 else cy + 3.0 * k + UiText.font().get_ascent(fs), "월인", fs, Color(1.0, 0.93, 0.72, 0.8))
+	var ty := tip.y - ah * k - 3.0 * k if dir < 0.0 else tip.y + ah * k + 3.0 * k + UiText.font().get_ascent(fs)
+	UiText.centered(node, tip.x, ty, "월인", fs, Color(1.0, 0.93, 0.72, 0.8))
 
 
 func _draw_body() -> void:

@@ -1,0 +1,210 @@
+{
+  "version": 11,
+  "character": {
+    "file": "enemy_mage.png",
+    "sheet": "enemy_mage.png",
+    "cell": [
+      96,
+      96
+    ],
+    "columns": 8,
+    "rows": 4,
+    "pivot": [
+      48,
+      88
+    ],
+    "standing_height": 54,
+    "orientation": "left"
+  },
+  "clips": {
+    "idle": {
+      "first": 0,
+      "count": 4,
+      "fps": 6,
+      "loop": true,
+      "hand": {
+        "0": [
+          28,
+          55
+        ],
+        "1": [
+          29,
+          54
+        ],
+        "2": [
+          28,
+          54
+        ],
+        "3": [
+          27,
+          55
+        ]
+      }
+    },
+    "step_back": {
+      "first": 4,
+      "count": 4,
+      "fps": 10,
+      "loop": false,
+      "hand": {
+        "0": [
+          28,
+          52
+        ],
+        "1": [
+          25,
+          55
+        ],
+        "2": [
+          22,
+          53
+        ],
+        "3": [
+          28,
+          54
+        ]
+      }
+    },
+    "cast_bolt": {
+      "first": 8,
+      "count": 3,
+      "fps": 6,
+      "loop": false,
+      "hold_last": true,
+      "advance": "event",
+      "hand": {
+        "0": [
+          24,
+          55
+        ],
+        "1": [
+          21,
+          59
+        ],
+        "2": [
+          15,
+          58
+        ]
+      }
+    },
+    "bolt_release": {
+      "first": 11,
+      "count": 2,
+      "fps": 20,
+      "loop": false,
+      "impact": 0,
+      "hand": {
+        "0": [
+          30,
+          61
+        ],
+        "1": [
+          26,
+          56
+        ]
+      }
+    },
+    "cast_ground": {
+      "first": 13,
+      "count": 3,
+      "fps": 6,
+      "loop": false,
+      "hold_last": true,
+      "advance": "event",
+      "hand": {
+        "0": [
+          25,
+          59
+        ],
+        "1": [
+          21,
+          58
+        ],
+        "2": [
+          39,
+          56
+        ]
+      }
+    },
+    "interrupted": {
+      "first": 16,
+      "count": 2,
+      "fps": 10,
+      "loop": false,
+      "hand": {
+        "0": [
+          39,
+          59
+        ],
+        "1": [
+          16,
+          72
+        ]
+      }
+    },
+    "hurt": {
+      "first": 18,
+      "count": 2,
+      "fps": 12,
+      "loop": false,
+      "hand": {
+        "0": [
+          32,
+          69
+        ],
+        "1": [
+          16,
+          58
+        ]
+      }
+    },
+    "stagger": {
+      "first": 20,
+      "count": 4,
+      "fps": 8,
+      "loop": true,
+      "hand": {
+        "0": [
+          19,
+          57
+        ],
+        "1": [
+          15,
+          55
+        ],
+        "2": [
+          22,
+          61
+        ],
+        "3": [
+          19,
+          61
+        ]
+      }
+    },
+    "death": {
+      "first": 24,
+      "count": 4,
+      "fps": 8,
+      "loop": false,
+      "hand": {
+        "0": [
+          10,
+          66
+        ],
+        "1": [
+          8,
+          73
+        ],
+        "2": [
+          19,
+          69
+        ],
+        "3": [
+          13,
+          77
+        ]
+      }
+    }
+  }
+}

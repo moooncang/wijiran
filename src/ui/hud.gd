@@ -268,9 +268,8 @@ func _status_line(top: float, h: float, text: String, color: Color, icon: String
 	var mid := top + h * 0.5
 	if icon != "":
 		_icon(self, icon, Vector2(L, floorf(mid - 8.0)))
-	else:   # a small ring in the line's tint, like the ring around the player
-		draw_arc(Vector2(L + 8.0, mid), 4.5, 0.0, TAU, 24, UiText.OUTLINE, 3.5, true)
-		draw_arc(Vector2(L + 8.0, mid), 4.5, 0.0, TAU, 24, color, 1.5, true)
+	else:   # 11차 정화 icon
+		draw_texture(Anim.ui_tex("purified"), Vector2(L, floorf(mid - 8.0)))
 	var base := _baseline(top, h, s)
 	UiText.draw(self, Vector2(TEXT_X, base), text, s, color, 2)
 	if extra != "":

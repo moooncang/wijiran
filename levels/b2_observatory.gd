@@ -5,7 +5,9 @@ class_name LevelB2
 
 static func data() -> Dictionary:
 	return {
-		"id": "b2", "name": "관측실", "width": 800.0, "ground_y": 300.0, "backdrop": "lab",
+		"id": "b2", "name": "관측실", "width": 800.0, "ground_y": 300.0, "backdrop": "lab", "map_key": "B2",
+		"art": {"p0": "b2_platform", "p1": "b2_platform"},
+		"decor": [["b2_instrument_0", 20, 300], ["b2_observation_ring_0", 300, 290], ["b2_instrument_1", 700, 300], ["b2_partition", 262, 300, false], ["b2_partition", 529, 300, false]],
 		"spawns": {"start": Vector2(80, 300)},
 		"platforms": [Rect2(80, 240, 140, 14), Rect2(580, 240, 140, 14)],
 		"covers": [],

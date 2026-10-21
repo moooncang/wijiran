@@ -1,0 +1,29 @@
+{
+  "version": 11,
+  "effects": {
+    "file": "fx_player_add.png",
+    "cell": 96,
+    "columns": 8
+  },
+  "effect_clips": {
+    "purified_aura": {
+      "sheet": "fx_player_add.png",
+      "cell": 96,
+      "columns": 8,
+      "first": 0,
+      "count": 2,
+      "fps": 8,
+      "loop": true,
+      "pivot": [
+        48,
+        48
+      ],
+      "orientation": "fixed",
+      "art_size": [
+        56,
+        56
+      ],
+      "render_scale": 1
+    }
+  }
+}

@@ -1,0 +1,383 @@
+{
+  "version": 11,
+  "effects": {
+    "file": "fx_minions.png",
+    "cell": 96,
+    "columns": 8
+  },
+  "effect_clips": {
+    "shield_block": {
+      "sheet": "fx_minions.png",
+      "cell": 96,
+      "columns": 8,
+      "first": 0,
+      "count": 3,
+      "fps": 24,
+      "loop": false,
+      "pivot": [
+        48,
+        48
+      ],
+      "orientation": "fixed",
+      "art_size": [
+        30,
+        30
+      ],
+      "render_scale": 1,
+      "ground": false,
+      "palette": [
+        "#f8f7ef",
+        "#d4d8de",
+        "#9eabbc",
+        "#2c3446"
+      ],
+      "lead_in_frames": 1
+    },
+    "bash_dust": {
+      "sheet": "fx_minions.png",
+      "cell": 96,
+      "columns": 8,
+      "first": 3,
+      "count": 2,
+      "fps": 24,
+      "loop": false,
+      "pivot": [
+        48,
+        80
+      ],
+      "orientation": "fixed",
+      "art_size": [
+        60,
+        12
+      ],
+      "render_scale": 1,
+      "ground": true,
+      "palette": [
+        "#f8f7ef",
+        "#d4d8de",
+        "#9eabbc",
+        "#2c3446"
+      ],
+      "lead_in_frames": 1
+    },
+    "guard_break": {
+      "sheet": "fx_minions.png",
+      "cell": 96,
+      "columns": 8,
+      "first": 5,
+      "count": 3,
+      "fps": 24,
+      "loop": false,
+      "pivot": [
+        48,
+        48
+      ],
+      "orientation": "fixed",
+      "art_size": [
+        40,
+        40
+      ],
+      "render_scale": 1,
+      "ground": false,
+      "palette": [
+        "#f8f7ef",
+        "#d4d8de",
+        "#9eabbc",
+        "#2c3446"
+      ],
+      "lead_in_frames": 1
+    },
+    "mage_bolt": {
+      "sheet": "fx_minions.png",
+      "cell": 96,
+      "columns": 8,
+      "first": 8,
+      "count": 2,
+      "fps": 12,
+      "loop": true,
+      "pivot": [
+        48,
+        48
+      ],
+      "orientation": "fixed",
+      "art_size": [
+        26,
+        12
+      ],
+      "render_scale": 1,
+      "ground": false,
+      "palette": [
+        "#f8f7ff",
+        "#c0dfff",
+        "#8faac8",
+        "#2c3446"
+      ]
+    },
+    "mage_bolt_hit": {
+      "sheet": "fx_minions.png",
+      "cell": 96,
+      "columns": 8,
+      "first": 10,
+      "count": 3,
+      "fps": 24,
+      "loop": false,
+      "pivot": [
+        48,
+        48
+      ],
+      "orientation": "fixed",
+      "art_size": [
+        40,
+        40
+      ],
+      "render_scale": 1,
+      "ground": false,
+      "palette": [
+        "#f8f7ff",
+        "#c0dfff",
+        "#8faac8",
+        "#2c3446"
+      ],
+      "lead_in_frames": 1
+    },
+    "mage_bolt_parried": {
+      "sheet": "fx_minions.png",
+      "cell": 96,
+      "columns": 8,
+      "first": 13,
+      "count": 3,
+      "fps": 24,
+      "loop": false,
+      "pivot": [
+        48,
+        48
+      ],
+      "orientation": "fixed",
+      "art_size": [
+        40,
+        40
+      ],
+      "render_scale": 1,
+      "ground": false,
+      "palette": [
+        "#f8f7ff",
+        "#c0dfff",
+        "#8faac8",
+        "#2c3446"
+      ],
+      "lead_in_frames": 1
+    },
+    "ground_rune": {
+      "sheet": "fx_minions_128.png",
+      "cell": 128,
+      "columns": 8,
+      "first": 0,
+      "count": 3,
+      "fps": 12,
+      "loop": true,
+      "pivot": [
+        64,
+        112
+      ],
+      "orientation": "fixed",
+      "art_size": [
+        90,
+        26
+      ],
+      "render_scale": 1,
+      "ground": true,
+      "palette": [
+        "#f8f7ff",
+        "#c0dfff",
+        "#8faac8",
+        "#2c3446"
+      ],
+      "hitbox": {
+        "type": "rect",
+        "width": 90,
+        "height": 26,
+        "x": -45,
+        "y": -26
+      },
+      "expanded_from_cell": 96
+    },
+    "ground_burst": {
+      "sheet": "fx_minions_128.png",
+      "cell": 128,
+      "columns": 8,
+      "first": 3,
+      "count": 3,
+      "fps": 24,
+      "loop": false,
+      "pivot": [
+        64,
+        112
+      ],
+      "orientation": "fixed",
+      "art_size": [
+        90,
+        70
+      ],
+      "render_scale": 1,
+      "ground": true,
+      "palette": [
+        "#f8f7ff",
+        "#c0dfff",
+        "#8faac8",
+        "#2c3446"
+      ],
+      "hitbox": {
+        "type": "rect",
+        "width": 90,
+        "height": 70,
+        "x": -45,
+        "y": -70
+      },
+      "lead_in_frames": 1,
+      "expanded_from_cell": 96
+    },
+    "cast_glow": {
+      "sheet": "fx_minions.png",
+      "cell": 96,
+      "columns": 8,
+      "first": 16,
+      "count": 2,
+      "fps": 12,
+      "loop": true,
+      "pivot": [
+        48,
+        48
+      ],
+      "orientation": "fixed",
+      "art_size": [
+        20,
+        20
+      ],
+      "render_scale": 1,
+      "ground": false,
+      "palette": [
+        "#f8f7ff",
+        "#c0dfff",
+        "#8faac8",
+        "#2c3446"
+      ]
+    },
+    "purify_zone": {
+      "sheet": "fx_minions_256.png",
+      "cell": 256,
+      "columns": 8,
+      "first": 0,
+      "count": 3,
+      "fps": 12,
+      "loop": true,
+      "pivot": [
+        128,
+        232
+      ],
+      "orientation": "fixed",
+      "art_size": [
+        160,
+        36
+      ],
+      "render_scale": 1,
+      "ground": true,
+      "palette": [
+        "#f8f7ef",
+        "#d4d8de",
+        "#9eabbc",
+        "#2c3446"
+      ],
+      "hitbox": {
+        "type": "rect",
+        "width": 160,
+        "height": 36,
+        "x": -80,
+        "y": -36
+      },
+      "expanded_from_cell": 96
+    },
+    "purify_zone_in": {
+      "sheet": "fx_minions_256.png",
+      "cell": 256,
+      "columns": 8,
+      "first": 3,
+      "count": 3,
+      "fps": 24,
+      "loop": false,
+      "pivot": [
+        128,
+        232
+      ],
+      "orientation": "fixed",
+      "art_size": [
+        160,
+        60
+      ],
+      "render_scale": 1,
+      "ground": true,
+      "palette": [
+        "#f8f7ef",
+        "#d4d8de",
+        "#9eabbc",
+        "#2c3446"
+      ],
+      "lead_in_frames": 1,
+      "expanded_from_cell": 96
+    },
+    "purify_zone_out": {
+      "sheet": "fx_minions_256.png",
+      "cell": 256,
+      "columns": 8,
+      "first": 6,
+      "count": 2,
+      "fps": 24,
+      "loop": false,
+      "pivot": [
+        128,
+        232
+      ],
+      "orientation": "fixed",
+      "art_size": [
+        160,
+        36
+      ],
+      "render_scale": 1,
+      "ground": true,
+      "palette": [
+        "#f8f7ef",
+        "#d4d8de",
+        "#9eabbc",
+        "#2c3446"
+      ],
+      "lead_in_frames": 1,
+      "expanded_from_cell": 96
+    },
+    "staff_hit": {
+      "sheet": "fx_minions.png",
+      "cell": 96,
+      "columns": 8,
+      "first": 18,
+      "count": 3,
+      "fps": 24,
+      "loop": false,
+      "pivot": [
+        48,
+        48
+      ],
+      "orientation": "fixed",
+      "art_size": [
+        30,
+        30
+      ],
+      "render_scale": 1,
+      "ground": false,
+      "palette": [
+        "#f8f7ef",
+        "#d4d8de",
+        "#9eabbc",
+        "#2c3446"
+      ],
+      "lead_in_frames": 1
+    }
+  }
+}

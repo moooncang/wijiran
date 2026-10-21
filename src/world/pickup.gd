@@ -1,18 +1,27 @@
 extends "res://src/world/interactable.gd"
 ## Side-path rewards (본편 §10 보상): `tonic` restores up to 40 HP once (permanent flag, no farming; it
 ## waits while health is full so it is never wasted), `record` is a war/transfer record read in the dialogue
-## box ("제목: 「본문」" → speaker and line) and kept as a flag. Drawn in code until the 11차 props.
+## box ("제목: 「본문」" → speaker and line) and kept as a flag. 11차 props: tonic / tonic_pickup flash,
+## transfer_record / war_record scrolls.
 
 const TONIC_HEAL := 40
 
 var kind := "tonic"
 var pickup_id := ""
 var text := ""
+var _s: Sprite2D
+var _clip := "tonic"
+var _flash: Sprite2D
+var _flash_t := -1.0
 
 
 func _ready() -> void:
 	super()
 	label = "회복약 마시기" if kind == "tonic" else "기록 읽기"
+	_clip = "tonic" if kind == "tonic" else ("transfer_record" if text.begins_with("이송") else "war_record")
+	_s = Anim.prop_sprite(_clip)
+	add_child(_s)
+	_s.visible = not taken()
 
 
 func taken() -> bool:
@@ -34,10 +43,15 @@ func _full() -> bool:
 
 func _use() -> void:
 	Game.set_flag("picked:" + pickup_id, true)
+	_s.visible = false
 	var p := get_tree().get_first_node_in_group("player") as Player
 	if kind == "tonic" and p:
 		var gain := mini(CombatConfig.PLAYER_MAX_HP, p.hp + TONIC_HEAL) - p.hp
 		p.hp += gain
+		_flash = Anim.prop_sprite("tonic_pickup")
+		_flash.position = Vector2(0, -8)
+		add_child(_flash)
+		_flash_t = 0.0
 		Juice.flash(p.global_position + Vector2(0, -26), 18.0)
 		Game.notice.emit("회복약: 체력 +%d" % gain)
 		return
@@ -48,24 +62,20 @@ func _use() -> void:
 		Dialogue.say("기록", text if text != "" else "글씨가 바래 읽을 수 없습니다.", 6.0, "", false)
 
 
-func _draw_body() -> void:
-	if taken():
+func _process(delta: float) -> void:
+	super(delta)
+	if Juice.frozen():
 		return
-	var bob := sin(_t * 3.0) * 2.0
-	if kind == "tonic":   # a small gourd: round belly, waist, cork and a cord
-		var y := -4.0 + bob
-		draw_circle(Vector2(0, y - 6), 6.0, Color(0.32, 0.06, 0.1))
-		draw_circle(Vector2(0, y - 6), 5.0, Color(0.6, 0.13, 0.18))
-		draw_circle(Vector2(0, y - 14), 3.8, Color(0.32, 0.06, 0.1))
-		draw_circle(Vector2(0, y - 14), 3.0, Color(0.6, 0.13, 0.18))
-		draw_rect(Rect2(-1.5, y - 20, 3, 3), Color(0.8, 0.68, 0.45))
-		draw_line(Vector2(-3, y - 10.5), Vector2(3, y - 10.5), Color(0.9, 0.78, 0.4), 1.5)
-		draw_circle(Vector2(-2, y - 8), 1.4, Color(1.0, 0.75, 0.75, 0.8))   # highlight
-	else:   # a rolled scroll: paper between two dark dowel ends, tied with a red cord
-		var y := -10.0 + bob
-		draw_rect(Rect2(-9, y - 4, 18, 8), Color(0.86, 0.8, 0.64))
-		draw_line(Vector2(-9, y - 1), Vector2(9, y - 1), Color(0.7, 0.62, 0.46), 1.0)
-		for x in [-11.0, 9.0]:
-			draw_rect(Rect2(x, y - 5, 2, 10), Color(0.3, 0.2, 0.12))
-		draw_rect(Rect2(-1, y - 4, 2, 8), Color(0.7, 0.14, 0.16))
-		draw_line(Vector2(0, y + 4), Vector2(-2, y + 8), Color(0.7, 0.14, 0.16), 1.2)
+	if _s.visible:
+		Anim.prop_frame(_s, _clip, int(_t * 8.0))
+	if _flash_t >= 0.0:
+		_flash_t += delta
+		if _flash_t >= 0.36:
+			_flash.queue_free()
+			_flash_t = -1.0
+		else:
+			Anim.prop_frame(_flash, "tonic_pickup", int(_flash_t / 0.12))
+
+
+func _draw_body() -> void:
+	pass

@@ -47,7 +47,7 @@ var _gone_t := 0.0
 var _t := 0.0
 var _boss_id := 0                       # instance the trail/fade state belongs to
 var _stagger_len := 0.0                 # longest stagger_left seen in the current stagger (its full length)
-var _portraits := {"티아넬": Anim.ui_tex("tianel_hud_portrait")}   # boss_name → 32px HUD portrait
+var _portraits := {"티아넬": Anim.ui_tex("tianel_hud_portrait"), "미레유": Anim.ui_tex("mireille_hud_portrait"), "엘로디": Anim.ui_tex("elodie_hud_portrait")}   # boss_name → 32px HUD portrait
 
 
 func _ready() -> void:

@@ -1,0 +1,235 @@
+{
+  "version": 11,
+  "character": {
+    "file": "enemy_incense.png",
+    "sheet": "enemy_incense.png",
+    "cell": [
+      96,
+      96
+    ],
+    "columns": 8,
+    "rows": 4,
+    "pivot": [
+      48,
+      88
+    ],
+    "standing_height": 52,
+    "height_excludes": "staff smoke above head",
+    "orientation": "left"
+  },
+  "clips": {
+    "idle": {
+      "first": 0,
+      "count": 4,
+      "fps": 6,
+      "loop": true,
+      "staff_tip": {
+        "0": [
+          33,
+          30
+        ],
+        "1": [
+          28,
+          33
+        ],
+        "2": [
+          29,
+          34
+        ],
+        "3": [
+          30,
+          35
+        ]
+      }
+    },
+    "walk": {
+      "first": 4,
+      "count": 6,
+      "fps": 10,
+      "loop": true,
+      "staff_tip": {
+        "0": [
+          35,
+          30
+        ],
+        "1": [
+          33,
+          31
+        ],
+        "2": [
+          24,
+          31
+        ],
+        "3": [
+          29,
+          32
+        ],
+        "4": [
+          26,
+          32
+        ],
+        "5": [
+          28,
+          32
+        ]
+      }
+    },
+    "strike_ready": {
+      "first": 10,
+      "count": 2,
+      "fps": 6,
+      "loop": false,
+      "hold_last": true,
+      "advance": "event",
+      "staff_tip": {
+        "0": [
+          41,
+          51
+        ],
+        "1": [
+          40,
+          54
+        ]
+      }
+    },
+    "strike": {
+      "first": 12,
+      "count": 3,
+      "fps": 20,
+      "loop": false,
+      "impact": 0,
+      "staff_tip": {
+        "0": [
+          9,
+          45
+        ],
+        "1": [
+          21,
+          41
+        ],
+        "2": [
+          25,
+          39
+        ]
+      }
+    },
+    "kneel_cast": {
+      "first": 15,
+      "count": 3,
+      "fps": 6,
+      "loop": false,
+      "hold_last": true,
+      "advance": "event",
+      "staff_tip": {
+        "0": [
+          22,
+          54
+        ],
+        "1": [
+          40,
+          60
+        ],
+        "2": [
+          40,
+          66
+        ]
+      }
+    },
+    "cast_done": {
+      "first": 18,
+      "count": 2,
+      "fps": 12,
+      "loop": false,
+      "staff_tip": {
+        "0": [
+          18,
+          35
+        ],
+        "1": [
+          21,
+          18
+        ]
+      }
+    },
+    "hurt": {
+      "first": 20,
+      "count": 2,
+      "fps": 12,
+      "loop": false,
+      "staff_tip": {
+        "0": [
+          26,
+          22
+        ],
+        "1": [
+          24,
+          20
+        ]
+      }
+    },
+    "recoil": {
+      "first": 22,
+      "count": 2,
+      "fps": 10,
+      "loop": false,
+      "staff_tip": {
+        "0": [
+          18,
+          12
+        ],
+        "1": [
+          18,
+          21
+        ]
+      }
+    },
+    "stagger": {
+      "first": 24,
+      "count": 4,
+      "fps": 8,
+      "loop": true,
+      "staff_tip": {
+        "0": [
+          21,
+          39
+        ],
+        "1": [
+          23,
+          44
+        ],
+        "2": [
+          26,
+          51
+        ],
+        "3": [
+          15,
+          52
+        ]
+      }
+    },
+    "death": {
+      "first": 28,
+      "count": 4,
+      "fps": 8,
+      "loop": false,
+      "staff_tip": {
+        "0": [
+          43,
+          57
+        ],
+        "1": [
+          36,
+          79
+        ],
+        "2": [
+          43,
+          66
+        ],
+        "3": [
+          43,
+          69
+        ]
+      }
+    }
+  }
+}

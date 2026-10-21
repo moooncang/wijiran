@@ -4,7 +4,8 @@ class_name LevelB3
 
 static func data() -> Dictionary:
 	return {
-		"id": "b3", "name": "향당", "width": 800.0, "ground_y": 300.0, "backdrop": "shrine",
+		"id": "b3", "name": "향당", "width": 800.0, "ground_y": 300.0, "backdrop": "shrine", "map_key": "B3",
+		"decor": [["b3_hanging_0", 40, 250], ["b3_censer_stand_0", 340, 300], ["b3_hanging_1", 700, 250]],
 		"spawns": {"start": Vector2(80, 300)},
 		"platforms": [],
 		"covers": [],

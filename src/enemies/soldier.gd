@@ -138,7 +138,7 @@ func frame() -> int:
 func _process(delta: float) -> void:
 	super(delta)
 	sprite.frame = frame()
-	sprite.flip_h = facing < 0.0
+	sprite.flip_h = facing > 0.0   # 11차 sheet is drawn facing left
 	sprite.position = Vector2(kick, 0)
 	sprite.modulate = Color(2, 2, 2) if flash > 0.0 else Color(1, 1, 1, corpse_alpha(dead_time))   # dead: death clip, then fade out
 

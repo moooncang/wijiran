@@ -51,7 +51,7 @@ func fx(clip: String, at: Vector2, dir: Vector2 = Vector2.RIGHT, facing: float =
 	var sx := scale_by * stretch.x
 	var sy := (-scale_by if flip_v else scale_by) * stretch.y
 	match String(c.get("orientation", "fixed")):
-		"hit_direction":
+		"hit_direction", "right", "left":   # 11차: "right" art points +x, "left" art is drawn pointing back; both follow dir
 			if dir.x < 0.0:
 				s.scale = Vector2(-sx, sy)
 				s.rotation = dir.angle() - PI

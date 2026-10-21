@@ -1,0 +1,737 @@
+{
+  "version": 11,
+  "assets": {
+    "f2_ground_0": {
+      "file": "terrain/f2_ground_0.png",
+      "size": [
+        96,
+        48
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "ground"
+    },
+    "f2_ground_1": {
+      "file": "terrain/f2_ground_1.png",
+      "size": [
+        96,
+        48
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "ground"
+    },
+    "f2_ground_2": {
+      "file": "terrain/f2_ground_2.png",
+      "size": [
+        96,
+        48
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "ground"
+    },
+    "f2_ground_3": {
+      "file": "terrain/f2_ground_3.png",
+      "size": [
+        96,
+        48
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "ground"
+    },
+    "b2_ground_0": {
+      "file": "terrain/b2_ground_0.png",
+      "size": [
+        96,
+        48
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "ground"
+    },
+    "b2_ground_1": {
+      "file": "terrain/b2_ground_1.png",
+      "size": [
+        96,
+        48
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "ground"
+    },
+    "f3_ground_0": {
+      "file": "terrain/f3_ground_0.png",
+      "size": [
+        96,
+        48
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "ground"
+    },
+    "f3_ground_1": {
+      "file": "terrain/f3_ground_1.png",
+      "size": [
+        96,
+        48
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "ground"
+    },
+    "f3_ground_2": {
+      "file": "terrain/f3_ground_2.png",
+      "size": [
+        96,
+        48
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "ground"
+    },
+    "f3_ground_3": {
+      "file": "terrain/f3_ground_3.png",
+      "size": [
+        96,
+        48
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "ground"
+    },
+    "b3_ground_0": {
+      "file": "terrain/b3_ground_0.png",
+      "size": [
+        96,
+        48
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "ground"
+    },
+    "b3_ground_1": {
+      "file": "terrain/b3_ground_1.png",
+      "size": [
+        96,
+        48
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "ground"
+    },
+    "f2_crate_stack_0": {
+      "file": "terrain/f2_crate_stack_0.png",
+      "size": [
+        120,
+        60
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "block"
+    },
+    "f2_crate_stack_1": {
+      "file": "terrain/f2_crate_stack_1.png",
+      "size": [
+        120,
+        60
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "block"
+    },
+    "f2_desk": {
+      "file": "terrain/f2_desk.png",
+      "size": [
+        140,
+        16
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "platform"
+    },
+    "f2_shelf_0": {
+      "file": "terrain/f2_shelf_0.png",
+      "size": [
+        110,
+        14
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "platform"
+    },
+    "f2_shelf_1": {
+      "file": "terrain/f2_shelf_1.png",
+      "size": [
+        110,
+        14
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "platform"
+    },
+    "f2_measuring_step": {
+      "file": "terrain/f2_measuring_step.png",
+      "size": [
+        200,
+        24
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "platform"
+    },
+    "f2_cell_door": {
+      "file": "terrain/f2_cell_door.png",
+      "size": [
+        60,
+        90
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "decoration"
+    },
+    "f2_cover_0": {
+      "file": "terrain/f2_cover_0.png",
+      "size": [
+        40,
+        40
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "cover"
+    },
+    "f2_cover_1": {
+      "file": "terrain/f2_cover_1.png",
+      "size": [
+        40,
+        40
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "cover"
+    },
+    "f2_lamp": {
+      "file": "terrain/f2_lamp.png",
+      "size": [
+        28,
+        42
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "decoration"
+    },
+    "f2_tank_a": {
+      "file": "terrain/f2_tank_a.png",
+      "size": [
+        40,
+        60
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "decoration"
+    },
+    "f2_tank_b": {
+      "file": "terrain/f2_tank_b.png",
+      "size": [
+        40,
+        60
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "decoration"
+    },
+    "f2_instrument": {
+      "file": "terrain/f2_instrument.png",
+      "size": [
+        72,
+        44
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "decoration"
+    },
+    "f2_papers": {
+      "file": "terrain/f2_papers.png",
+      "size": [
+        40,
+        18
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "decoration"
+    },
+    "f2_chain": {
+      "file": "terrain/f2_chain.png",
+      "size": [
+        16,
+        96
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "decoration"
+    },
+    "f2_pillar": {
+      "file": "terrain/f2_pillar.png",
+      "size": [
+        40,
+        150
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "decoration"
+    },
+    "f2_bars": {
+      "file": "terrain/f2_bars.png",
+      "size": [
+        80,
+        90
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "decoration"
+    },
+    "f2_stone_plate_0": {
+      "file": "terrain/f2_stone_plate_0.png",
+      "size": [
+        48,
+        16
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "decoration"
+    },
+    "f2_stone_plate_1": {
+      "file": "terrain/f2_stone_plate_1.png",
+      "size": [
+        48,
+        16
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "decoration"
+    },
+    "f2_stone_plate_2": {
+      "file": "terrain/f2_stone_plate_2.png",
+      "size": [
+        48,
+        16
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "decoration"
+    },
+    "b2_partition": {
+      "file": "terrain/b2_partition.png",
+      "size": [
+        8,
+        48
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "decoration"
+    },
+    "b2_platform": {
+      "file": "terrain/b2_platform.png",
+      "size": [
+        140,
+        14
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "platform"
+    },
+    "b2_observation_ring_0": {
+      "file": "terrain/b2_observation_ring_0.png",
+      "size": [
+        200,
+        200
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "decoration"
+    },
+    "b2_observation_ring_1": {
+      "file": "terrain/b2_observation_ring_1.png",
+      "size": [
+        200,
+        200
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "decoration"
+    },
+    "b2_instrument_0": {
+      "file": "terrain/b2_instrument_0.png",
+      "size": [
+        80,
+        160
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "decoration"
+    },
+    "b2_instrument_1": {
+      "file": "terrain/b2_instrument_1.png",
+      "size": [
+        80,
+        160
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "decoration"
+    },
+    "f3_cart_platform": {
+      "file": "terrain/f3_cart_platform.png",
+      "size": [
+        130,
+        40
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "block"
+    },
+    "f3_post_platform": {
+      "file": "terrain/f3_post_platform.png",
+      "size": [
+        120,
+        14
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "platform"
+    },
+    "f3_stair_0": {
+      "file": "terrain/f3_stair_0.png",
+      "size": [
+        100,
+        16
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "platform"
+    },
+    "f3_stair_1": {
+      "file": "terrain/f3_stair_1.png",
+      "size": [
+        100,
+        16
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "platform"
+    },
+    "f3_stair_2": {
+      "file": "terrain/f3_stair_2.png",
+      "size": [
+        100,
+        16
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "platform"
+    },
+    "f3_wall": {
+      "file": "terrain/f3_wall.png",
+      "size": [
+        160,
+        50
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "block"
+    },
+    "f3_chapel_step": {
+      "file": "terrain/f3_chapel_step.png",
+      "size": [
+        200,
+        24
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "platform"
+    },
+    "f3_cover_0": {
+      "file": "terrain/f3_cover_0.png",
+      "size": [
+        40,
+        40
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "cover"
+    },
+    "f3_cover_1": {
+      "file": "terrain/f3_cover_1.png",
+      "size": [
+        40,
+        40
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "cover"
+    },
+    "f3_sun_flag_0": {
+      "file": "terrain/f3_sun_flag_0.png",
+      "size": [
+        30,
+        70
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "decoration"
+    },
+    "f3_sun_flag_1": {
+      "file": "terrain/f3_sun_flag_1.png",
+      "size": [
+        30,
+        70
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "decoration"
+    },
+    "f3_tent": {
+      "file": "terrain/f3_tent.png",
+      "size": [
+        130,
+        100
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "decoration"
+    },
+    "f3_censer_base": {
+      "file": "terrain/f3_censer_base.png",
+      "size": [
+        60,
+        40
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "decoration"
+    },
+    "f3_cart_wreck": {
+      "file": "terrain/f3_cart_wreck.png",
+      "size": [
+        100,
+        54
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "decoration"
+    },
+    "f3_stone_lantern": {
+      "file": "terrain/f3_stone_lantern.png",
+      "size": [
+        40,
+        70
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "decoration"
+    },
+    "f3_gate_pillar": {
+      "file": "terrain/f3_gate_pillar.png",
+      "size": [
+        48,
+        150
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "decoration"
+    },
+    "f3_bindings": {
+      "file": "terrain/f3_bindings.png",
+      "size": [
+        36,
+        14
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "decoration"
+    },
+    "f3_cloth": {
+      "file": "terrain/f3_cloth.png",
+      "size": [
+        50,
+        26
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "decoration"
+    },
+    "f3_purified": {
+      "file": "terrain/f3_purified.png",
+      "size": [
+        96,
+        48
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "ground"
+    },
+    "b3_censer_stand_0": {
+      "file": "terrain/b3_censer_stand_0.png",
+      "size": [
+        120,
+        80
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "decoration"
+    },
+    "b3_censer_stand_1": {
+      "file": "terrain/b3_censer_stand_1.png",
+      "size": [
+        120,
+        80
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "decoration"
+    },
+    "b3_hanging_0": {
+      "file": "terrain/b3_hanging_0.png",
+      "size": [
+        60,
+        150
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "decoration"
+    },
+    "b3_hanging_1": {
+      "file": "terrain/b3_hanging_1.png",
+      "size": [
+        60,
+        150
+      ],
+      "pivot": [
+        0,
+        0
+      ],
+      "kind": "decoration"
+    }
+  }
+}

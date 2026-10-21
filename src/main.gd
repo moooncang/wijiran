@@ -34,6 +34,7 @@ var cutscene: Control          # first-entry card: near-opaque wash with the fra
 var _cut_card: NinePatchRect    # framed card; the image is its child
 var _cut_image: TextureRect
 var _cut_t := -1.0
+var _cut_queue: Array = []      # cards still to show after the current one
 var _cut_caption := ""          # the route card names its stops (manifest "locations")
 
 const TITLE_TIME := 2.5
@@ -140,24 +141,36 @@ func _load_level(level_id: String, spawn_id: String, show_title := true) -> void
 	_cut_t = -1.0                  # a card from the previous level never carries over
 	cutscene.visible = false
 	hud.modulate.a = 1.0
+	_cut_queue.clear()
 	var cut := String(level.data.get("cutscene", ""))
 	if cut != "" and Anim.cutscenes.has(cut) and not Game.save.skip_intro_seen.has(cut):
-		Game.save.skip_intro_seen.append(cut)
+		_cut_queue.append(cut)
+	for pair in level.data.get("cutscene_after", []):   # [flag, key]: result cards once their flag is set
+		var key := String(pair[1])
+		if Game.flag(String(pair[0])) and Anim.cutscenes.has(key) and not Game.save.skip_intro_seen.has(key):
+			_cut_queue.append(key)
+	if not _cut_queue.is_empty():
+		for key in _cut_queue:
+			Game.save.skip_intro_seen.append(key)
 		Game.write_save()
-		_cut_image.texture = Anim.tex(String(Anim.cutscenes[cut].file))
-		var stops := PackedStringArray()
-		for s in Anim.cutscenes[cut].get("locations", []):
-			stops.append(STOP_NAMES.get(s, s))
-		_cut_caption = " → ".join(stops)
-		_cut_image.queue_redraw()
-		cutscene.modulate.a = 1.0      # the wash is up from the first frame (no flash of the map); the art fades in
-		_cut_card.modulate.a = 0.0
-		hud.modulate.a = 0.0
-		cutscene.visible = true
-		_cut_t = 0.0               # queued toasts wait for the card (_pump_notice) instead of sitting on its art
+		_start_card(String(_cut_queue.pop_front()))
 
 
 var _title_left := 0.0
+
+
+func _start_card(cut: String) -> void:
+	_cut_image.texture = Anim.tex(String(Anim.cutscenes[cut].file))
+	var stops := PackedStringArray()
+	for s in Anim.cutscenes[cut].get("locations", []):
+		stops.append(STOP_NAMES.get(s, s))
+	_cut_caption = " → ".join(stops)
+	_cut_image.queue_redraw()
+	cutscene.modulate.a = 1.0      # the wash is up from the first frame (no flash of the map); the art fades in
+	_cut_card.modulate.a = 0.0
+	hud.modulate.a = 0.0
+	cutscene.visible = true
+	_cut_t = 0.0               # queued toasts wait for the card (_pump_notice) instead of sitting on its art
 
 
 func _on_travel(level_id: String, spawn_id: String) -> void:
@@ -193,6 +206,8 @@ func _process(delta: float) -> void:
 			_cut_t = -1.0
 			cutscene.visible = false
 			hud.modulate.a = 1.0
+			if not _cut_queue.is_empty():
+				_start_card(String(_cut_queue.pop_front()))
 	else:
 		_title_left = maxf(0.0, _title_left - delta)   # the map title waits for the cutscene card
 	# short fade-out (0.4 s) so the band is either solid or gone, never a ghost over the world; it and the

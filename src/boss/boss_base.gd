@@ -51,6 +51,7 @@ var floor_y := 300.0                 # the arena floor (ground_y moves with perc
 var barrier_left := 0.0
 var barrier_recover := 0.0
 var _zone_rects: Dictionary = {}     # strike id → resolved ZONE/LANE rect
+var _zone_art: Dictionary = {}       # strike id → looping warn clip over the zone (freed when it fires)
 var _used_lanes: Array = []
 
 var pattern_id := ""
@@ -153,6 +154,10 @@ func _on_barrier_down() -> void:
 
 
 func _on_blink() -> void:
+	pass
+
+
+func _after_blink() -> void:
 	pass
 
 
@@ -352,6 +357,10 @@ func _cancel_pattern() -> void:
 	pattern_id = ""
 	pattern = {}
 	_chain_next = ""
+	for k in _zone_art:
+		if is_instance_valid(_zone_art[k]):
+			_zone_art[k].queue_free()
+	_zone_art.clear()
 	queue_redraw()
 
 
@@ -399,6 +408,9 @@ func _step_pattern(dt: float) -> void:
 		var shape := String(s.shape)
 		if shape in ["ZONE", "LANE"] and not _zone_rects.has(hid) and pattern_time >= float(s.get("lock", 0.0)):
 			_zone_rects[hid] = _resolve_zone(s)
+			if s.has("warn_clip") and Anim.effects.has(String(s.warn_clip)):
+				var zr: Rect2 = _zone_rects[hid]
+				_zone_art[hid] = Juice.fx(String(s.warn_clip), Vector2(zr.get_center().x, zr.end.y))
 		if shape == "AURA" and pattern_time >= t and pattern_time < t + dur:
 			var centre := global_position + Vector2(0, -30)
 			var hr := player.hurt_rect()
@@ -420,6 +432,13 @@ func _step_pattern(dt: float) -> void:
 			_strike_flash(s)
 		if not _fx_done.has(hid) and pattern_time >= t:
 			_fx_done[hid] = true
+			if _zone_art.has(hid):
+				if is_instance_valid(_zone_art[hid]):
+					_zone_art[hid].queue_free()
+				_zone_art.erase(hid)
+			if shape in ["ZONE", "LANE"] and s.has("fx") and Anim.effects.has(String(s.fx)):
+				var fr: Rect2 = _zone_rects.get(hid, Rect2())
+				Juice.fx(String(s.fx), Vector2(fr.get_center().x, fr.end.y))
 			_strike_fx(s)
 			match shape:
 				"PROJ":
@@ -517,6 +536,7 @@ func _blink() -> void:
 	_on_blink()
 	if not perches.is_empty() and rng.randf() < 0.4:
 		_teleport_to_perch({})
+		_after_blink()
 		return
 	var ls := _lanes()
 	var best := 0
@@ -530,6 +550,7 @@ func _blink() -> void:
 	global_position = Vector2(clampf((float(ls[best][0]) + float(ls[best][1])) * 0.5, arena_left, arena_right), floor_y)
 	ground_y = floor_y
 	facing = -1.0 if player.global_position.x < global_position.x else 1.0
+	_after_blink()
 
 
 func _resolve_dist(m: Dictionary) -> float:
@@ -699,9 +720,9 @@ func _fire_volley(s: Dictionary) -> void:
 		p.color = Color(s.get("color", Color(0.85, 0.9, 0.7)))
 		p.radius = 5.0 * maxf(1.0, fx_scale * 0.6)
 		p.clip = String(s.get("clip", ""))
-		p.hit_clip = "arrow_hit"
-		p.parried_clip = "arrow_parried_big"
-		p.stick_clip = "arrow_stick"
+		p.hit_clip = String(s.get("hit_clip", "arrow_hit"))
+		p.parried_clip = String(s.get("parried_clip", "arrow_parried_big"))
+		p.stick_clip = String(s.get("stick_clip", "arrow_stick"))
 		var hit := HitEvent.new()
 		hit.attacker = self
 		hit.instance_id = instance
@@ -711,7 +732,7 @@ func _fire_volley(s: Dictionary) -> void:
 		hit.parry_class = int(s.cls)
 		hit.posture_damage = float(s.get("posture", POSTURE[int(s.cls)]))
 		hit.label = "%s#%d" % [pattern.name, int(s.id)]
-		hit.hit_fx = "arrow_hit"
+		hit.hit_fx = String(s.get("hit_clip", "arrow_hit"))
 		p.hit = hit
 		get_parent().add_child(p)
 
