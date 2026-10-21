@@ -129,7 +129,12 @@ func _unhandled_input(event: InputEvent) -> void:
 ## The tree is paused while the menu is up and GUI picking does not run then: clicks and taps are taken
 ## here (delivered to always-processing nodes) and routed to the same handler.
 func _input(event: InputEvent) -> void:
-	if _open and (event is InputEventMouseButton or event is InputEventMouseMotion or event is InputEventScreenTouch):
+	if not _open:
+		return
+	if UiText.touch:
+		if event is InputEventScreenTouch:
+			_gui_input(event)
+	elif event is InputEventMouseButton or event is InputEventMouseMotion:
 		_gui_input(event)
 
 
@@ -152,6 +157,15 @@ func _gui_input(event: InputEvent) -> void:
 			accept_event()
 			queue_redraw()
 			return
+
+
+## Build stamp written into the web page by tools/stamp_web.js ("dev" when run from the editor).
+func _build_id() -> String:
+	if OS.has_feature("web"):
+		var v = JavaScriptBridge.eval("window.WIJIRAN_BUILD || \"\"", true)
+		if v is String and String(v) != "":
+			return String(v)
+	return "dev"
 
 
 func _activate(action: String) -> void:
@@ -206,6 +220,7 @@ func _draw() -> void:
 			_draw_rows(cx, 170)
 			var hint := "W/S 선택 · J/Enter 결정 · Esc 닫기" if not UiText.touch else "항목을 누르세요 · 계속하기로 돌아갑니다"
 			UiText.centered(self, cx, vp.y - 24, hint, UiText.sz(UiText.XS), UiText.DIM, 0)
+			UiText.draw(self, Vector2(vp.x - 8.0 - UiText.width("빌드 " + _build_id(), UiText.XS), vp.y - 8.0), "빌드 " + _build_id(), UiText.XS, UiText.DIM, 0)
 
 
 func _draw_rows(cx: float, _top: float) -> void:

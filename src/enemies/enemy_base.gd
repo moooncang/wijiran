@@ -551,42 +551,33 @@ func _draw_body() -> void:
 
 
 ## Hitbox-exact translucent red dot field filling in toward the strike (shared by bosses, mages, hazards).
+## Hitbox-exact telegraph: a translucent red box whose saturation and opacity climb toward the strike
+## (pale rose at the start, solid red at the hit), with a thin edge; the last quarter adds a bright rim.
+static func telegraph_fill(progress: float) -> Color:
+	var p := clampf(progress, 0.0, 1.0)
+	return Color.from_hsv(0.0, lerpf(0.35, 1.0, p), 1.0, lerpf(0.14, 0.52, p))
+
+
+static func telegraph_edge(progress: float) -> Color:
+	var p := clampf(progress, 0.0, 1.0)
+	return Color.from_hsv(0.0, lerpf(0.5, 1.0, p), 1.0, lerpf(0.5, 0.95, p))
+
+
 static func draw_telegraph(node: CanvasItem, local: Rect2, unparryable: bool, progress: float) -> void:
-	var alpha := 0.28 + 0.45 * progress
-	var dot := Color(1.0, 0.22, 0.2, alpha)
-	var pitch := 8.0 if progress < 0.5 else 5.0
-	var y := local.position.y + 2.0
-	var row := 0
-	while y < local.end.y - 1.0:
-		var x := local.position.x + 2.0 + (pitch * 0.5 if row % 2 == 1 else 0.0)
-		while x < local.end.x - 1.0:
-			node.draw_rect(Rect2(x, y, 2, 2), dot)
-			x += pitch
-		y += pitch
-		row += 1
-	node.draw_rect(local, Color(1.0, 0.3, 0.25, 0.55 + 0.4 * progress), false, 2.0)
+	node.draw_rect(local, telegraph_fill(progress))
+	node.draw_rect(local, telegraph_edge(progress), false, 2.0)
 	if progress > 0.75:
 		node.draw_rect(local.grow(2.0), Color(1.0, 0.85, 0.7, (progress - 0.75) * 2.0), false, 1.0)
 	if unparryable:
 		node.draw_rect(Rect2(local.position.x, local.end.y - 3.0, local.size.x, 3.0), Color(1.0, 0.25, 0.2, 0.7 + 0.3 * progress))
 
 
-## Same field clipped to a disc (정화 기도 등 원형 판정).
+## Same box as a disc (정화 기도 등 원형 판정).
 static func draw_telegraph_disc(node: CanvasItem, centre: Vector2, r: float, progress: float) -> void:
-	var alpha := 0.28 + 0.45 * progress
-	var dot := Color(1.0, 0.22, 0.2, alpha)
-	var pitch := 8.0 if progress < 0.5 else 5.0
-	var y := centre.y - r
-	var row := 0
-	while y < centre.y + r:
-		var x := centre.x - r + (pitch * 0.5 if row % 2 == 1 else 0.0)
-		while x < centre.x + r:
-			if Vector2(x, y).distance_to(centre) <= r:
-				node.draw_rect(Rect2(x, y, 2, 2), dot)
-			x += pitch
-		y += pitch
-		row += 1
-	node.draw_arc(centre, r, 0.0, TAU, 48, Color(1.0, 0.3, 0.25, 0.55 + 0.4 * progress), 2.0)
+	node.draw_circle(centre, r, telegraph_fill(progress))
+	node.draw_arc(centre, r, 0.0, TAU, 48, telegraph_edge(progress), 2.0)
+	if progress > 0.75:
+		node.draw_arc(centre, r + 2.0, 0.0, TAU, 48, Color(1.0, 0.85, 0.7, (progress - 0.75) * 2.0), 1.0)
 
 
 ## Greybox humanoid (no sheet yet), shaded so it sits beside the pixel-art sprites: a 2 px dark silhouette

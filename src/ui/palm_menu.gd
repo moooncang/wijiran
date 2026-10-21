@@ -126,7 +126,12 @@ func _unhandled_input(event: InputEvent) -> void:
 ## The tree is paused while the menu is up and GUI picking does not run then: clicks and taps are taken
 ## here (delivered to always-processing nodes) and routed to the same handler.
 func _input(event: InputEvent) -> void:
-	if _open and (event is InputEventMouseButton or event is InputEventMouseMotion or event is InputEventScreenTouch):
+	if not _open:
+		return
+	if UiText.touch:
+		if event is InputEventScreenTouch:
+			_gui_input(event)
+	elif event is InputEventMouseButton or event is InputEventMouseMotion:
 		_gui_input(event)
 
 
