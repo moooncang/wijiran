@@ -101,6 +101,7 @@ func _ready() -> void:
 func _load_level(level_id: String, spawn_id: String, show_title := true) -> void:
 	if level_id != Game.level_id:
 		_drop_notice(true)   # toasts from the map we left (a rescue right before the door) are stale here
+	Game.wiping = false
 	# a toast already seen belongs to the old map ("여기서 다시 시작합니다" would name the wrong place);
 	# queued ones not shown yet still play here
 	_drop_notice(false)

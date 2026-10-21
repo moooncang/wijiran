@@ -27,9 +27,8 @@ func _process(delta: float) -> void:
 	super(delta)
 	if _lit_t >= 0.0:
 		_lit_t += delta
-	var fade = get_tree().current_scene.get("_fade_t")
-	if (fade is float and fade >= 0.0) or Game.paused:
-		return   # a map change is under way (a progress wipe restarts at T0): never re-save the lantern we are leaving
+	if Game.wiping:
+		return   # a progress wipe is restarting at T0: never re-save the lantern we are leaving
 	if near and not lit:
 		_use()
 	_arriving = false

@@ -180,6 +180,7 @@ func _activate(action: String) -> void:
 func _wipe() -> void:
 	Game.wipe_save()
 	Game.write_save()
+	Game.wiping = true
 	close()
 	Game.notice.emit("진행을 지웠습니다. 처음부터 시작합니다.")
 	Game.travel("t0", "start")

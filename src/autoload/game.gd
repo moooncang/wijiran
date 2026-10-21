@@ -22,6 +22,7 @@ var level_id := ""
 var player: Player
 var level: Node
 var save_enabled := true          # tests run with saving off
+var wiping := false               # a progress reset is restarting the game: lanterns must not re-save until T0 is up
 
 
 func _ready() -> void:
