@@ -26,7 +26,9 @@ var _notice_tween: Tween
 var title_label: Label
 var _fade: ColorRect
 var _fade_t := -1.0
-var _pending: Array = []       # [level_id, spawn_id]
+var _pending: Array = []       # [level_id, spawn_id] in flight
+var _queued: Array = []        # a travel asked for during a running fade: starts when this one ends
+var _loaded := false           # the in-flight travel has loaded its level
 var _death_t := -1.0
 var death_screen: Control      # dim + "쓰러졌다" during the death delay
 var title_band: NinePatchRect
@@ -186,12 +188,14 @@ func _start_card(cut: String) -> void:
 	_cut_t = 0.0               # queued toasts wait for the card (_pump_notice) instead of sitting on its art
 
 
+## One travel at a time: a request during a running fade is queued and runs after it (a death mid-door).
 func _on_travel(level_id: String, spawn_id: String) -> void:
-	_pending = [level_id, spawn_id]   # a request during a running fade replaces its destination instead of being dropped
-	if _fade_t >= 0.3:
-		_fade_t = 0.0   # the old level is already up: fade again
-	elif _fade_t < 0.0:
-		_fade_t = 0.0
+	if _fade_t >= 0.0:
+		_queued = [level_id, spawn_id]
+		return
+	_pending = [level_id, spawn_id]
+	_loaded = false
+	_fade_t = 0.0
 
 
 func _on_boss_spawned(boss: Node) -> void:
@@ -300,21 +304,30 @@ func _input(event: InputEvent) -> void:
 		_cut_t = CUT_TIME - 0.5
 
 
+## Fade out 0.25 s, load (exactly once, whatever the frame length: a long frame used to skip the load window and
+## the fade came back with the old level), fade in 0.30 s, then start a queued travel if one arrived meanwhile.
 func _step_fade(delta: float) -> void:
 	if _fade_t < 0.0:
 		return
-	_fade_t += delta
+	_fade_t += minf(delta, 0.1)
 	if _fade_t < 0.25:
 		_fade.color.a = _fade_t / 0.25
-	elif _fade_t < 0.30:
-		if _fade.color.a < 1.0:
-			_fade.color.a = 1.0
-			_load_level(_pending[0], _pending[1], _pending[0] != Game.level_id)   # respawns skip the title
-	elif _fade_t < 0.60:
+		return
+	if not _loaded:
+		_loaded = true
+		_fade.color.a = 1.0
+		_fade_t = 0.30
+		_load_level(_pending[0], _pending[1], _pending[0] != Game.level_id)   # respawns skip the title
+		return
+	if _fade_t < 0.60:
 		_fade.color.a = 1.0 - (_fade_t - 0.30) / 0.30
 	else:
 		_fade.color.a = 0.0
 		_fade_t = -1.0
+		if not _queued.is_empty():
+			var q := _queued
+			_queued = []
+			_on_travel(String(q[0]), String(q[1]))
 
 
 ## Notices queue instead of replacing each other (a boss's key-item line and the room's "구역 정리" fire

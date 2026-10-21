@@ -238,6 +238,18 @@ func _run() -> void:
 		print("probe after W: level=%s fade=%.2f" % [main.level.id, main._fade_t])
 		get_tree().quit(0)
 		return
+	if suite == "fadeprobe":
+		Game.save = Game.default_save()
+		await _goto("f1")
+		Game.travel("b1", "start")
+		main._step_fade(0.08)
+		main._step_fade(0.08)
+		main._step_fade(0.08)
+		main._step_fade(0.08)   # 0.32 s in one hop: the old code skipped its 0.25-0.30 load window
+		await _pf(2)
+		print("probe big-frame travel: level=%s" % main.level.id)
+		get_tree().quit(0)
+		return
 	if suite == "walk":
 		var bot := Node.new()
 		bot.set_script(preload("res://tests/walk_bot.gd"))

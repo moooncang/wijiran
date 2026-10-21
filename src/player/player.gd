@@ -505,6 +505,8 @@ func _release_swing() -> void:
 
 ## The player's hurt box in world space (feet-anchored, crouch lowers it).
 func hurt_rect() -> Rect2:
+	if dead:
+		return Rect2()   # a body takes no hits
 	var h := hurt_height()
 	return Rect2(global_position.x - 10.0, global_position.y - h, 20.0, h)
 

@@ -835,7 +835,7 @@ func _deliver(s: Dictionary) -> void:
 	hit.hit_id = int(s.id)
 	hit.origin = _strike_origin(s)
 	hit.direction = Vector2(facing, 0)
-	hit.raw_direct = float(s.raw)
+	hit.raw_direct = 0.0 if drill else float(s.raw)   # the yard drill teaches parry timing: its strikes never hurt
 	hit.knockback = float(KNOCKBACK[s.cls])
 	hit.hitstun = CombatConfig.HURT_STUN
 	hit.parry_class = int(s.cls)
