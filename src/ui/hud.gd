@@ -17,8 +17,8 @@ const TEXT_X := L + 21.0  # labels, palm name and status text share one column
 const BAR_H := 6.0
 const SEP := 5.0          # gap + 1 px rule + gap between the 월식 bar and the equipped palm
 const PALM_H := 20.0      # palm row band: the 24 px palm cell has 2 px of empty margin around 20 px art
-const KEY_CAP := 16.0     # key cap height: a 12 px label with its descender (Space's p) clear of the frame
-const KEY_ROW := 17.0     # key panel pitch: caps 1 px apart
+const KEY_CAP := 12.0     # key cap height (compact: 10 px labels)
+const KEY_ROW := 13.0     # key panel pitch (compact)
 const KEY_FADED := 0.1    # key panel alpha while someone stands behind it: out of the way, not ghost text
 const TRAIL := Color(0.45, 0.16, 0.22)   # recently lost HP: darker and duller than the fill, so the bar never reads full
 const HP := Color(0.85, 0.3, 0.4)
@@ -225,8 +225,8 @@ func _skill_lines() -> Array:
 func _draw_keys() -> void:
 	var lines := _skill_lines()
 	# caps and states at 12 px: at 11 px the 1.6× window scale dropped thin strokes (Shift's t, F's middle bar)
-	var ks := UiText.sz(UiText.S + 1)
-	var ns := UiText.sz(UiText.M)   # names: at 11 px the ㅓ of 허공답월 thinned to one pixel
+	var ks := UiText.sz(UiText.XS)
+	var ns := UiText.sz(UiText.XS)
 	var kw := 0.0
 	var nw := 0.0
 	var sw := 0.0
@@ -235,14 +235,14 @@ func _draw_keys() -> void:
 		nw = maxf(nw, UiText.width(line[1], ns))
 	for t in STATE_SAMPLES:
 		sw = maxf(sw, UiText.width(t, ks))
-	kw = roundf(kw + 16.0)   # 8 px a side
-	var w := roundf(6.0 + kw + 6.0 + nw + 8.0 + sw + 6.0)
-	var h := KEY_ROW * lines.size() - (KEY_ROW - KEY_CAP) + 8.0   # 4 px margin above the first cap and under the last
+	kw = roundf(kw + 10.0)   # 5 px a side
+	var w := roundf(4.0 + kw + 5.0 + nw + 8.0 + sw + 4.0)
+	var h := KEY_ROW * lines.size() - (KEY_ROW - KEY_CAP) + 6.0   # 3 px margin above the first cap and under the last
 	_keys_rect = Rect2(PANEL_R - w, get_viewport_rect().size.y - 4.0 - h, w, h)
 	UiText.panel(_keys, _keys_rect)
 	var caps: Array[Rect2] = []
 	for i in lines.size():
-		caps.append(Rect2(_keys_rect.position.x + 6.0, _keys_rect.position.y + 4.0 + KEY_ROW * i, kw, KEY_CAP))
+		caps.append(Rect2(_keys_rect.position.x + 4.0, _keys_rect.position.y + 3.0 + KEY_ROW * i, kw, KEY_CAP))
 	# every cap first, every label after, so no cap can paint over a neighbouring row's glyphs
 	for i in lines.size():
 		var ok: bool = lines[i][2]
@@ -254,11 +254,11 @@ func _draw_keys() -> void:
 		var ok: bool = line[2]
 		var state: String = line[3]
 		# ink centred in the 14 px inside the frame: caps' tops 2 px under it, Space's p 1 px above it
-		var kb := cap.position.y + KEY_CAP - 4.0
+		var kb := cap.position.y + KEY_CAP - 2.0
 		UiText.centered(_keys, cap.get_center().x, kb, line[0], ks, UiText.INK if ok else OFF, 0)
-		UiText.draw(_keys, Vector2(cap.end.x + 6.0, _baseline(cap.position.y, KEY_CAP, ns)), line[1], ns, UiText.INK if ok else OFF, 0)
+		UiText.draw(_keys, Vector2(cap.end.x + 5.0, _baseline(cap.position.y, KEY_CAP, ns)), line[1], ns, UiText.INK if ok else OFF, 0)
 		if state != "":
-			_right(_keys, _keys_rect.end.x - 6.0, kb, state, ks, line[4], 0)
+			_right(_keys, _keys_rect.end.x - 4.0, kb, state, ks, line[4], 0)
 
 
 ## The status line under the palm row (수전증 / 정화): a 16 px icon or a ring marker, then the text;

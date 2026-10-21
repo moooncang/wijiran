@@ -702,7 +702,8 @@ func _physics_process(dt: float) -> void:
 		if Input.is_action_just_pressed("parry"):
 			started = press_parry(move)
 		if not started and Input.is_action_just_pressed("dash"):
-			started = press_dash(aim)
+			var kdir := Vector2(move, -1.0 if jump_held else (1.0 if controls_crouch else 0.0))   # 잔월보 follows the keys, not the mouse
+			started = press_dash(aim if touch_mode else (kdir if kdir != Vector2.ZERO else Vector2(facing, 0)))
 		if not started and Input.is_action_just_pressed("ultimate"):
 			started = press_ultimate()
 		if not started and Input.is_action_just_pressed("heavy_attack"):

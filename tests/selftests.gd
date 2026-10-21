@@ -140,6 +140,33 @@ func _run() -> void:
 			print("drill i=%d state=%s pattern=%s hp=%.0f hits=%d px=%.0f mx=%.0f cands=%s cd=%s pending=%s recent=%s" % [i, m.state, m.get("pattern_id"), m.status.hp, hits, p.global_position.x, m.global_position.x, m._candidates(), m.cooldowns, m._pending_first, m.get("recent")])
 		get_tree().quit(0)
 		return
+	if suite == "innprobe":
+		Game.save = Game.default_save()
+		await _goto("b1")
+		var p := _player()
+		p.global_position = Vector2(320, 300)
+		await _pf(4)
+		var boss = main.level._spawned["arena"][0]
+		boss._cancel_pattern()
+		boss.state = boss.State.IDLE
+		boss.status.hp = 3.0
+		boss.global_position = Vector2(380, 300)
+		p.global_position = Vector2(330, 300)
+		p.aim = Vector2.RIGHT
+		Juice.clear()
+		p.press_attack()
+		await _pf(60)
+		print("probe boss hp=%.0f alive=%s beaten=%s flag=%s walls=%d count=%d" % [boss.status.hp, boss.status.alive(), boss.beaten, Game.flag("b1_tianel_beaten"), main.level._walls.size(), main.level._enemy_count])
+		p.global_position = Vector2(760, 300)
+		await _pf(6)
+		var used := false
+		for it in get_tree().get_nodes_in_group("interactable"):
+			if it.try_use():
+				used = true
+		await _pf(int(0.8 * 120))
+		print("probe door used=%s level=%s px=%.0f fade=%.2f" % [used, main.level.id, p.global_position.x, main._fade_t])
+		get_tree().quit(0)
+		return
 	if suite == "walk":
 		var bot := Node.new()
 		bot.set_script(preload("res://tests/walk_bot.gd"))
@@ -945,6 +972,9 @@ func _qa() -> void:
 	p.global_position = Vector2(2920, 300)
 	await _pf(4)
 	await _snap("qa-t0-door")
+	p.global_position = Vector2(2560, 300)
+	await _pf(int(2.2 * 120))
+	await _snap("qa-t0-drill")
 	# --- cutscene overlay on first entry
 	Game.save.skip_intro_seen = []
 	await _goto("t0")

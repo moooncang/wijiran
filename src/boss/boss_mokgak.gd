@@ -1112,21 +1112,5 @@ func _draw_overlay() -> void:
 ## the strike, a red outline, and a solid bar on the floor edge for floor attacks. The class is told by the
 ## head icon / staff mark; the zone itself stays one colour so every attack reads the same way.
 func _draw_zone(r: Rect2, cls: int, progress: float) -> void:
-	var local := Rect2(r.position - global_position, r.size)
-	var alpha := 0.28 + 0.45 * progress
-	var dot := Color(1.0, 0.22, 0.2, alpha)
-	var pitch := 8.0 if progress < 0.5 else 5.0
-	var y := local.position.y + 2.0
-	var row := 0
-	while y < local.end.y - 1.0:
-		var x := local.position.x + 2.0 + (pitch * 0.5 if row % 2 == 1 else 0.0)
-		while x < local.end.x - 1.0:
-			draw_rect(Rect2(x, y, 2, 2), dot)
-			x += pitch
-		y += pitch
-		row += 1
-	draw_rect(local, Color(1.0, 0.3, 0.25, 0.55 + 0.4 * progress), false, 2.0)
-	if progress > 0.75:
-		draw_rect(local.grow(2.0), Color(1.0, 0.85, 0.7, (progress - 0.75) * 2.0), false, 1.0)
-	if cls == U:
-		draw_rect(Rect2(local.position.x, local.end.y - 3.0, local.size.x, 3.0), Color(1.0, 0.25, 0.2, 0.7 + 0.3 * progress))
+	EnemyBase.draw_telegraph(self, Rect2(r.position - global_position, r.size), cls == U, progress)
+
