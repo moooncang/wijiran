@@ -90,6 +90,8 @@ func build(d: Dictionary, p: Player, cam: Camera2D) -> void:
 		_build_prop(pr)
 	for rd in d.get("rooms", []):
 		var room := {"id": String(rd.id), "name": String(rd.get("name", "")), "x0": float(rd.x0), "x1": float(rd.x1), "lock": bool(rd.get("lock", false)), "enemies": rd.get("enemies", []), "lines": rd.get("lines", []), "entered": false}
+		if rd.has("cleared_by"):
+			room.cleared_by = String(rd.cleared_by)
 		if rd.has("lines_after"):
 			room.lines_after = rd.lines_after
 			room.lines_flag = String(rd.get("lines_flag", ""))
@@ -130,7 +132,12 @@ func spawn_point(spawn_id: String) -> Vector2:
 
 
 func cleared(room_id: String) -> bool:
-	return Game.flag("cleared:%s:%s" % [id, room_id])
+	if Game.flag("cleared:%s:%s" % [id, room_id]):
+		return true
+	for r in rooms:   # a boss arena stays clear once its boss is beaten (permanent flag), even after a death or reload
+		if String(r.id) == room_id and r.has("cleared_by") and Game.flag(String(r.cleared_by)):
+			return true
+	return false
 
 
 # ---------- building ----------
@@ -333,7 +340,7 @@ func _spawn_enemy(e: Dictionary, r: Dictionary = {}) -> Node2D:
 
 
 func _on_enemy_died(_enemy: Node) -> void:
-	if active_room.is_empty() or cleared(active_room.id):
+	if active_room.is_empty() or Game.flag("cleared:%s:%s" % [id, active_room.id]):   # the session clear only: a boss flag set a frame earlier must not skip the unlock
 		return
 	_enemy_count = _alive(_spawned.get(active_room.id, []))
 	if _enemy_count <= 0:

@@ -83,6 +83,8 @@ func _ready() -> void:
 		for k in fxm:
 			if fxm[k] is Dictionary and fxm[k].has("first"):
 				effects[k] = fxm[k]
+	if effects.has("ash_arrow"):
+		effects["ash_arrow"].orientation = "fixed"   # drawn falling (vertical) in the sheet; hit_direction turned it on its side
 	for name in ["scout", "scout_human", "tianel", "disciple_m", "disciple_f", "renata", "mireille", "elodie", "shield", "mage", "incense"]:
 		sheets[name] = load_sheet("manifest_%s.json" % name)
 	var pm: Dictionary = _load_json(R10 + "manifest_props.json")

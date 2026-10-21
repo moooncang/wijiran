@@ -15,7 +15,7 @@ static func data() -> Dictionary:
 			{"type": "door", "x": 760, "to": "f3", "spawn": "start", "label": "백향 이송로", "requires": "b2_mireille_beaten"},
 		],
 		"rooms": [
-			{"id": "arena", "x0": 140, "x1": 800, "lock": true, "enemies": [{"type": "mireille", "x": 560}],
+			{"id": "arena", "x0": 140, "x1": 800, "lock": true, "cleared_by": "b2_mireille_beaten", "enemies": [{"type": "mireille", "x": 560}],
 				"lines": [["미레유", "표본 3호가 걸어 들어오네. 가설대로야. …읽히지 않아. 왜 안 읽히지?"], ["위지란", "표본? 이름이 있어, 전부. 네 이름은 몰라도 되고."]]},
 		],
 		"camera": {"top": -50, "bottom": 400},

@@ -167,6 +167,51 @@ func _run() -> void:
 		print("probe door used=%s level=%s px=%.0f fade=%.2f" % [used, main.level.id, p.global_position.x, main._fade_t])
 		get_tree().quit(0)
 		return
+	if suite == "returnprobe":
+		Game.save = Game.default_save()
+		Game.session_flags.clear()
+		await _goto("f1")
+		var p := _player()
+		Game.reach_checkpoint("f1", "before_boss")
+		Game.travel("b1", "start")
+		await _pf(int(0.8 * 120))
+		p.global_position = Vector2(320, 300)
+		await _pf(4)
+		var boss = main.level._spawned["arena"][0]
+		boss._cancel_pattern()
+		boss.state = boss.State.IDLE
+		boss.status.hp = 3.0
+		boss.global_position = Vector2(380, 300)
+		p.global_position = Vector2(330, 300)
+		p.aim = Vector2.RIGHT
+		Juice.clear()
+		p.press_attack()
+		await _pf(60)
+		print("probe after kill: flag=%s cleared=%s" % [Game.flag("b1_tianel_beaten"), Game.flag("cleared:b1:arena")])
+		Game.respawn()
+		await _pf(int(0.8 * 120))
+		print("probe respawned: level=%s px=%.0f" % [main.level.id, p.global_position.x])
+		p.global_position = Vector2(3340, 300)
+		await _pf(6)
+		var used := false
+		for it in get_tree().get_nodes_in_group("interactable"):
+			if it.try_use():
+				used = true
+		await _pf(int(0.8 * 120))
+		print("probe f1 door used=%s level=%s enemies=%s walls=%d count=%d" % [used, main.level.id, main.level._spawned.keys(), main.level._walls.size(), main.level._enemy_count])
+		p.global_position = Vector2(320, 300)
+		await _pf(6)
+		print("probe b1 again: spawned=%s walls=%d hud=%s" % [main.level._spawned.keys(), main.level._walls.size(), main.boss_hud.visible])
+		p.global_position = Vector2(760, 300)
+		await _pf(6)
+		used = false
+		for it in get_tree().get_nodes_in_group("interactable"):
+			if it.try_use():
+				used = true
+		await _pf(int(0.8 * 120))
+		print("probe inn door used=%s level=%s" % [used, main.level.id])
+		get_tree().quit(0)
+		return
 	if suite == "walk":
 		var bot := Node.new()
 		bot.set_script(preload("res://tests/walk_bot.gd"))

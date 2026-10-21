@@ -14,7 +14,7 @@ static func data() -> Dictionary:
 			{"type": "door", "x": 760, "to": "h0", "spawn": "start", "label": "쌍등객잔", "requires": "b1_tianel_beaten"},
 		],
 		"rooms": [
-			{"id": "arena", "x0": 150, "x1": 800, "lock": true, "enemies": [{"type": "tianel", "x": 560}],
+			{"id": "arena", "x0": 150, "x1": 800, "lock": true, "cleared_by": "b1_tianel_beaten", "enemies": [{"type": "tianel", "x": 560}],
 				"lines": [["티아넬", "물러가라, 인간. 잿더미를 밟는 발소리는 멀리서도 들린다."], ["위지란", "길을 비켜. 네 숲은 안 태워. 오늘은."]]},
 		],
 		"camera": {"top": -50, "bottom": 400},

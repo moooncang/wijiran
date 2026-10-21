@@ -14,7 +14,7 @@ static func data() -> Dictionary:
 			{"type": "door", "x": 750, "to": "h0", "spawn": "start", "label": "쌍등객잔", "requires": "b3_elodie_beaten"},
 		],
 		"rooms": [
-			{"id": "arena", "x0": 140, "x1": 800, "lock": true, "enemies": [{"type": "elodie", "x": 560}],
+			{"id": "arena", "x0": 140, "x1": 800, "lock": true, "cleared_by": "b3_elodie_beaten", "enemies": [{"type": "elodie", "x": 560}],
 				"lines": [["엘로디", "이교도. 향이 타는 동안만 묻겠습니다. 그 붉은 끈은 무엇입니까."], ["위지란", "죽은 애들 이름. 하나 더 늘리러 온 건 아니야. 비켜."]]},
 		],
 		"camera": {"top": -50, "bottom": 400},
