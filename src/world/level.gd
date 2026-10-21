@@ -71,7 +71,7 @@ func build(d: Dictionary, p: Player, cam: Camera2D) -> void:
 					drawn = true
 				else:
 					drawn = art.add_piece(name, r)
-		_solid(r, Color(0.3, 0.22, 0.16), drawn)
+		_solid(r, Color(0.3, 0.22, 0.16), drawn, 0.0, false, r.size.y <= 24.0)   # thin ledges: pass from below, drop through with S
 	var covers: Array = d.get("covers", [])
 	for i in covers.size():
 		var r: Rect2 = covers[i]
@@ -147,13 +147,17 @@ func _build_backdrop() -> void:
 
 
 ## `depth`: visual fill below the collision rect (floor pieces only; collision stays 60 px).
-func _solid(r: Rect2, col: Color, painted := false, depth := 0.0, cover := false) -> void:
+## `one_way`: a ledge on physics layer 2 that only blocks from above (the player drops through it on S / a down dash).
+func _solid(r: Rect2, col: Color, painted := false, depth := 0.0, cover := false, one_way := false) -> void:
 	solids.append(r)
 	var body := StaticBody2D.new()
 	var shape := CollisionShape2D.new()
 	var rect := RectangleShape2D.new()
 	rect.size = r.size
 	shape.shape = rect
+	if one_way:
+		shape.one_way_collision = true
+		body.collision_layer = 2
 	body.add_child(shape)
 	body.position = r.get_center()
 	add_child(body)

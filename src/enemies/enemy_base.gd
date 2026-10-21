@@ -156,6 +156,7 @@ func _physics_process(dt: float) -> void:
 		return
 	if not active or player == null:
 		return
+	_settle()
 	if player.dead:   # nobody keeps swinging or aiming at a body: the fight is over until the respawn
 		if has_method("_cancel_pattern"):
 			call("_cancel_pattern")
@@ -166,6 +167,24 @@ func _physics_process(dt: float) -> void:
 		_leash(dt)
 		return
 	_ai(dt)
+
+
+## Ground under the feet: the highest solid top at this x that is not above the current ground. Walking or
+## hopping off a ledge moves the ground to the floor below; hops are relative to ground_y, so they keep working.
+func _settle() -> void:
+	var lv = Game.level
+	if lv == null or status.is_boss:
+		return
+	var best := INF
+	for r in lv.solids:
+		var rr: Rect2 = r
+		if global_position.x >= rr.position.x and global_position.x <= rr.end.x and rr.position.y >= ground_y - 2.0 and rr.position.y < best:
+			best = rr.position.y
+	if best < INF and absf(best - ground_y) > 0.5:
+		var on_ground: bool = absf(global_position.y - ground_y) < 0.5
+		ground_y = best
+		if on_ground:
+			global_position.y = best
 
 
 ## The player left the room: drop the attack, walk back to the spawn spot, wait there (no cross-room chases,

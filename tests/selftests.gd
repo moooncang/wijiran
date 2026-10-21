@@ -118,6 +118,28 @@ func _run() -> void:
 		print("probe after click page=%s selected=%d" % [pm.page, pm.selected])
 		get_tree().quit(0)
 		return
+	if suite == "drillprobe":
+		await _goto("t0")
+		var p := _player()
+		p.global_position = Vector2(2400, 300)
+		await _pf(int(1.5 * 120))
+		var m: Node = main.level._spawned["parry_drill"][0]
+		var hits := 0
+		var last_hp: float = m.status.hp
+		for i in 30:
+			var dx: float = m.global_position.x - p.global_position.x
+			if absf(dx) > 60.0:
+				p.global_position.x = m.global_position.x - signf(dx) * 50.0
+			p.aim = Vector2(signf(dx), 0)
+			Juice.clear()
+			p.press_attack()
+			await _pf(40)
+			if m.status.hp < last_hp:
+				hits += 1
+			last_hp = m.status.hp
+			print("drill i=%d state=%s pattern=%s hp=%.0f hits=%d px=%.0f mx=%.0f cands=%s cd=%s pending=%s recent=%s" % [i, m.state, m.get("pattern_id"), m.status.hp, hits, p.global_position.x, m.global_position.x, m._candidates(), m.cooldowns, m._pending_first, m.get("recent")])
+		get_tree().quit(0)
+		return
 	if suite == "walk":
 		var bot := Node.new()
 		bot.set_script(preload("res://tests/walk_bot.gd"))
@@ -145,6 +167,8 @@ func _run() -> void:
 		await _tutorial()
 	if suite in ["all", "menu"]:
 		await _menu()
+	if suite in ["all", "ledge"]:
+		await _ledge()
 	if suite in ["all", "minions"]:
 		await _minions()
 	if suite in ["all", "mireille"]:
@@ -551,6 +575,92 @@ func _menu() -> void:
 	for e in main.level._spawned.get("parry_drill", []):
 		master = e
 	_check(master != null and master.get("_active") == true, "drill: entering the yard's drill room activates 목각교두")
+	# it keeps striking however often it is hit: count pattern starts over 12 s while being hit every 0.33 s
+	var starts := 0
+	var last_state: int = -1
+	for i in 36:
+		var dx: float = master.global_position.x - p.global_position.x
+		if absf(dx) > 60.0:
+			p.global_position.x = master.global_position.x - signf(dx) * 50.0
+		p.aim = Vector2(signf(dx) if dx != 0.0 else 1.0, 0)
+		Juice.clear()
+		p.press_attack()
+		for k in 40:
+			await _pf(1)
+			if int(master.state) == 3 and last_state != 3:
+				starts += 1
+			last_state = int(master.state)
+	_check(starts >= 4, "drill: the master keeps striking after many hits (no two-in-a-row stall)", "starts=%d" % starts)
+	# W at the rest point opens the palm menu with her still on the floor, so equipping works
+	await _goto("f1")
+	Game.save.palms.unlocked = ["black_moon", "formation_breaker"]
+	p.global_position = Vector2(3050, 300)
+	await _pf(4)
+	Input.action_press("interact")
+	Input.action_press("jump")
+	await _pf(1)
+	for it in get_tree().get_nodes_in_group("interactable"):
+		if it.try_use():
+			break
+	await _pf(2)
+	Input.action_release("interact")
+	Input.action_release("jump")
+	var can: bool = main.palm_menu.visible and Game.can_equip_now()
+	var equipped: bool = Game.equip_palm("formation_breaker")
+	_check(can and equipped and Game.equipped_palm() == "formation_breaker", "rest: W opens the palm menu without a hop and equipping works", "menu=%s can=%s" % [main.palm_menu.visible, Game.can_equip_now()])
+	main.palm_menu.close()
+
+
+# ---------- 얇은 발판 · 적 착지 ----------
+
+func _ledge() -> void:
+	Game.save = Game.default_save()
+	await _goto("t0")
+	var p := _player()
+	Juice.clear()
+	# the landing lip (800,185 120×14) is one-way: a jump from right under it passes up through and lands on top
+	p.reset_state(860)
+	p.global_position = Vector2(860, 300)
+	await _pf(2)
+	Input.action_press("jump")
+	await _pf(40)
+	Input.action_release("jump")
+	await _pf(2)
+	Input.action_press("jump")
+	await _pf(140)
+	Input.action_release("jump")
+	_check(p.is_on_floor() and absf(p.global_position.y - 185.0) < 1.0, "ledge: jumping from below passes through the lip and lands on it", "y=%.0f" % p.global_position.y)
+	# S drops through it
+	Input.action_press("crouch")
+	await _pf(3)
+	Input.action_release("crouch")
+	await _pf(60)
+	_check(p.global_position.y > 290.0, "ledge: S on a ledge drops through to the floor", "y=%.0f" % p.global_position.y)
+	# a down dash drops too; the thick tutorial wall still blocks from below
+	p.reset_state(860)
+	p.global_position = Vector2(860, 185)
+	await _pf(3)
+	p.press_dash(Vector2(0, 1))
+	await _pf(60)
+	var dropped: bool = p.global_position.y > 290.0
+	p.reset_state(470)
+	p.global_position = Vector2(470, 300)
+	await _pf(2)
+	Input.action_press("move_right")
+	await _pf(60)
+	Input.action_release("move_right")
+	_check(dropped and p.global_position.x < 560.0, "ledge: a down dash drops through; thick walls stay solid", "x=%.0f" % p.global_position.x)
+	# an archer hopping off its log lands on the floor instead of hovering
+	await _goto("f1")
+	p.global_position = Vector2(1000, 300)
+	await _pf(4)
+	var archer: Node = main.level._spawned["r2"][0]
+	archer.activate(p)
+	archer.global_position = Vector2(1120, 236)
+	archer.ground_y = 236.0
+	p.global_position = Vector2(1180, 236)   # right next to it on the log: it hops away left, off the trunk's end
+	await _pf(int(1.2 * 120))
+	_check(absf(archer.global_position.y - 300.0) < 1.0 and absf(archer.ground_y - 300.0) < 1.0, "enemy: a hop off the log lands on the floor", "y=%.0f ground=%.0f x=%.0f" % [archer.global_position.y, archer.ground_y, archer.global_position.x])
 
 
 # ---------- F2 졸개·장치 ----------

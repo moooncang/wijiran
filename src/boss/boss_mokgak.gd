@@ -455,6 +455,9 @@ func _decide() -> void:
 	if cands.is_empty():
 		_enter(State.APPROACH)
 		return
+	if drill:   # the training master has one strike and repeats it: the no-repeat rules would stall it
+		_start_pattern("P1_A", "")
+		return
 	# never the same pattern twice in a row (relaxed only when nothing else fits), never three in a row
 	var filtered: Array = []
 	for id in cands:

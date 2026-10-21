@@ -128,6 +128,7 @@ var arm_root: Node2D
 var _aura: Sprite2D     # dash_aura, lives while dashing
 var _gather: Sprite2D   # gather clip, lives while the burst winds up
 var _rush: Sprite2D     # looping rush aura (쇄진장 관진), freed when the swing ends
+var _drop_left := 0.0   # seconds left ignoring one-way ledges (S or a down dash on a ledge)
 var sleeve: Sprite2D
 var hand: Sprite2D
 var qi_fx: Sprite2D
@@ -149,6 +150,7 @@ func _ready() -> void:
 	shape.shape = rect
 	shape.position = Vector2(0, -15)
 	add_child(shape)
+	collision_mask = 3   # 1 = solids, 2 = one-way ledges (dropped while _drop_left runs)
 	sprite = Sprite2D.new()
 	sprite.texture = Anim.body_texture
 	sprite.hframes = 8
@@ -331,6 +333,30 @@ func press_pull() -> bool:
 		best.pull_to(global_position + Vector2(facing * 34.0, 0))
 		Juice.fx("pull_drag", best.global_position, Vector2(-facing, 0), 1.0, false, null, 1.5).set("life", 0.2)
 	return true
+
+
+## True while the floor under her is a one-way ledge (layer 2).
+func _on_ledge() -> bool:
+	for i in get_slide_collision_count():
+		var c := get_slide_collision(i)
+		if c.get_normal().y < -0.5 and c.get_collider() is StaticBody2D and (c.get_collider() as StaticBody2D).collision_layer == 2:
+			return true
+	return false
+
+
+func _drop_through() -> void:
+	_drop_left = 0.22
+	collision_mask = 1
+	global_position.y += 2.0
+	crouching = false
+
+
+## A door, lantern, manual, rescue or rest point that W would use right now.
+func _near_usable() -> bool:
+	for it in get_tree().get_nodes_in_group("interactable"):
+		if it.near and it.label != "" and it.available():
+			return true
+	return false
 
 
 ## 정화 영역이 매 프레임 부른다: 나간 뒤 0.5초면 정상. 중첩 없음, 내상 스택은 그대로 (기획 §8).
@@ -517,7 +543,10 @@ func press_dash(dir: Vector2) -> bool:
 	_end_swing()
 	dash_dir = dir.normalized() if dir.length() > 0.01 else Vector2(facing, 0)
 	if is_on_floor() and dash_dir.y > 0.0:
-		dash_dir = Vector2(signf(dash_dir.x) if dash_dir.x != 0.0 else facing, 0)  # no dashing into the floor
+		if dash_dir.y > 0.7 and _on_ledge():
+			_drop_through()   # a dash aimed down on a thin ledge falls through it
+		else:
+			dash_dir = Vector2(signf(dash_dir.x) if dash_dir.x != 0.0 else facing, 0)  # no dashing into the floor
 	if dash_dir.x != 0.0:
 		facing = signf(dash_dir.x)
 	dash_remaining = DASH_DURATION
@@ -683,8 +712,10 @@ func _physics_process(dt: float) -> void:
 			started = press_heavy()
 		if not started and Input.is_action_just_pressed("skill_pull"):
 			started = press_pull()
-		if Input.is_action_just_pressed("jump"):
-			press_jump()
+		if Input.is_action_just_pressed("jump") and not (Input.is_action_just_pressed("interact") and _near_usable()):
+			press_jump()   # W at a door/rest point/manual is the use, not a hop (the palm menu needs her on the floor)
+		if Input.is_action_just_pressed("crouch") and is_on_floor() and _on_ledge():
+			_drop_through()
 		if not started and (Input.is_action_just_pressed("attack") or Input.is_action_just_pressed("attack_key")):
 			press_attack()
 	if Juice.frozen():
@@ -710,6 +741,10 @@ func _physics_process(dt: float) -> void:
 	tremor_left = maxf(0.0, tremor_left - dt)
 	pull_cooldown = maxf(0.0, pull_cooldown - dt)
 	purify_left = maxf(0.0, purify_left - dt)
+	if _drop_left > 0.0:
+		_drop_left = maxf(0.0, _drop_left - dt)
+		if _drop_left == 0.0:
+			collision_mask = 3
 	queue_redraw()
 	pull_candidate = _pull_candidate() if combat_enabled and not dead and pull_cooldown == 0.0 and qi >= PULL_QI else null
 	if pull_left > 0.0:
