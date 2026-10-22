@@ -874,13 +874,13 @@ func _mireille() -> void:
 	await _pf(int(0.15 * 120))
 	var zone: Rect2 = boss._zone_rects.get(1, Rect2())
 	p.global_position = Vector2(120, 300)
-	await _pf(int(0.8 * 120))
+	await _pf(int(1.2 * 120))
 	_check(absf(zone.get_center().x - 300.0) < 2.0 and p.hp == 100, "mireille: 좌표 소각 is saved once and never follows", "zone=%.0f hp=%d" % [zone.get_center().x, p.hp])
 	boss._cancel_pattern()
 	boss.state = boss.State.IDLE
 	p.global_position = Vector2(300, 300)
 	boss._start_pattern("burn")
-	await _pf(int(0.95 * 120))
+	await _pf(int(1.35 * 120))
 	_check(p.hp == 82, "mireille: standing in the saved spot takes 18 (unparryable)", "hp=%d" % p.hp)
 	# 세 칸 봉쇄 seals two different lanes; the third stays safe
 	boss._cancel_pattern()
@@ -889,7 +889,7 @@ func _mireille() -> void:
 	p.global_position = Vector2(400, 300)   # middle lane
 	boss.global_position = Vector2(560, 300)
 	boss._start_pattern("seal")
-	await _pf(int(0.45 * 120))
+	await _pf(int(0.65 * 120))
 	var first_lane: int = boss._used_lanes[0] if boss._used_lanes.size() > 0 else -1
 	var second_lane: int = boss._used_lanes[1] if boss._used_lanes.size() > 1 else -1
 	var safe := 3 - first_lane - second_lane
@@ -1165,7 +1165,7 @@ func _qa() -> void:
 	var m = main.level._spawned["arena"][0]
 	m.state = m.State.IDLE
 	m._start_pattern("seal")
-	await _pf(int(0.85 * 120))
+	await _pf(int(1.25 * 120))
 	await _snap("qa-b2-seal")
 	m._cancel_pattern()
 	m.state = m.State.IDLE
@@ -1175,7 +1175,7 @@ func _qa() -> void:
 	m._cancel_pattern()
 	m.state = m.State.IDLE
 	m._start_pattern("burn")
-	await _pf(int(0.4 * 120))
+	await _pf(int(0.8 * 120))
 	await _snap("qa-b2-burn")
 	# --- F3: incense zone, purify HUD line, archer on the steps
 	await _goto("f3")
