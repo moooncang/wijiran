@@ -633,6 +633,27 @@ func _tianel() -> void:
 	p.press_parry(1.0)
 	await _pf(24)
 	_check(boss.state == boss.State.STAGGER and p.hp == 100, "tianel: perfect-parried arrow staggers at posture 100", "state=%d hp=%d posture=%.0f" % [boss.state, p.hp, boss.status.posture])
+	# an "X" hit still parries in the perfect window (every strike is parryable)
+	p.reset_state(300)
+	p.global_position = Vector2(300, 300)
+	p.press_parry(1.0)
+	await _pf(1)
+	var xh := HitEvent.new()
+	xh.parry_class = CombatConfig.ParryClass.UNPARRYABLE
+	xh.origin = p.global_position + Vector2(40, -20)
+	xh.raw_direct = 16.0
+	var xr := CombatResolver.resolve_incoming(xh, p)
+	_check(xr.kind == CombatResolver.Kind.PERFECT, "parry: an unparryable-class hit perfect-parries", str(xr))
+	# a run that starts on a perch comes down to the floor
+	boss._cancel_pattern()
+	boss.state = boss.State.IDLE
+	boss.global_position = Vector2(685, 230)
+	boss.ground_y = 230.0
+	boss._start_pattern("charge")
+	await _pf(int(0.5 * 120))
+	_check(boss.global_position.y == 300.0 and boss.ground_y == 300.0, "tianel: 질풍 질주 from a perch runs on the floor", "y=%.0f" % boss.global_position.y)
+	boss._cancel_pattern()
+	boss.state = boss.State.IDLE
 	# defeat opens the door flag
 	boss.status.hp = 1.0
 	boss.on_hit({"hp_damage": 1, "burst": 0, "killed": true}, 1.0, 0.0)
@@ -640,6 +661,8 @@ func _tianel() -> void:
 	boss.on_hit({"hp_damage": 0, "burst": 0, "killed": true}, 1.0, 0.0)
 	await _pf(2)
 	_check(Game.flag("b1_tianel_beaten") and boss.beaten, "tianel: defeat sets the permanent flag")
+	await _pf(int(1.8 * 120))
+	_check(boss.sprite.modulate.a == 0.0, "tianel: withdraws and fades out after defeat", "a=%.2f" % boss.sprite.modulate.a)
 
 
 # ---------- 일시정지 메뉴 · 훈련장 ----------

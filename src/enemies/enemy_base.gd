@@ -9,7 +9,7 @@ signal died(enemy: Node)
 
 const TAG_WARN := Color(1.0, 0.9, 0.4)        # "!" wind-up
 const TAG_OPEN := Color(1.0, 0.7, 0.38)       # 무방비 / 끊김: punish now (orange on a plate, apart from the gold 월인 mark)
-const TAG_UNPARRY := Color(1.0, 0.35, 0.25)   # "X" cannot be parried (the most dangerous class reads red)
+const TAG_UNPARRY := Color(1.0, 0.35, 0.25)   # "X" parries only in the perfect window (the most dangerous class reads red)
 ## Class tags drawn as the bold boss_marks.png icons the T0 parry drill uses: [clip, glyph width, tint].
 ## The cream art is tinted red for "X" so the unparryable class is the most alarming one.
 const TAG_ICONS := {"!": ["icon_bang", 14.0, Color.WHITE], "!!": ["icon_bang2", 26.0, Color.WHITE], "X": ["icon_x", 28.0, Color(1.0, 0.45, 0.4)]}

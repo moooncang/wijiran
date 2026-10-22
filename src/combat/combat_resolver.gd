@@ -40,7 +40,7 @@ static func resolve_incoming(hit: HitEvent, p) -> Dictionary:
 		return r
 	var elapsed: float = p.parry_elapsed()
 	r.elapsed = elapsed
-	var eligible: bool = elapsed >= 0.0 and hit.parry_class != CombatConfig.ParryClass.UNPARRYABLE and _in_front(hit, p)
+	var eligible: bool = elapsed >= 0.0 and _in_front(hit, p)   # every hit parries; UNPARRYABLE ("X") only in the perfect window
 	var normal := CombatConfig.final_damage(hit.raw_direct, hit.raw_internal, p.armor_rate)
 	if eligible and elapsed < CombatConfig.PARRY_PERFECT_END - 1e-6:
 		r.kind = Kind.PERFECT

@@ -388,6 +388,9 @@ func _step_pattern(dt: float) -> void:
 		if pattern_time > f and before < to:
 			if not m.has("px"):
 				m.px = _resolve_dist(m)
+				if ground_y != floor_y:   # a run that starts on a perch comes down first instead of crossing the arena in the air
+					ground_y = floor_y
+					global_position.y = floor_y
 				facing = -1.0 if player.global_position.x < global_position.x else 1.0
 			var dist := float(m.px)
 			var seg_dt := minf(pattern_time, to) - maxf(before, f)
@@ -761,7 +764,7 @@ func _next_strike() -> Dictionary:
 	return {}
 
 
-## Head icon per parry class of the next pending strike: "!" normal, "!!" perfect-only, "X" unparryable.
+## Head icon per parry class of the next pending strike: "!" normal, "!!" perfect-only, "X" perfect-only and heaviest.
 ## It appears together with that strike's dot field (warn_from), as in the T0 parry drill.
 func _tag() -> Array:
 	if state != State.PATTERN:

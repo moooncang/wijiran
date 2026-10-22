@@ -11,6 +11,7 @@ var sprite: ClipSprite
 var _charge_fx: Sprite2D
 var _ring_fx: Sprite2D
 var _ring_perch := Vector2.ZERO
+var _fade := 1.0   # the beaten archer withdraws: her withdraw clip, then she fades into the wind
 
 
 func _boss_setup() -> void:
@@ -158,8 +159,13 @@ func _process(delta: float) -> void:
 		return
 	sprite.set_facing(facing)
 	sprite.position = Vector2(kick, 0)
-	sprite.modulate = Color(2, 2, 2) if flash > 0.0 else Color.WHITE
+	sprite.modulate = Color(2, 2, 2) if flash > 0.0 else Color(1, 1, 1, _fade)
 	match state:
+		State.DEAD:
+			if sprite._done and _fade > 0.0:
+				if _fade == 1.0:
+					Juice.fx("wind_land", global_position)
+				_fade = maxf(0.0, _fade - delta / 0.8)
 		State.STAGGER:
 			if sprite.clip == "stagger_in" and sprite._done:
 				sprite.play("stagger", true)
