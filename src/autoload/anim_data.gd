@@ -6,7 +6,8 @@ const ROOT := "res://assets/v9/"
 const V8 := "res://assets/v8/"
 const R10 := "res://assets/r10/"
 const R11 := "res://assets/r11/"
-const ROOTS := [R11, ROOT, R10]      # manifests name files relative to one of these (newest first: r11 replaces fx_pull)
+const R12 := "res://assets/r12/"
+const ROOTS := [R12, R11, ROOT, R10]      # manifests name files relative to one of these (newest first: r11 replaces fx_pull)
 
 var manifest: Dictionary = {}
 var clips: Dictionary = {}
@@ -83,6 +84,25 @@ func _ready() -> void:
 		for k in fxm:
 			if fxm[k] is Dictionary and fxm[k].has("first"):
 				effects[k] = fxm[k]
+	# 12차 장법 개편: clips carry duration / frame_durations instead of fps, a layer (decorative_back = behind
+	# the body it rides) and an opacity; the ring halves are read by ring_fx.gd straight from this table
+	var r12: Dictionary = _load_json(R12 + "manifest_palms_r12.json")
+	for sec in ["effect_clips", "prop_sprites"]:
+		for k in r12[sec]:
+			var c: Dictionary = r12[sec][k]
+			if not c.has("first"):
+				continue
+			if c.has("frame_durations"):
+				c.durs = c.frame_durations
+			elif c.has("duration"):
+				c.fps = float(c.count) / float(c.duration)
+			if String(c.get("layer", "")) == "decorative_back":
+				c.z = -1
+			if String(c.get("orientation", "")) == "toward_ring_center":
+				c.orientation = "hit_direction"   # the caller passes the direction to the ring's centre
+			if c.has("recommended_opacity"):
+				c.opacity = float(c.recommended_opacity)
+			effects[k] = c
 	if effects.has("ash_arrow"):
 		effects["ash_arrow"].orientation = "fixed"   # drawn falling (vertical) in the sheet; hit_direction turned it on its side
 	for name in ["scout", "scout_human", "tianel", "disciple_m", "disciple_f", "renata", "mireille", "elodie", "shield", "mage", "incense"]:
@@ -96,6 +116,9 @@ func _ready() -> void:
 	props_r11_top = load(R11 + "props_r11_top.png")
 	ui = _load_json(R10 + "manifest_ui.json").assets
 	ui.merge(_load_json(R11 + "manifest_ui_r11.json").assets)
+	for i in 3:   # 12차 장법 아이콘 (32 px cells) replace the r10 ones; the opened manual for the 극의 reveal
+		ui["palm_" + String(r12.ui_sprites.r12_palm_icons.styles[i])] = {"file": "ui/r12_palm_icons.png", "rect": [i * 32, 0, 32, 32]}
+	ui["r12_bp_manual_open"] = {"file": "ui/r12_bp_manual_open.png", "rect": [0, 0, 128, 96]}
 	bg = _load_json(R11 + "manifest_bg.json").maps   # 11차 lists all eight maps (the r10 ones via reuse/ paths: tex() falls back to the file name)
 	terrain = _load_json(R10 + "manifest_terrain.json").assets
 	terrain.merge(_load_json(R11 + "manifest_terrain_r11.json").assets)

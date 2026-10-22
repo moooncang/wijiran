@@ -304,6 +304,14 @@ func _dummy(dx: float) -> Node2D:
 	return d
 
 
+
+## Waits until the player can take a new press (swing over, cooldown spent): headless hitstops are wall-clock.
+func _ready_to_swing(p: Player) -> void:
+	var n := 0
+	while (p.swinging() or p.swing_cooldown > 0.0) and n < 150:
+		await _pf(1)
+		n += 1
+
 func _swing(p: Player, n: int) -> void:
 	for i in n:
 		Juice.clear()
@@ -356,33 +364,90 @@ func _palm() -> void:
 	var lunge_bm := p.global_position.x - x0
 	_check(lunge_fb > lunge_bm + 8.0, "palm: 쇄진장 first strike reaches farther", "fb=%.0f bm=%.0f" % [lunge_fb, lunge_bm])
 	await _pf(40)
-	# 투골장: injury 2 on the second strike, capped at 3 overall; heavy consumes once
+	# 투골장 극의: 1·2타 add 1 injury each; 관천's two 발경 both land and only the last consumes (개편안 §8)
 	Game.save.palms.unlocked.append("bone_piercing")
 	Game.at_rest_point = true
 	Game.equip_palm("bone_piercing")
 	await _pf(40)
 	await _pf(2)
-	d.global_position = p.global_position + Vector2(40, 0)
+	d.global_position = p.global_position + Vector2(50, 0)
 	d.reset_state()
-	await _pf(90)
-	p.press_attack()
-	await _pf(26)
-	p.press_attack()
-	await _pf(26)
+	d.status.hp = 500.0   # never broken mid-check
+	Juice.clear()
+	p.press_attack()   # 천문: 24 px step, a 96×48 front box at 0.06 s
+	await _pf(30)
+	Juice.clear()
+	var hp1: float = d.status.hp
+	d.global_position = p.global_position + Vector2(40, 0)
+	await _ready_to_swing(p)
+	p.press_attack()   # 겹월: three palms, one hit
+	await _pf(34)
+	Juice.clear()
 	var inj_after_two: int = d.status.injury
-	d.global_position = p.global_position + Vector2(30, 0)   # the lunges may have carried the player past it; 침장 never hits behind
-	Juice.clear()   # headless hitstops are wall-clock: never let one swallow the next press
-	await _pf(12)
+	var dmg2 := int(hp1 - d.status.hp)
+	var hp2: float = d.status.hp
+	await _ready_to_swing(p)
+	p.press_attack()   # 관천: 0.22 s and 0.34 s
+	await _pf(84)
+	Juice.clear()
+	var dmg3 := int(hp2 - d.status.hp)
+	_check(inj_after_two == 2 and dmg2 == 24 and dmg3 == 18 + 30 + 2 * 12 and d.status.injury == 0, "palm: 투골장 injury 1+1, 겹월 hits once, 관천 hits twice and bursts once", "after2=%d dmg2=%d dmg3=%d inj=%d" % [inj_after_two, dmg2, dmg3, d.status.injury])
+	# 다단 발경: cancelled after the first 발경, the second never lands and the injury stays
+	await _pf(40)
+	d.global_position = p.global_position + Vector2(50, 0)
+	d.reset_state()
+	d.status.hp = 500.0
+	d.status.add_injury(2)
+	Juice.clear()
+	await _ready_to_swing(p)
+	p.combo_count = 2
+	p.combo_timer = 0.6
 	p.press_attack()
-	await _pf(60)   # 침장 winds up 0.26 s
-	var inj_after_three: int = d.status.injury
-	_check(inj_after_two == 3 and inj_after_three == 0, "palm: 투골장 injury 1+2 caps at 3, third strike bursts once", "after2=%d after3=%d" % [inj_after_two, inj_after_three])
+	var n := 0
+	while d.status.hp == 500.0 and n < 60:
+		await _pf(1)
+		n += 1
+	Juice.clear()
+	p.press_dash(Vector2.LEFT)
+	await _pf(70)
+	_check(int(500.0 - d.status.hp) == 18 and d.status.injury == 2, "palm: 관천 cancelled after its first 발경 keeps the second and the injury", "dmg=%d inj=%d" % [int(500.0 - d.status.hp), d.status.injury])
+	# 쇄진장 잔진: cancelled before 0.16 s nothing lands; cancelled after, the scar still fires exactly once
+	await _pf(40)
+	Game.at_rest_point = true
+	Game.equip_palm("formation_breaker")
+	await _pf(40)
+	await _pf(2)
+	d.global_position = p.global_position + Vector2(70, 0)
+	d.reset_state()
+	d.status.hp = 500.0
+	Juice.clear()
+	await _ready_to_swing(p)
+	p.combo_count = 2
+	p.combo_timer = 0.6
+	p.press_attack()
+	await _pf(10)
+	p.press_dash(Vector2.LEFT)
+	await _pf(80)
+	var early := int(500.0 - d.status.hp)
+	d.global_position = p.global_position + Vector2(70, 0)
+	await _ready_to_swing(p)
+	p.combo_count = 2
+	p.combo_timer = 0.6
+	p.press_attack()
+	await _pf(24)   # the scar lands at 0.16 s
+	var armed := not p._scar.is_empty()
+	p.press_dash(Vector2.LEFT)
+	await _pf(60)
+	_check(early == 0 and armed and int(500.0 - d.status.hp) == 32, "palm: 잔진 — nothing before the scar lands, exactly one hit after a dash cancel", "early=%d armed=%s dmg=%d" % [early, armed, int(500.0 - d.status.hp)])
 	# 회란장 multi-hit: two dummies, one gauge grant per attack
 	await _pf(60)
 	Game.save.palms.unlocked.append("returning_tide")
 	Game.at_rest_point = true
 	Game.equip_palm("returning_tide")
 	await _pf(40)
+	await _pf(2)
+	p.reset_state(1660)   # back on open ground: the dashes above may have left her beside a wall, which blocks a ring
+	p.global_position = Vector2(1660, 300)
 	await _pf(2)
 	var d2 := await _dummy(-40.0)
 	d.global_position = p.global_position + Vector2(40, 0)
@@ -391,9 +456,29 @@ func _palm() -> void:
 	p.gauge = 0.0
 	p.press_attack()
 	await _pf(26)
-	p.press_attack()   # 환장: 360°
+	p.press_attack()   # 회환: the band comes back in
 	await _pf(26)
 	_check(d.status.hp < d.status.max_hp and d2.status.hp < d2.status.max_hp and p.gauge <= CombatConfig.GAUGE_PER_ATTACK * 2.0, "palm: 회란장 hits both sides, gauge once per attack", "gauge=%.0f" % p.gauge)
+	# 만조: the outgoing band hits once and leaves the injury, the returning band hits once and bursts it
+	await _pf(40)
+	Juice.clear()
+	d2.global_position = Vector2(-9999, 300)
+	d.global_position = p.global_position + Vector2(60, 0)
+	d.reset_state()
+	d.status.hp = 500.0
+	d.status.add_injury(2)
+	await _ready_to_swing(p)
+	p.combo_count = 2
+	p.combo_timer = 0.6
+	p.press_attack()
+	n = 0
+	while d.status.hp == 500.0 and n < 60:
+		await _pf(1)
+		n += 1
+	var inj_out: int = d.status.injury
+	var dmg_out := int(500.0 - d.status.hp)
+	await _pf(84)
+	_check(dmg_out == 12 and inj_out == 2 and int(500.0 - d.status.hp) == 12 + 18 + 2 * 8 and d.status.injury == 0, "palm: 만조 out 12 keeps the injury, return 18 + burst 16 consumes it", "out=%d inj_out=%d total=%d inj=%d" % [dmg_out, inj_out, int(500.0 - d.status.hp), d.status.injury])
 	d.queue_free()
 	d2.queue_free()
 	Game.equip_palm("black_moon")
@@ -1071,6 +1156,36 @@ func _qa() -> void:
 	p.press_attack()
 	await _pf(40)
 	await _snap("qa-t0-dummies-damage")
+	# 12차 장법: each new style caught mid-strike at the dummies (scar, path burst, ring out / back, fold, great moon)
+	var qp := _player()
+	Game.save.palms.unlocked = PalmStyles.ids().duplicate()
+	for cfg in [["formation_breaker", 2, 0.30, "fb-scar"], ["formation_breaker", -1, 0.56, "fb-path"], ["returning_tide", 2, 0.19, "rt-out"], ["returning_tide", -1, 0.50, "rt-return"], ["bone_piercing", 1, 0.09, "bp-fold"], ["bone_piercing", -1, 0.56, "bp-heavy"]]:
+		Game.save.palms.equipped = String(cfg[0])
+		for d in get_tree().get_nodes_in_group("enemy"):
+			if d.has_method("reset_state"):
+				d.reset_state()
+		qp.reset_state(1920)
+		qp.global_position = Vector2(1920, 300)
+		qp.qi = 100.0
+		qp.aim = Vector2.RIGHT
+		qp._mouse_seen = false   # the real mouse must not steer the capture
+		await _pf(2)
+		Juice.clear()
+		if int(cfg[1]) < 0:
+			qp.press_heavy()
+		else:
+			qp.combo_count = int(cfg[1])
+			qp.combo_timer = 0.6
+			qp.press_attack()
+		var qn := 0
+		while (qp.swinging() and qp.swing_t < float(cfg[2]) or not qp._scar.is_empty() and qp._scar.left > float(cfg[2]) - 0.34) and qn < 200:
+			await _pf(1)
+			qn += 1
+		await _snap("qa-palm-" + String(cfg[3]))
+		Juice.clear()
+		await _pf(90)
+	Game.save.palms.equipped = "black_moon"
+	qp.on_palm_changed()
 	p._say("내공 부족")
 	Game.notice.emit("장법 「쇄진장」을 발견했습니다. 다음 휴식 지점에서 장착할 수 있습니다.")
 	await _pf(4)

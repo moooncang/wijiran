@@ -67,6 +67,9 @@ func fx(clip: String, at: Vector2, dir: Vector2 = Vector2.RIGHT, facing: float =
 	s.set("count", int(c.count))
 	s.set("fps", float(c.get("fps", 24.0)))
 	s.set("loop", bool(c.get("loop", false)))
+	s.set("durs", c.get("durs", []))
+	s.set("hold", bool(c.get("hold_last", false)))
+	s.modulate.a = float(c.get("opacity", 1.0))
 	s.frame = int(c.first)  # before the first draw: hitstop can freeze _process for the clip's whole life
 	(parent if parent else world).add_child(s)
 	if debug_fx:

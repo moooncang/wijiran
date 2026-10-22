@@ -326,7 +326,10 @@ func _draw() -> void:
 	if _palm_key != String(pst.icon):
 		_palm_key = String(pst.icon)
 		_palm_tex = Anim.ui_tex(_palm_key)
-	draw_texture(_palm_tex, Vector2(L - 4.0, y - 2.0))   # art centred on the icon column, 2 px inside the panel
+	if _palm_tex.get_width() > 24:
+		draw_texture_rect(_palm_tex, Rect2(L - 4.0, y - 2.0, 24.0, 24.0), false)   # 12차 32 px icon fitted to the 24 px cell
+	else:
+		draw_texture(_palm_tex, Vector2(L - 4.0, y - 2.0))   # art centred on the icon column, 2 px inside the panel
 	UiText.draw(self, Vector2(TEXT_X, _baseline(y, PALM_H, s)), String(pst.name), s, UiText.INK, 2)
 	y += PALM_H
 	if not status.is_empty():

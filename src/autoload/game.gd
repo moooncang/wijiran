@@ -153,6 +153,9 @@ func equip_palm(id: String) -> bool:
 	save.palms.equipped = id
 	write_save()
 	player.on_palm_changed()
+	if id == "bone_piercing" and not flag("bp_revealed"):
+		set_flag("bp_revealed")
+		player.reveal_palm()   # 투골장 · 극의: the manual opens under the great moon, once (개편안 §8)
 	palms_changed.emit()
 	notice.emit("「%s」 장착" % PalmStyles.style(id).name)
 	return true

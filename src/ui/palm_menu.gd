@@ -275,7 +275,8 @@ func _list(r: Rect2) -> void:
 			draw_rect(row, ROW_HOVER)
 		var icon := row.position + Vector2(6, roundf((row_h - 24.0) * 0.5))
 		if owned:
-			draw_texture(Anim.ui_tex(String(s.icon)), icon)
+			var tex := Anim.ui_tex(String(s.icon))
+			draw_texture(tex, icon - (Vector2(4, 4) if tex.get_width() > 24 else Vector2.ZERO))   # 12차 icons: 32 px cells, 2 px margin
 		else:
 			_unknown_mark(icon + Vector2(12, 12), 11.0, UiText.sz(16))
 		var base := _baseline(row, m)

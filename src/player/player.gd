@@ -93,6 +93,10 @@ var _gauge_given := false
 var _burst_rate := 1.0
 var _recovery_extra := 0.0
 var _lunged := false
+var _tl_prev := 0.0                  # timeline strikes: swing_t a tick ago
+var _tl_state: Dictionary = {}       # event index → ring centre / previous radius, sweep tail
+var _tl_nodes: Array = []            # rings and follow art freed when the swing ends (a cancel takes them)
+var _scar: Dictionary = {}           # 쇄진장: the one armed scar; fires after a dash cancel too
 
 # --- defense / resources ---
 var hp: int = CombatConfig.PLAYER_MAX_HP
@@ -185,6 +189,10 @@ func _ready() -> void:
 ## 15. full reset (R).
 func reset_state(x: float) -> void:
 	style_id = Game.equipped_palm()
+	_clear_scar()
+	for n in _tl_nodes:
+		_free(n)
+	_tl_nodes.clear()
 	global_position = Vector2(x, 300)
 	velocity = Vector2.ZERO
 	facing = 1.0
@@ -444,7 +452,7 @@ func _start_swing(a: Dictionary) -> void:
 	if dash_remaining > 0.0:
 		dash_remaining = 0.0
 	swing = a
-	swing_t = -float(a.windup)
+	swing_t = -float(a.get("windup", 0.0))
 	swing_dir = -swing_dir
 	attack_instance += 1
 	_gauge_given = false
@@ -455,6 +463,11 @@ func _start_swing(a: Dictionary) -> void:
 	if not bool(a.get("is_heavy", false)):
 		_burst_rate = 1.0
 		_recovery_extra = 0.0
+	if String(a.kind) == "timeline":
+		_lunged = true   # no legacy lunge / smear: the strike's own moves and art run from its timeline
+		_tl_prev = -EPS
+		_tl_state.clear()
+		return
 	if float(a.windup) <= 0.0:
 		_release_swing()
 	else:
@@ -519,6 +532,9 @@ func _free(n) -> void:  # untyped: a freed reference is a valid argument here
 func _end_swing() -> void:
 	_free(_gather)
 	_free(_rush)
+	for n in _tl_nodes:
+		_free(n)
+	_tl_nodes.clear()
 	if swing.is_empty():
 		return
 	swing_cooldown = float(swing.cooldown) + _recovery_extra
@@ -742,6 +758,7 @@ func _physics_process(dt: float) -> void:
 	pull_cooldown = maxf(0.0, pull_cooldown - dt)
 	purify_left = maxf(0.0, purify_left - dt)
 	_step_purify_fx()
+	_step_scar(dt)
 	if _drop_left > 0.0:
 		_drop_left = maxf(0.0, _drop_left - dt)
 		if _drop_left == 0.0:
@@ -843,6 +860,11 @@ func _step_swing(dt: float) -> void:
 	swing_t += dt
 	if not _lunged and swing_t >= 0.0:
 		_release_swing()
+	if String(swing.kind) == "timeline":
+		_step_timeline()
+		if swing_t >= float(swing.time):
+			_end_swing()
+		return
 	var kind := String(swing.kind)
 	var window_end: float = float(swing.time) * (0.95 if kind == "spin" else (0.5 if kind in ["burst", "front_burst"] else 0.7))
 	if swing_t >= 0.0 and swing_t < window_end:
@@ -981,6 +1003,248 @@ func _check_hits() -> void:
 			break
 
 
+
+# ---------- 12차 timeline strikes (쇄진장 · 회란장 · 투골장 극의) ----------
+
+## Forward direction of a timeline strike: horizontal on the ground, the aim in the air (개편안 §6).
+func _tl_dir() -> Vector2:
+	return Vector2(facing, 0.0) if is_on_floor() else aim
+
+
+## One tick of a "timeline" strike: moves, art spawns and hit events keyed to swing_t (see PalmStyles).
+func _step_timeline() -> void:
+	var prev := _tl_prev
+	var now := swing_t
+	_tl_prev = now
+	var fwd := _tl_dir()
+	for m in swing.get("moves", []):
+		if now >= float(m.from) and now < float(m.to):
+			var speed := float(m.dist) / (float(m.to) - float(m.from))
+			velocity = Vector2(fwd.x * speed, velocity.y) if is_on_floor() else fwd * speed
+		elif prev < float(m.to) and now >= float(m.to):
+			velocity.x = 0.0   # the run ends where the data says (쇄진장 파진: the path is exactly the ground run over)
+	for f in swing.get("fx", []):
+		if prev < float(f.t) and now >= float(f.t):
+			var local := TORSO if String(f.get("at", "torso")) == "torso" else _hand_world() - global_position
+			if bool(f.get("follow", false)):
+				_tl_nodes.append(Juice.fx(String(f.clip), local, fwd, facing, false, self))
+			else:
+				Juice.fx(String(f.clip), global_position + local, fwd, facing)
+	var events: Array = swing.get("events", [])
+	for i in events.size():
+		var e: Dictionary = events[i]
+		var t := float(e.t)
+		var torso := global_position + TORSO
+		match String(e.shape):
+			"scar", "path":
+				if prev < t and now >= t:
+					_arm_scar(e)
+			"ring":
+				if now >= t - float(e.get("lead", 0.0)) and prev < float(e.until):
+					_ring_tick(i, e, now)
+			"sweep":
+				if now >= t and now <= float(e.until):
+					_tl_hits(e, _tl_state.get(i, torso), torso + fwd * float(e.reach), "%d:%d" % [attack_instance, i], _tl_rate(), false)
+				_tl_state[i] = torso
+			"circle":
+				if prev < t and now >= t:
+					_tl_hits(e, torso, torso, "%d:%d" % [attack_instance, i], _tl_rate(), false)
+			_:
+				if prev < t and now >= t:
+					var hand := _hand_world()
+					_tl_hits(e, hand, hand + fwd * float(e.len), "%d:%d" % [attack_instance, i], _tl_rate(), false)
+
+
+## Injury-burst multiplier fixed for the running strike (overheat on heavies, 정화 on everything).
+func _tl_rate() -> float:
+	return (_burst_rate if bool(swing.get("is_heavy", false)) else 1.0) * (PURIFY_BURST_RATE if purified() else 1.0)
+
+
+## 회란장: the band's radius is read every tick; a target is hit when its hurt box's radial span meets
+## the band swept since the last tick (so nothing slips between samples). Walls block the ring.
+func _ring_tick(i: int, e: Dictionary, now: float) -> void:
+	var t0 := float(e.t)
+	var t1 := float(e.until)
+	if not _tl_state.has(i):
+		var c := global_position + TORSO
+		_tl_state[i] = {"c": c, "r": float(e.r0)}
+		var ring := Node2D.new()
+		ring.set_script(preload("res://src/world/ring_fx.gd"))
+		ring.clip = String(e.art)
+		ring.travel = t1 - t0
+		ring.lead = float(e.get("lead", 0.0))
+		ring.hold = float(e.get("hold", 0.0))
+		ring.position = c
+		Juice.world.add_child(ring)
+		_tl_nodes.append(ring)
+	if now < t0:
+		return
+	var st: Dictionary = _tl_state[i]
+	var c: Vector2 = st.c
+	var r := lerpf(float(e.r0), float(e.r1), clampf((now - t0) / (t1 - t0), 0.0, 1.0))
+	var lo := minf(float(st.r), r) - float(e.w) * 0.5
+	var hi := maxf(float(st.r), r) + float(e.w) * 0.5
+	st.r = r
+	for d in get_tree().get_nodes_in_group("enemy"):
+		if d.has_method("invulnerable") and d.invulnerable():
+			continue
+		var box := _hurt_box(d)
+		var near := c.distance_to(c.clamp(box.position, box.end))
+		var far := maxf(maxf(c.distance_to(box.position), c.distance_to(box.end)), maxf(c.distance_to(Vector2(box.position.x, box.end.y)), c.distance_to(Vector2(box.end.x, box.position.y))))
+		if far < lo or near > hi or _blocked(c, box.get_center()):
+			continue
+		var p := c.clamp(box.position, box.end)
+		var out := (p - c).normalized() if p != c else Vector2(facing, 0)
+		_land(d, e, p, out, "%d:%d:%d" % [attack_instance, i, d.get_instance_id()], _tl_rate())
+
+
+## Capsule test (segment a→b, radius = w/2 or r) against every enemy's hurt box; `wall` also needs a clear
+## line from `a` (scars and path bursts never reach past a wall).
+func _tl_hits(e: Dictionary, a: Vector2, b: Vector2, key_base: String, rate: float, wall: bool) -> void:
+	var rad := float(e.get("r", float(e.get("w", 0.0)) * 0.5))
+	var front := String(e.shape) == "front"
+	var dir := (b - a).normalized()
+	for d in get_tree().get_nodes_in_group("enemy"):
+		if d.has_method("invulnerable") and d.invulnerable():
+			continue
+		var box := _hurt_box(d)
+		if front and (box.get_center() - a).dot(dir) < -16.0:
+			continue   # a forward box never reaches behind the hand (the capsule's radius would)
+		if _seg_box_dist(a, b, box) > rad or (wall and _blocked(a, box.get_center())):
+			continue
+		var p: Vector2 = a.lerp(b, 0.5).clamp(box.position, box.end)
+		var out := (p - a).normalized() if p != a else Vector2(facing, 0)
+		_land(d, e, p, out, "%s:%d" % [key_base, d.get_instance_id()], rate)
+
+
+## One timeline hit landing on `d`: ledger, damage, injury (add or burst), gauge once per attack, kick,
+## impact art, hitstop and shake (Juice takes the max, so many targets never stack them).
+func _land(d: Node, e: Dictionary, p: Vector2, out_dir: Vector2, key: String, rate: float) -> void:
+	var atk := {"damage": float(e.damage), "injury": int(e.get("injury", 0)), "injury_burst": e.has("burst"), "burst_per_stack": float(e.get("burst", 0.0)) * rate}
+	var r := CombatResolver.resolve_outgoing(atk, d.status, key, counter_armed)
+	if r.kind == CombatResolver.Kind.IGNORED:
+		return
+	hits += 1
+	damage += r.hp_damage
+	if r.hp_damage > 0 and not _gauge_given:   # shortcut: a scar firing during a later attack shares that attack's gauge flag; fine for one scar
+		_gauge_given = true
+		gauge = minf(100.0, gauge + CombatConfig.GAUGE_PER_ATTACK)
+	var push := signf(out_dir.x) if out_dir.x != 0.0 else facing
+	var kick_px := float(e.get("kick", 0.0))
+	var boss: bool = d.get("status") != null and d.status.is_boss
+	if e.has("pull"):   # 회란장 돌아오는 띠: normal enemies are drawn a little toward the centre, bosses never move
+		push = -push
+		kick_px = 0.0 if boss else float(e.pull)
+	elif boss:
+		kick_px = minf(kick_px, 6.0)
+	d.on_hit(r, push, kick_px)
+	Juice.flash(p, 5.0)
+	if e.has("fx"):
+		Juice.fx(String(e.fx), p, -out_dir if e.has("pull") else out_dir, facing)
+	if bool(e.get("crack", false)) and int(r.burst) > 0:
+		Juice.fx("r12_bp_inner_crack", d.global_position + Vector2(0, float(d.hurt_top) * 0.5))
+	Juice.hitstop(float(e.get("hit_stop", 0.06)))
+	Juice.shake(float(e.get("shake", 4.0)), push * 5.0)
+	Juice.ghost(sprite, 0.16, 0.45)
+	Juice.damage_number(d.global_position, r.hp_damage)
+
+
+## 쇄진장 잔진 / 파진: the one armed scar. It outlives a dash cancel (lay it, then leave) and fires at its
+## time; a new scar, a hit taken, death or a respawn clears it without damage (개편안 §6).
+func _arm_scar(e: Dictionary) -> void:
+	_clear_scar()
+	var fwd := _tl_dir()
+	var path := String(e.shape) == "path"
+	var start := global_position + TORSO if path else _hand_world()
+	var art: Array = e.get("art", [])
+	var nodes: Array = []
+	if path:
+		var box := Node2D.new()
+		box.set_script(preload("res://src/world/clip_box.gd"))
+		box.width = float(e.w)
+		box.position = start
+		box.rotation = fwd.angle() - (PI if fwd.x < 0.0 else 0.0)
+		box.scale = Vector2(-1.0 if fwd.x < 0.0 else 1.0, 1.0)   # mirrored like Juice.fx, so the art never hangs upside down
+		Juice.world.add_child(box)
+		Juice.fx(String(art[0]), Vector2.ZERO, Vector2.RIGHT, 1.0, false, box)
+		nodes.append(box)
+	else:
+		nodes.append(Juice.fx(String(art[0]), start, fwd))
+	_scar = {"e": e, "a": start, "b": start + fwd * float(e.get("len", 0.0)), "dir": fwd, "left": float(e.fire) - float(e.t), "t": 0.0, "stage": 0, "rate": _tl_rate(), "instance": attack_instance, "nodes": nodes}
+
+
+func _step_scar(dt: float) -> void:
+	if _scar.is_empty():
+		return
+	var s := _scar
+	var e: Dictionary = s.e
+	s.t += dt
+	s.left -= dt
+	var path := String(e.shape) == "path"
+	if path and swinging() and swing_t <= float(e.grow):   # the path is only the ground actually run over
+		s.b = global_position + TORSO
+		var box = s.nodes[0]
+		box.length = s.a.distance_to(s.b)
+		box.queue_redraw()
+	var art: Array = e.get("art", [])
+	var art_t: Array = e.get("art_t", [])
+	while s.stage + 1 < art.size() - 1 and s.t >= float(art_t[s.stage + 1]):   # middle stages (the charge); the last is the burst
+		s.stage += 1
+		s.nodes.append(Juice.fx(String(art[s.stage]), s.a, s.dir))
+	if s.left > 0.0:
+		return
+	_scar = {}
+	if path:
+		var box = s.nodes[0]
+		for c in box.get_children():
+			c.queue_free()
+		Juice.fx(String(art[art.size() - 1]), Vector2.ZERO, Vector2.RIGHT, 1.0, false, box)
+		get_tree().create_timer(0.4, false).timeout.connect(box.queue_free)
+	else:
+		for n in s.nodes:
+			_free(n)
+		Juice.fx(String(art[art.size() - 1]), s.a, s.dir)
+	_tl_hits(e, s.a, s.b, "%d:scar" % int(s.instance), float(s.rate), true)
+
+
+func _clear_scar() -> void:
+	for n in _scar.get("nodes", []):
+		_free(n)
+	_scar = {}
+
+
+## 투골장 · 극의 first equipped (Game.equip_palm): the manual opens under the great moon (개편안 §8).
+func reveal_palm() -> void:
+	Juice.fx("r12_bp_moon_great", TORSO, Vector2.RIGHT, 1.0, false, self)
+	var book := Sprite2D.new()
+	book.texture = Anim.ui_tex("r12_bp_manual_open")
+	book.position = TORSO + Vector2(0, -58)
+	book.z_index = 41
+	add_child(book)
+	get_tree().create_timer(1.6, false).timeout.connect(book.queue_free)
+
+
+static func _hurt_box(d: Node) -> Rect2:
+	var hw := _half_w(d)
+	var top := float(d.hurt_top)
+	return Rect2(d.global_position.x - hw, d.global_position.y + top, hw * 2.0, -top)
+
+
+## Shortest distance from segment a→b to a box, sampled every 8 px (exact enough for 20 px hurt boxes).
+static func _seg_box_dist(a: Vector2, b: Vector2, box: Rect2) -> float:
+	var n := maxi(1, int(ceil(a.distance_to(b) / 8.0)))
+	var best := INF
+	for k in n + 1:
+		var p := a.lerp(b, float(k) / float(n))
+		best = minf(best, p.distance_to(p.clamp(box.position, box.end)))
+	return best
+
+
+## A solid between two points (layer 1: walls and floors; enemies are plain nodes, so the ray never hits them).
+func _blocked(from: Vector2, to: Vector2) -> bool:
+	return not get_world_2d().direct_space_state.intersect_ray(PhysicsRayQueryParameters2D.create(from, to, 1)).is_empty()
+
+
 # ---------- enemy → player ----------
 
 func parry_elapsed() -> float:
@@ -1071,6 +1335,7 @@ func _apply_incoming(hit: HitEvent, r: Dictionary) -> void:
 			if ult_time >= 0.0:
 				_end_ultimate(true)
 			_end_swing()
+			_clear_scar()   # a hit taken drops the armed scar (개편안 §6)
 			_take_damage(r.hp_damage)
 			if not dead:
 				hurt_left = hit.hitstun
@@ -1092,6 +1357,7 @@ func _take_damage(amount: int) -> void:
 		dead = true
 		death_time = 0.0
 		_end_swing()
+		_clear_scar()
 		parry_time = -1.0
 		parry_recovery = 0.0
 		hurt_left = 0.0
@@ -1181,7 +1447,7 @@ func _update_visual() -> void:
 		var offset := 0.0
 		if swinging():
 			var arc := deg_to_rad(float(swing.arc))
-			var kind := String(swing.kind)
+			var kind := String(swing.get("pose", swing.kind))   # timeline strikes name the arm pose they borrow
 			if kind in ["burst", "front_burst"]:
 				if swing_t < 0.0:
 					offset = PI * 0.75 * (1.0 - (-swing_t) / float(swing.windup) * 0.4)  # pulled to the chest while gathering
@@ -1194,7 +1460,7 @@ func _update_visual() -> void:
 		arm_root.rotation = aim.angle() + offset
 		var palm := swinging()
 		Anim.part_frame(hand, "hand_palm" if palm else "hand_open", 0)
-		var big := swinging() and String(swing.kind) in ["burst", "front_burst"]
+		var big := swinging() and String(swing.get("pose", swing.kind)) in ["burst", "front_burst"]
 		qi_fx.visible = swinging()
 		if qi_fx.visible:
 			Anim.part_frame(qi_fx, "qi_moon" if big else "qi_palm", int(clock * 12.0))
